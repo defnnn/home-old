@@ -8,3 +8,5 @@ pytest-cov
 coverage
 cookiecutter
 httpie
+awscli
+aws-sam-cli
