@@ -129,9 +129,6 @@ steps:
     username:
       from_secret: docker_username
 
-depends_on:
-- test
-
 ---
 kind: pipeline
 type: docker
