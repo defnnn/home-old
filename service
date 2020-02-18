@@ -8,7 +8,7 @@ function main {
     sudo chown ubuntu:ubuntu /docker.sock
   fi
 
-  exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+  exec /usr/sbin/sshd -D -o UseDNS=no -o PasswordAuthentication=no -o Port=2222 -e
 }
 
 main "$@"
