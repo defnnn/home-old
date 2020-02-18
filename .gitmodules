@@ -1,3 +1,3 @@
-[submodule ".dotfiles"]
-	path = .dotfiles
-	url = git@github.com:defn/dotfiles
+[submodule "homedir"]
+	path = homedir
+	url = git@github.com:destructuring/homedir

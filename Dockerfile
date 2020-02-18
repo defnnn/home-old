@@ -12,7 +12,7 @@ RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/ud
 RUN apt-get update && apt-get install -y openssh-server curl sudo tzdata \
     locales iputils-ping iproute2 net-tools pass gnupg pinentry-curses tmux expect \
     man-db manpages groff docker.io libusb-1.0-0 libusb-1.0-0-dev vim-nox \
-    apt-transport-https make
+    apt-transport-https make rsync
 
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 RUN dpkg-reconfigure -f noninteractive tzdata
@@ -53,9 +53,10 @@ RUN chmod 755 /usr/local/bin/drone /usr/local/bin/powerline-go /usr/local/bin/jq
 
 USER app
 ENV HOME=/app/src
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 WORKDIR /app/src
 
-COPY --chown=app:app home /app/src
+COPY --chown=app:app homedir /app/src
 
 RUN chmod 700 /app/src/.ssh
 RUN chmod 600 /app/src/.ssh/authorized_keys
@@ -64,7 +65,6 @@ RUN chmod 700 /app/src/.gnupg
 RUN mkdir -p /app/src/.aws && ln -nfs /efs/config/aws/config /app/src/.aws/
 RUN ln -nfs /efs/config/pass /app/src/.password-store
 
-COPY --chown=app:app .dotfiles /app/src/.dotfiles
 RUN make -f .dotfiles/Makefile dotfiles
 
 COPY --chown=app:app requirements.txt /app/src/
