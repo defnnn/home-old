@@ -65,8 +65,6 @@ RUN chmod 700 /app/src/.gnupg
 
 RUN mkdir -p /app/src/.aws && ln -nfs /efs/config/aws/config /app/src/.aws/
 RUN ln -nfs /efs/config/pass /app/src/.password-store
-RUN ln -nfs /efs/config/terraform/.terraform.d /app/src/
-RUN ln -nfs /efs/config/terraform/.terraformrc /app/src/
 
 COPY --chown=app:app .dotfiles /app/src/.dotfiles
 RUN make -f .dotfiles/Makefile dotfiles
