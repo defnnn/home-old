@@ -5,12 +5,15 @@ ENV HOME=/root
 WORKDIR /root
 
 RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
-RUN apk add curl sudo tmux expect vim bash make jq
+RUN apk add curl wget sudo tmux expect vim bash make jq perl
 RUN apk add pass@testing libusb
 RUN apk add openssh docker docker-compose
 
 RUN ssh-keygen -A
 RUN chown -R app:app /etc/ssh /run
+
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-2.30-r0.apk && apk add glibc-2.30-r0.apk && rm -f glibc-2.30-r0.apk
 
 RUN cd /usr/local/bin && curl -sSL -O https://github.com/drone/drone-cli/releases/download/v1.2.1/drone_linux_amd64.tar.gz \
     && tar xvfz drone_linux_amd64.tar.gz \
