@@ -52,11 +52,7 @@ ENV HOME=/app/src
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 WORKDIR /app/src
 
-COPY --chown=app:app requirements.txt /app/src/
-RUN . /app/venv/bin/activate && pip install --no-cache-dir -r /app/src/requirements.txt
-COPY --chown=app:app src /app/src
-
-COPY --chown=app:app homedir /app/src
+RUN git clone https://github.com/destructuring/homedir && mv homedir/.git . && git reset --hard && git clean -ffd
 
 RUN chmod 700 /app/src/.ssh
 RUN chmod 600 /app/src/.ssh/authorized_keys
@@ -65,7 +61,11 @@ RUN chmod 700 /app/src/.gnupg
 RUN mkdir -p /app/src/.aws && ln -nfs /efs/config/aws/config /app/src/.aws/
 RUN ln -nfs /efs/config/pass /app/src/.password-store
 
+RUN git clone https://github.com/destructuring/dotfiles /app/src/.dotfiles
 RUN make -f .dotfiles/Makefile dotfiles
+
+COPY --chown=app:app requirements.txt /app/src/requirements.txt
+RUN python3 -m venv /app/venv-home && . /app/venv-home/bin/activate && pip install --no-cache-dir -r /app/src/requirements.txt
 
 COPY service /service
 

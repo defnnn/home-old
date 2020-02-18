@@ -1,3 +1,0 @@
-[submodule "homedir"]
-	path = homedir
-	url = git@github.com:destructuring/homedir
