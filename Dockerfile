@@ -49,6 +49,8 @@ RUN cd /usr/local/bin && curl -sSL -O https://github.com/segmentio/aws-okta/rele
 RUN cd /usr/local/bin && curl -sSL -O https://github.com/segmentio/chamber/releases/download/v2.7.5/chamber-v2.7.5-linux-amd64 \
     && mv chamber-v2.7.5-linux-amd64 chamber
 
+RUN chmod 755 /usr/local/bin/drone /usr/local/bin/powerline-go /usr/local/bin/jq /usr/local/bin/docker-compose /usr/local/bin/aws-okta /usr/local/bin/chamber
+
 USER app
 ENV HOME=/app/src
 WORKDIR /app/src
