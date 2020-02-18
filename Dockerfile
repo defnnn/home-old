@@ -9,10 +9,9 @@ WORKDIR /root
 
 RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/udevadm
 
-RUN apt-get update && apt-get install -y openssh-server curl sudo tzdata \
-    locales iputils-ping iproute2 net-tools pass gnupg pinentry-curses tmux expect \
-    man-db manpages groff docker.io libusb-1.0-0 libusb-1.0-0-dev vim-nox \
-    apt-transport-https make rsync
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssh-server curl tzdata locales iputils-ping iproute2 net-tools pass \
+    gnupg pinentry-curses tmux docker.io libusb-1.0-0 vim make rsync git
 
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 RUN dpkg-reconfigure -f noninteractive tzdata
@@ -27,9 +26,6 @@ ENV LC_ALL en_US.UTF-8
 RUN rm -f /usr/bin/gs
 
 RUN mkdir -p /run/sshd /var/run/sshd /run && chown -R app:app /var/run/sshd /run /etc/ssh
-
-RUN echo "app ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-RUN echo "Defaults !requiretty" >> /etc/sudoers
 
 RUN cd /usr/local/bin && curl -sSL -O https://github.com/drone/drone-cli/releases/download/v1.2.1/drone_linux_amd64.tar.gz \
     && tar xvfz drone_linux_amd64.tar.gz \
@@ -56,6 +52,10 @@ ENV HOME=/app/src
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 WORKDIR /app/src
 
+COPY --chown=app:app requirements.txt /app/src/
+RUN . /app/venv/bin/activate && pip install --no-cache-dir -r /app/src/requirements.txt
+COPY --chown=app:app src /app/src
+
 COPY --chown=app:app homedir /app/src
 
 RUN chmod 700 /app/src/.ssh
@@ -67,12 +67,6 @@ RUN ln -nfs /efs/config/pass /app/src/.password-store
 
 RUN make -f .dotfiles/Makefile dotfiles
 
-COPY --chown=app:app requirements.txt /app/src/
-RUN . /app/venv/bin/activate && pip install --no-cache-dir -r /app/src/requirements.txt
-COPY --chown=app:app src /app/src
-
 COPY service /service
-
-RUN sudo apt-get update && sudo apt-get upgrade -y
 
 ENTRYPOINT [ "/tini", "--", "/service" ]

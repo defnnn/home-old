@@ -119,7 +119,7 @@ steps:
   image: letfn/drone-kaniko
   settings:
     args: --destination=defn/home
-    cache: false
+    cache: true
     cache_repo: defn/cache
     password:
       from_secret: docker_password
