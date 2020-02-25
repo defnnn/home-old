@@ -1,4 +1,4 @@
-FROM letfn/python
+FROM letfn/python-cli
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV container docker
