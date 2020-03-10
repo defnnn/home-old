@@ -137,3 +137,6 @@ dmypy.json
 /config.yaml
 gh-pages
 public
+
+# Docker
+/cache

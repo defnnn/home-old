@@ -36,6 +36,10 @@ requirements: # Compile requirements
 build: # Build container
 	@echo
 	drone exec --pipeline $@ --secret-file ../.drone.secret
+	docker pull defn/home
+
+warm: # Cache FROM images
+	docker run --rm -ti -v $(shell pwd)/cache:/cache gcr.io/kaniko-project/warmer:latest --cache-dir=/cache --image=letfn/python-cli:latest
 
 watch: # Watch for changes
 	@trap 'exit' INT; while true; do fswatch -0 src content | while read -d "" event; do case "$$event" in *.py) figlet woke; make lint test; break; ;; *.md) figlet docs; make docs; ;; esac; done; sleep 1; done

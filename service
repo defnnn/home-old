@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 
 function main {
-  env -u PATH -u DEBIAN_FRONTEND -u USER -u HOME env | egrep -v '^(PWD|SHLVL|_)=' > .env
+  if [[ "$#" -gt 0 ]]; then
+    source /app/venv/bin/activate
+    exec "$@"
+    return $?
+  fi
+
+  set -x
 
   if [[ -S /docker.sock ]]; then
+    sudo mkdir -p /var/run
     sudo ln -nfs /docker.sock /var/run/docker.sock
-    sudo chown ubuntu:ubuntu /docker.sock
   fi
 
   exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e

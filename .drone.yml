@@ -124,7 +124,6 @@ steps:
     password:
       from_secret: docker_password
     repo: defn/home
-    skip_tls_verify: true
     tag: latest
     username:
       from_secret: docker_username

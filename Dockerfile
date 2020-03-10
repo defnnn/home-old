@@ -1,71 +1,72 @@
-FROM letfn/python-cli
+ARG FROM_VERSION=latest
+FROM letfn/python-cli:$FROM_VERSION
+ARG FROM_VERSION
 
+USER root
+WORKDIR /root
+
+ENV HOME=/root
 ENV DEBIAN_FRONTEND=noninteractive
 ENV container docker
 
-USER root
-ENV HOME=/root
-WORKDIR /root
-
 RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/udevadm
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    openssh-server curl tzdata locales iputils-ping iproute2 net-tools pass \
-    gnupg pinentry-curses tmux docker.io libusb-1.0-0 vim make rsync git
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        openssh-server curl tzdata locales iputils-ping iproute2 net-tools pass \
+        gnupg pinentry-curses tmux docker.io libusb-1.0-0 vim make rsync git jq \
+        unzip sudo \
+    && rm -f /usr/bin/gs \
+    && mkdir -p /run/sshd /var/run/sshd /run && chown -R app:app /var/run/sshd /run /etc/ssh
 
-RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime
-RUN dpkg-reconfigure -f noninteractive tzdata
+RUN echo "app ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-RUN locale-gen en_US.UTF-8
-RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && locale-gen en_US.UTF-8 \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
+RUN cd /usr/local/bin && curl -sSL -O https://github.com/drone/drone-cli/releases/download/v1.2.1/drone_linux_amd64.tar.gz \
+    && tar xvfz drone_linux_amd64.tar.gz \
+    && rm -f drone_linux_amd64.tar.gz \
+    && chmod 755 /usr/local/bin/drone
+
+RUN cd /usr/local/bin && curl -sSL -O https://github.com/justjanne/powerline-go/releases/download/v1.15.0/powerline-go-linux-amd64 \
+    && mv powerline-go-linux-amd64 powerline-go \
+    && chmod 755 /usr/local/bin/powerline-go
+
+RUN cd /usr/local/bin && curl -sSL -O https://github.com/segmentio/aws-okta/releases/download/v1.0.1/aws-okta-v1.0.1-linux-amd64 \
+    && mv aws-okta-v1.0.1-linux-amd64 aws-okta \
+    && chmod 755 /usr/local/bin/aws-okta
+
+USER app
+WORKDIR /app/src
+
+ENV HOME=/app/src
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN rm -f /usr/bin/gs
+RUN git clone https://github.com/destructuring/homedir \
+    && mv homedir/.git . \
+    && git reset --hard
 
-RUN mkdir -p /run/sshd /var/run/sshd /run && chown -R app:app /var/run/sshd /run /etc/ssh
+RUN chmod 700 /app/src/.ssh \
+    && chmod 600 /app/src/.ssh/authorized_keys \
+    && chmod 700 /app/src/.gnupg \
+    && mkdir -p /app/src/.aws \
+    && ln -nfs /efs/config/aws/config /app/src/.aws/ \
+    && ln -nfs /efs/config/pass /app/src/.password-store
 
-RUN cd /usr/local/bin && curl -sSL -O https://github.com/drone/drone-cli/releases/download/v1.2.1/drone_linux_amd64.tar.gz \
-    && tar xvfz drone_linux_amd64.tar.gz \
-    && rm -f drone_linux_amd64.tar.gz
-
-RUN cd /usr/local/bin && curl -sSL -O https://github.com/justjanne/powerline-go/releases/download/v1.15.0/powerline-go-linux-amd64 \
-    && mv powerline-go-linux-amd64 powerline-go
-
-RUN cd /usr/local/bin && curl -sSL -O https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 \
-    && mv jq-linux64 jq
-
-RUN cd /usr/local/bin && curl -o docker-compose -sSL https://github.com/docker/compose/releases/download/1.25.4/docker-compose-Linux-x86_64
-
-RUN cd /usr/local/bin && curl -sSL -O https://github.com/segmentio/aws-okta/releases/download/v0.27.0/aws-okta-v0.27.0-linux-amd64 \
-    && mv aws-okta-v0.27.0-linux-amd64 aws-okta
-
-RUN cd /usr/local/bin && curl -sSL -O https://github.com/segmentio/chamber/releases/download/v2.7.5/chamber-v2.7.5-linux-amd64 \
-    && mv chamber-v2.7.5-linux-amd64 chamber
-
-RUN chmod 755 /usr/local/bin/drone /usr/local/bin/powerline-go /usr/local/bin/jq /usr/local/bin/docker-compose /usr/local/bin/aws-okta /usr/local/bin/chamber
-
-USER app
-ENV HOME=/app/src
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-WORKDIR /app/src
-
-RUN git clone https://github.com/destructuring/homedir && mv homedir/.git . && git reset --hard && git clean -ffd
-
-RUN chmod 700 /app/src/.ssh
-RUN chmod 600 /app/src/.ssh/authorized_keys
-RUN chmod 700 /app/src/.gnupg
-
-RUN mkdir -p /app/src/.aws && ln -nfs /efs/config/aws/config /app/src/.aws/
-RUN ln -nfs /efs/config/pass /app/src/.password-store
-
-RUN git clone https://github.com/destructuring/dotfiles /app/src/.dotfiles
-RUN make -f .dotfiles/Makefile dotfiles
+RUN git clone https://github.com/destructuring/dotfiles /app/src/.dotfiles \
+    && make -f .dotfiles/Makefile dotfiles
 
 COPY --chown=app:app requirements.txt /app/src/requirements.txt
-RUN python3 -m venv /app/venv-home && . /app/venv-home/bin/activate && pip install --no-cache-dir -r /app/src/requirements.txt
+
+RUN . /app/venv/bin/activate \
+    && pip install --no-cache-dir -r /app/src/requirements.txt
 
 COPY service /service
 

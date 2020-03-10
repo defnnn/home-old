@@ -2,3 +2,4 @@
 .drone.secret
 .drone.env
 .env
+cache
