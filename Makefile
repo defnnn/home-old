@@ -14,12 +14,10 @@ all: # Run everything except build
 fmt: # Format with isort, black
 	@echo
 	drone exec --pipeline $@
-	drone exec --pipeline $@-python
 
 lint: # Run pyflakes, mypy
 	@echo
 	drone exec --pipeline $@
-	drone exec --pipeline $@-python
 
 test: # Run tests
 	@echo

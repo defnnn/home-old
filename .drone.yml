@@ -31,59 +31,6 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: fmt-python
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: python
-  image: letfn/python
-  commands:
-  - . /app/venv/bin/activate && isort -rc src
-  - . /app/venv/bin/activate && black src
-
----
-kind: pipeline
-type: docker
-name: lint-python
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: everything
-  image: letfn/python
-  commands:
-  - . /app/venv/bin/activate && pyflakes src
-  - . /app/venv/bin/activate && mypy src
-
----
-kind: pipeline
-type: docker
-name: test
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: everything
-  image: letfn/python
-  commands:
-  - . /app/venv/bin/activate && pytest -v src
-
-depends_on:
-- fmt
-- fmt-python
-- lint
-- lint-python
-
----
-kind: pipeline
-type: docker
 name: requirements
 
 platform:
