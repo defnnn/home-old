@@ -63,11 +63,13 @@ RUN chmod 700 /app/src/.ssh \
 RUN git clone https://github.com/destructuring/dotfiles /app/src/.dotfiles \
     && make -f .dotfiles/Makefile dotfiles
 
-COPY --chown=app:app requirements.txt /app/src/requirements.txt
+COPY service /service
+
+COPY requirements.txt /app/src/requirements.txt
+RUN chown app:app /app/src/requirements.txt
 
 RUN . /app/venv/bin/activate \
     && pip install --no-cache-dir -r /app/src/requirements.txt
 
-COPY service /service
-
 ENTRYPOINT [ "/tini", "--", "/service" ]
+
