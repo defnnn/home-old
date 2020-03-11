@@ -3,7 +3,6 @@ FROM letfn/python-cli:$FROM_VERSION
 ARG FROM_VERSION
 
 USER root
-WORKDIR /root
 
 ENV HOME=/root
 ENV DEBIAN_FRONTEND=noninteractive
@@ -41,7 +40,6 @@ RUN cd /usr/local/bin && curl -sSL -O https://github.com/segmentio/aws-okta/rele
     && chmod 755 /usr/local/bin/aws-okta
 
 USER app
-WORKDIR /app/src
 
 ENV HOME=/app/src
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
