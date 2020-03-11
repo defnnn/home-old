@@ -47,6 +47,11 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
+COPY --chown=app:app requirements.txt /app/src/requirements.txt
+
+RUN . /app/venv/bin/activate \
+    && pip install --no-cache-dir -r /app/src/requirements.txt
+
 RUN git clone https://github.com/destructuring/homedir \
     && mv homedir/.git . \
     && git reset --hard
@@ -60,11 +65,6 @@ RUN chmod 700 /app/src/.ssh \
 
 RUN git clone https://github.com/destructuring/dotfiles /app/src/.dotfiles \
     && make -f .dotfiles/Makefile dotfiles
-
-COPY --chown=app:app requirements.txt /app/src/requirements.txt
-
-RUN . /app/venv/bin/activate \
-    && pip install --no-cache-dir -r /app/src/requirements.txt
 
 COPY service /service
 
