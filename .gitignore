@@ -140,3 +140,4 @@ public
 
 # Docker
 /cache
+git-*
