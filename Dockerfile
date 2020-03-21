@@ -28,11 +28,11 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
 COPY git-linuxbrew /home/linuxbrew/.linuxbrew
-COPY git-linuxbrew-core /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core
+COPY git-linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
 
 RUN /home/linuxbrew/.linuxbrew/bin/brew install hello \
+    && (brew bundle || true) \
     && chown -R app:app /home/linuxbrew
-    && (brew bundle || true)
 
 # TODO what causes .cache root:root ownership
 RUN chown -R app:app /app/src/.cache
@@ -44,11 +44,6 @@ ENV PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
-
-COPY --chown=app:app requirements.txt /app/src/requirements.txt
-
-RUN . /app/venv/bin/activate \
-    && pip install --no-cache-dir -r /app/src/requirements.txt
 
 RUN git clone https://github.com/destructuring/homedir \
     && mv homedir/.git . \
