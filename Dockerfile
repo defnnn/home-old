@@ -1,5 +1,5 @@
-ARG FROM_VERSION=latest
-FROM letfn/python-cli:$FROM_VERSION
+ARG FROM_IMAGE=letfn/python-cli:latest
+FROM $FROM_IMAGE
 ARG FROM_VERSION
 
 USER root
@@ -67,5 +67,3 @@ RUN git clone https://github.com/destructuring/dotfiles /app/src/.dotfiles \
     && make -f .dotfiles/Makefile dotfiles
 
 COPY service /service
-
-ENTRYPOINT [ "/tini", "--", "/service" ]
