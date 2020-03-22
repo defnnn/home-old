@@ -1,6 +1,12 @@
 ARG FROM_IMAGE=letfn/python-cli:latest
+ARG HOMEDIR=https://github.com/destructuring/homedir
+ARG DOTFILES=https://github.com/destructuring/dotfiles
+
 FROM $FROM_IMAGE
+
 ARG FROM_VERSION
+ARG HOMEDIR
+ARG DOTFILES
 
 USER root
 
@@ -27,8 +33,9 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && locale-gen en_US.UTF-8 \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-COPY git-linuxbrew /home/linuxbrew/.linuxbrew
-COPY git-linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
+RUN git clone https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew
+
+RUN git clone https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
 
 RUN /home/linuxbrew/.linuxbrew/bin/brew install hello \
     && (/home/linuxbrew/.linuxbrew/bin/brew bundle || true) \
@@ -45,12 +52,12 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN git clone https://github.com/destructuring/homedir \
+RUN git clone $HOMEDIR \
     && mv homedir/.git . \
     && git reset --hard \
     && rm -rf homedir
 
-RUN git clone https://github.com/destructuring/dotfiles /app/src/.dotfiles \
+RUN git clone $DOTFILES /app/src/.dotfiles \
     && make -f .dotfiles/Makefile dotfiles
 
 COPY service /service
