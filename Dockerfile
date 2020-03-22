@@ -48,16 +48,10 @@ ENV LC_ALL en_US.UTF-8
 RUN git clone https://github.com/destructuring/homedir \
     && mv homedir/.git . \
     && git reset --hard \
-    && rm -rf homedir \
-    && git remote rm origin \
-    && git remove add origin git@github.com:destructuring/homedir \
-    && git branch -u origin/master
+    && rm -rf homedir
 
 RUN git clone https://github.com/destructuring/dotfiles /app/src/.dotfiles \
-    && make -f .dotfiles/Makefile dotfiles \
-    && git remote rm origin \
-    && git remove add origin git@github.com:destructuring/dotfiles \
-    && git branch -u origin/master
+    && make -f .dotfiles/Makefile dotfiles
 
 COPY service /service
 
