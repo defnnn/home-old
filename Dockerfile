@@ -1,12 +1,14 @@
 ARG FROM_IMAGE=letfn/python-cli:latest
 ARG HOMEDIR=https://github.com/destructuring/homedir
 ARG DOTFILES=https://github.com/destructuring/dotfiles
+ARG COMBO_BREAKER=3
 
 FROM $FROM_IMAGE
 
 ARG FROM_VERSION
 ARG HOMEDIR
 ARG DOTFILES
+ARG COMBO_BREAKER
 
 USER root
 
@@ -19,10 +21,11 @@ RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/ud
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        openssh-server tzdata locales iputils-ping iproute2 net-tools \
-        docker.io libusb-1.0-0 git curl \
+        openssh-server tzdata locales iputils-ping iproute2 net-tools git curl xz-utils \
+        docker.io libusb-1.0-0 \
         sudo \
         build-essential \
+        libssl-dev zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev libncursesw5-dev libffi-dev liblzma-dev \
     && rm -f /usr/bin/gs \
     && mkdir -p /run/sshd /var/run/sshd /run && chown -R app:app /var/run/sshd /run /etc/ssh
 
@@ -33,9 +36,9 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && locale-gen en_US.UTF-8 \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-RUN git clone https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew
+RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew
 
-RUN git clone https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
+RUN git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
 
 RUN /home/linuxbrew/.linuxbrew/bin/brew install hello \
     && (/home/linuxbrew/.linuxbrew/bin/brew bundle || true) \
@@ -52,12 +55,16 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
+RUN echo $COMBO_BREAKER
+
 RUN git clone $HOMEDIR \
     && mv homedir/.git . \
     && git reset --hard \
+    && git submodule update --init \
     && rm -rf homedir
 
 RUN git clone $DOTFILES /app/src/.dotfiles \
+    && git submodule update --init \
     && make -f .dotfiles/Makefile dotfiles
 
 COPY service /service
