@@ -12,4 +12,6 @@ RUN git clone $HOMEDIR \
 RUN git clone $DOTFILES /app/src/.dotfiles \
     && git submodule update --init
 
-RUN ln -nfs .dotfiles/Makefile . && make
+RUN sudo chown app:app /app/src/.cache \
+    && ln -nfs .dotfiles/Makefile . \
+    && make

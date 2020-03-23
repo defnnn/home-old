@@ -43,5 +43,4 @@ watch: # Watch for changes
 	@trap 'exit' INT; while true; do fswatch -0 src content | while read -d "" event; do case "$$event" in *.py) figlet woke; make lint test; break; ;; *.md) figlet docs; make docs; ;; esac; done; sleep 1; done
 
 update: # Build image with updated homedir/dotfiles
-	docker build --no-cache -t defn/home:update -f Dockerfile.update  .
-	docker push defn/home:update
+	docker build -t defn/home:update -f Dockerfile.update  .
