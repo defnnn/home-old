@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 function main {
+  sudo chown app:app ./.git ./.git/modules ./.git/modules/.asdf ./.git/modules/.asdf/plugins ./.asdf/plugins ./.cache/pip/http/a/1 ./.cache/pip/http/a/1/9 ./.cache/pip/http/a/1/9/5
+
   if [[ -S /docker.sock ]]; then
     sudo mkdir -p /var/run
     local gid="$(stat -c '%g' /docker.sock)"
@@ -18,11 +20,11 @@ function main {
 
   if [[ "$#" -gt 0 ]]; then
     source /app/venv/bin/activate
-    exec sudo -u app "$@"
+    exec sudo -u app -i "$@"
     return $?
   fi
 
-  exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+  exec sudo -u app /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
 }
 
 main "$@"

@@ -44,9 +44,6 @@ RUN /home/linuxbrew/.linuxbrew/bin/brew install hello \
     && (/home/linuxbrew/.linuxbrew/bin/brew bundle || true) \
     && chown -R app:app /home/linuxbrew
 
-# TODO what causes .cache root:root ownership
-RUN chown -R app:app /app/src/.cache
-
 USER app
 
 ENV HOME=/app/src
