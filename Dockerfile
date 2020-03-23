@@ -68,3 +68,5 @@ RUN git clone $DOTFILES /app/src/.dotfiles \
     && make -f .dotfiles/Makefile dotfiles
 
 COPY service /service
+
+ENTRYPOINT [ "/service" ]

@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
 
 function main {
-  if [[ "$#" -gt 0 ]]; then
-    source /app/venv/bin/activate
-    exec "$@"
-    return $?
-  fi
-
-  set -x
-
   if [[ -S /docker.sock ]]; then
     sudo mkdir -p /var/run
     local gid="$(stat -c '%g' /docker.sock)"
@@ -22,6 +14,12 @@ function main {
     sudo /usr/sbin/usermod -a -G "${gname}" app
 
     sudo ln -nfs /docker.sock /var/run/docker.sock
+  fi
+
+  if [[ "$#" -gt 0 ]]; then
+    source /app/venv/bin/activate
+    exec sudo -u app "$@"
+    return $?
   fi
 
   exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
