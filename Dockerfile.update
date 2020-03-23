@@ -2,6 +2,8 @@ FROM defn/home
 
 RUN sudo chown app:app ./.git ./.git/modules ./.git/modules/.asdf ./.git/modules/.asdf/plugins ./.asdf/plugins ./.cache/pip/http/a/1 ./.cache/pip/http/a/1/9 ./.cache/pip/http/a/1/9/5
 
+RUN rm -rf main.py tests
+
 RUN make
 
 ENTRYPOINT [ "/service" ]
