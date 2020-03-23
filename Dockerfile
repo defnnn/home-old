@@ -36,12 +36,8 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && locale-gen en_US.UTF-8 \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew
-
-RUN git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
-
-RUN /home/linuxbrew/.linuxbrew/bin/brew install hello \
-    && (/home/linuxbrew/.linuxbrew/bin/brew bundle || true) \
+RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
+    && git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
     && chown -R app:app /home/linuxbrew
 
 USER app
@@ -51,18 +47,6 @@ ENV PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
-
-RUN echo $COMBO_BREAKER
-
-RUN git clone $HOMEDIR \
-    && mv homedir/.git . \
-    && git reset --hard \
-    && git submodule update --init \
-    && rm -rf homedir
-
-RUN git clone $DOTFILES /app/src/.dotfiles \
-    && git submodule update --init \
-    && make -f .dotfiles/Makefile dotfiles
 
 COPY service /service
 

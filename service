@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 function main {
-  sudo chown app:app ./.git ./.git/modules ./.git/modules/.asdf ./.git/modules/.asdf/plugins ./.asdf/plugins ./.cache/pip/http/a/1 ./.cache/pip/http/a/1/9 ./.cache/pip/http/a/1/9/5
-
   if [[ -S /docker.sock ]]; then
     sudo mkdir -p /var/run
     local gid="$(stat -c '%g' /docker.sock)"

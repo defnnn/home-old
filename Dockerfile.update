@@ -1,9 +1,15 @@
 FROM defn/home
 
-RUN sudo chown app:app ./.git ./.git/modules ./.git/modules/.asdf ./.git/modules/.asdf/plugins ./.asdf/plugins ./.cache/pip/http/a/1 ./.cache/pip/http/a/1/9 ./.cache/pip/http/a/1/9/5
+ARG HOMEDIR=https://github.com/destructuring/homedir
+ARG DOTFILES=https://github.com/destructuring/dotfiles
 
-RUN rm -rf main.py tests
+RUN git clone $HOMEDIR \
+    && mv homedir/.git . \
+    && git reset --hard \
+    && git submodule update --init \
+    && rm -rf homedir
 
-RUN make
+RUN git clone $DOTFILES /app/src/.dotfiles \
+    && git submodule update --init
 
-ENTRYPOINT [ "/service" ]
+RUN ln -nfs .dotfiles/Makefile . && make
