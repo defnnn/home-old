@@ -15,3 +15,5 @@ RUN git clone $DOTFILES /app/src/.dotfiles \
 RUN sudo chown app:app /app/src/.cache \
     && ln -nfs .dotfiles/Makefile . \
     && make
+
+RUN rm -rf main.py tests
