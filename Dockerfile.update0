@@ -1,0 +1,20 @@
+FROM defn/home
+
+ARG HOMEDIR=https://github.com/destructuring/homedir
+ARG DOTFILES=https://github.com/destructuring/dotfiles
+
+RUN rm -rf main.py tests
+
+RUN sudo chown app:app /app/src/.cache
+
+RUN git clone $HOMEDIR \
+    && mv homedir/.git . \
+    && git reset --hard \
+    && git submodule update --init \
+    && rm -rf homedir
+
+RUN git clone $DOTFILES /app/src/.dotfiles \
+    && git submodule update --init
+
+RUN ln -nfs .dotfiles/Makefile . \
+    && make
