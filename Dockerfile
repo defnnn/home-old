@@ -1,14 +1,8 @@
 ARG FROM_IMAGE=letfn/python-cli:latest
-ARG HOMEDIR=https://github.com/destructuring/homedir
-ARG DOTFILES=https://github.com/destructuring/dotfiles
-ARG COMBO_BREAKER=3
 
 FROM $FROM_IMAGE
 
 ARG FROM_VERSION
-ARG HOMEDIR
-ARG DOTFILES
-ARG COMBO_BREAKER
 
 USER root
 

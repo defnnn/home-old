@@ -1,7 +1,7 @@
 FROM defn/home
 
-ARG HOMEDIR=https://github.com/destructuring/homedir
-ARG DOTFILES=https://github.com/destructuring/dotfiles
+ARG HOMEDIR=https://github.com/amanibhavam/homedir
+ARG DOTFILES=https://github.com/amanibhavam/dotfiles
 
 RUN rm -rf main.py tests
 
