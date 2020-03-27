@@ -3,10 +3,6 @@ FROM defn/home
 ARG HOMEDIR=https://github.com/amanibhavam/homedir
 ARG DOTFILES=https://github.com/amanibhavam/dotfiles
 
-RUN rm -rf main.py tests
-
-RUN sudo chown app:app /app/src/.cache
-
 RUN git clone $HOMEDIR \
     && mv homedir/.git . \
     && git reset --hard \

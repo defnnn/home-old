@@ -34,6 +34,8 @@ RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxb
     && git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
     && chown -R app:app /home/linuxbrew
 
+RUN rm -rf main.py requirements.txt tests .cache __pycache__
+
 USER app
 
 ENV HOME=/app/src
