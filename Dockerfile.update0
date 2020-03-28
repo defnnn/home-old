@@ -13,4 +13,4 @@ RUN git clone $DOTFILES /app/src/.dotfiles \
     && git submodule update --init
 
 RUN ln -nfs .dotfiles/Makefile . \
-    && make
+    && make upgrade

@@ -1,3 +1,3 @@
 FROM registry.eldri.ch/defn/home:update0
 
-RUN make
+RUN make upgrade
