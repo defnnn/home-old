@@ -1,4 +1,4 @@
-FROM defn/home
+FROM registry.eldri.ch/defn/home
 
 ARG HOMEDIR=https://github.com/amanibhavam/homedir
 ARG DOTFILES=https://github.com/amanibhavam/dotfiles

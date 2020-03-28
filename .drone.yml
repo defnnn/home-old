@@ -65,12 +65,12 @@ steps:
 - name: kaniko
   image: letfn/drone-kaniko
   settings:
-    args: --destination=defn/home
+    args: --destination=registry.eldri.ch/defn/home
     cache: true
-    cache_repo: defn/cache
+    cache_repo: registry.eldri.ch/cache/defn/home
     password:
       from_secret: docker_password
-    repo: defn/home
+    repo: registry.eldri.ch/defn/home
     tag: latest
     username:
       from_secret: docker_username

@@ -34,7 +34,7 @@ requirements: # Compile requirements
 build: # Build container
 	@echo
 	drone exec --pipeline $@ --secret-file ../.drone.secret
-	docker pull defn/home
+	docker pull registry.eldri.ch/defn/home
 
 warm: # Cache FROM images
 	docker run --rm -ti -v $(shell pwd)/cache:/cache gcr.io/kaniko-project/warmer:latest --cache-dir=/cache --image=letfn/python-cli:latest
@@ -43,7 +43,7 @@ watch: # Watch for changes
 	@trap 'exit' INT; while true; do fswatch -0 src content | while read -d "" event; do case "$$event" in *.py) figlet woke; make lint test; break; ;; *.md) figlet docs; make docs; ;; esac; done; sleep 1; done
 
 update0: # Build base with homedir/dotfiles
-	docker build -t defn/home:update0 -f Dockerfile.update0 --no-cache .
+	docker build -t registry.eldri.ch/defn/home:update0 -f Dockerfile.update0 --no-cache .
 
 update: # Build image with updated homedir/dotfiles with no cache
-	docker build -t defn/home:update -f Dockerfile.update --no-cache .
+	docker build -t registry.eldri.ch/defn/home:update -f Dockerfile.update --no-cache .
