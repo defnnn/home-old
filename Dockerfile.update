@@ -1,5 +1,7 @@
 FROM registry.eldri.ch/defn/home:update0
 
-RUN make update upgrade
+RUN make update
+
+RUN make upgrade
 
 COPY service /service
