@@ -16,13 +16,20 @@ function main {
     sudo ln -nfs /docker.sock /var/run/docker.sock
   fi
 
-  if [[ "$#" -gt 0 ]]; then
-    source /app/venv/bin/activate
-    exec sudo -u app -i "$@"
-    return $?
-  fi
+  case "${1:-}" in
+    sshd)
+      exec sudo -u app /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+      ;;
+    *)
+      if [[ "$#" == 0 ]]; then
+        set -- bash
+      fi
+      source /app/venv/bin/activate
+      exec sudo -u app -i "$@"
+      ;;
+  esac
 
-  exec sudo -u app /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+  return $?
 }
 
 main "$@"
