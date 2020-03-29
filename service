@@ -16,6 +16,13 @@ function main {
     sudo ln -nfs /docker.sock /var/run/docker.sock
   fi
 
+  if [[ -f /run/secrets/kubernetes.io/serviceaccount/token ]]; then
+    kubectl config set-cluster kind-kind --certificate-authority=/run/secrets/kubernetes.io/serviceaccount/ca.crt --server=https://kubernetes.default.svc
+    kubectl config set-credentials kind-kind --token=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
+    kubectl config set-context kind-kind --cluster=kind-kind --user=kind-kind
+    kubectl config use-context kind-kind
+  fi
+
   case "${1:-}" in
     sshd)
       exec sudo -u app /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
