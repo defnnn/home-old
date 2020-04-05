@@ -1,17 +1,16 @@
-FROM registry.eldri.ch/defn/home
+FROM registry.eldri.ch/defn/home:os
 
 ARG HOMEDIR=https://github.com/amanibhavam/homedir
 ARG DOTFILES=https://github.com/amanibhavam/dotfiles
 
-RUN git clone $HOMEDIR \
+ENV PATH=/app/src/.asdf/bin:/app/src/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+RUN git clone $HOMEDIR homedir \
     && mv homedir/.git . \
-    && git reset --hard \
-    && git submodule update --init \
-    && rm -rf homedir
+    && rm -rf homedir \
+    && git reset --hard
 
-RUN git clone $DOTFILES /app/src/.dotfiles \
-    && git submodule update --init
+RUN git clone $DOTFILES /app/src/.dotfiles
 
-RUN ln -nfs .dotfiles/Makefile . \
-    && make update \
+RUN make update \
     && make upgrade

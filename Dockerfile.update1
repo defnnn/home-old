@@ -4,4 +4,6 @@ RUN make update
 
 RUN make upgrade
 
+RUN make install
+
 COPY service /service
