@@ -56,6 +56,7 @@ watch: # Watch for changes
 zt0: # Launch zt0 multipass machine
 	multipass delete --purge $@ || true
 	multipass launch -m 4g -d 20g -c 2 -n $@ --cloud-init cloud-init.conf bionic
+	multipass exec $@ -- bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
 	multipass mount /tmp/data/$@ $@:/data
 	multipass exec $@ -- git clone https://github.com/amanibhavam/homedir homedir
 	multipass exec $@ -- mv homedir/.git .
@@ -67,7 +68,13 @@ zt0: # Launch zt0 multipass machine
 	multipass exec $@ -- mkdir -p work
 	multipass exec $@ -- git clone https://github.com/letfn/zerotier work/zerotier
 	multipass exec $@ -- docker pull letfn/zerotier
-	multipass exec $@ -- docker-compose up  -d
-	multipass exec $@ -- make daemon.json
+	multipass exec $@ -- bash -c 'cd work/zerotier && docker-compose up -d'
+	multipass exec $@ -- bash -c 'cd work/zerotier && sleep 10 && make daemon.json'
 	multipass exec $@ -- sudo mv daemon.json /etc/docker/daemon.json
 	multipass exec $@ -- sudo systemctl restart docker
+
+docker: # Build docker os base
+	$(MAKE) os
+	$(MAKE) update0
+	$(MAKE) update1
+	$(MAKE) build
