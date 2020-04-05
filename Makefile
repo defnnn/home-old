@@ -53,3 +53,21 @@ warm: # Cache FROM images
 watch: # Watch for changes
 	@trap 'exit' INT; while true; do fswatch -0 src content | while read -d "" event; do case "$$event" in *.py) figlet woke; make lint test; break; ;; *.md) figlet docs; make docs; ;; esac; done; sleep 1; done
 
+zt0: # Launch zt0 multipass machine
+	multipass delete --purge $@ || true
+	multipass launch -m 4g -d 20g -c 2 -n $@ --cloud-init cloud-init.conf bionic
+	multipass mount /tmp/data/$@ $@:/data
+	multipass exec $@ -- git clone https://github.com/amanibhavam/homedir homedir
+	multipass exec $@ -- mv homedir/.git .
+	multipass exec $@ -- rm -rf homedir
+	multipass exec $@ -- git reset --hard
+	multipass exec $@ -- make update
+	multipass exec $@ -- make upgrade
+	multipass exec $@ -- make install
+	multipass exec $@ -- mkdir -p work
+	multipass exec $@ -- git clone https://github.com/letfn/zerotier work/zerotier
+	multipass exec $@ -- docker pull letfn/zerotier
+	multipass exec $@ -- docker-compose up  -d
+	multipass exec $@ -- make daemon.json
+	multipass exec $@ -- sudo mv daemon.json /etc/docker/daemon.json
+	multipass exec $@ -- sudo systemctl restart docker
