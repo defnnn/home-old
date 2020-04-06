@@ -118,3 +118,19 @@ spec:
       name: pihole
   selector:
     app: pihole
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pihole
+  labels:
+    app: pihole
+spec:
+  entryPoints:
+    - https
+  routes:
+  - match: Host(`pihole.eldri.ch`)
+    kind: Rule
+    services:
+    - name: pihole
+      port: 80

@@ -93,10 +93,10 @@ kind:
 
 kind-support:
 	$(MAKE) metal
+	$(MAKE) traefik
 	$(MAKE) hubble
 	$(MAKE) pihole
 	$(MAKE) openvpn
-	$(MAKE) traefik
 	$(MAKE) registry
 
 cilium:
