@@ -128,3 +128,6 @@ registry:
 defn:
 	source ~/.bashrc; k apply -f defn.yaml
 
+argo:
+	source ~/.bashrc; k apply -f argo.yaml
+

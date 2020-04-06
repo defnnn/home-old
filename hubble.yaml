@@ -276,4 +276,4 @@ spec:
     kind: Rule
     services:
     - name: hubble-ui
-      port: 12000
+      port: 80
