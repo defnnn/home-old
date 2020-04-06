@@ -97,6 +97,7 @@ kind-support:
 	$(MAKE) pihole
 	$(MAKE) openvpn
 	$(MAKE) traefik
+	$(MAKE) registry
 
 cilium:
 	source ~/.bashrc; k apply -f cilium.yaml
@@ -120,3 +121,10 @@ traefik:
 	source ~/.bashrc; k apply -f crds
 	source ~/.bashrc; kt apply -f cloudflare.yaml
 	source ~/.bashrc; kt apply -f traefik.yaml
+
+registry:
+	source ~/.bashrc; k apply -f registry.yaml
+
+defn:
+	source ~/.bashrc; k apply -f defn.yaml
+

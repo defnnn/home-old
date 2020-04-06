@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: defn
+spec:
+  selector:
+    matchLabels:
+      app: defn
+  template:
+    metadata:
+      labels:
+        app: defn
+        org: empire
+        class: sofa
+    spec:
+      volumes:
+        - name: docker
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
+      containers:
+      - name: defn
+        image: registry.eldri.ch/defn/home
+        imagePullPolicy: Always
+        command: [ "/tini" ]
+        args: [ "--", "/service", "sshd" ]
+        volumeMounts:
+         - name: docker
+           mountPath: /docker.sock
+        ports:
+        - name: "ssh"
+          containerPort: 2222
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: defn
+spec:
+  ports:
+  - name: ssh
+    port: 22
+    protocol: TCP
+    targetPort: 2222
+  selector:
+    app: defn
+  type: ClusterIP
