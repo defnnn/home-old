@@ -96,6 +96,7 @@ kind-support:
 	$(MAKE) hubble
 	$(MAKE) pihole
 	$(MAKE) openvpn
+	$(MAKE) traefik
 
 cilium:
 	source ~/.bashrc; k apply -f cilium.yaml
@@ -114,3 +115,8 @@ pihole:
 openvpn:
 	source ~/.bashrc; k apply -f openvpn.yaml
 
+traefik:
+	source ~/.bashrc; k create ns traefik || true
+	source ~/.bashrc; k apply -f crds
+	source ~/.bashrc; kt apply -f cloudflare.yaml
+	source ~/.bashrc; kt apply -f traefik.yaml
