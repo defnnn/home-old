@@ -105,7 +105,7 @@ cilium:
 
 metal:
 	source ~/.bashrc; k create ns metallb-system || true
-	source ~/.bashrc; k apply -f metal.yaml
+	source ~/.bashrc; kn metallb-system  apply -f metal.yaml
 
 hubble:
 	source ~/.bashrc; k apply -f hubble.yaml
@@ -118,7 +118,7 @@ openvpn:
 
 traefik:
 	source ~/.bashrc; k create ns traefik || true
-	source ~/.bashrc; k apply -f crds
+	source ~/.bashrc; kt apply -f crds
 	source ~/.bashrc; kt apply -f cloudflare.yaml
 	source ~/.bashrc; kt apply -f traefik.yaml
 
@@ -129,5 +129,6 @@ defn:
 	source ~/.bashrc; k apply -f defn.yaml
 
 argo:
-	source ~/.bashrc; k apply -f argo.yaml
+	source ~/.bashrc; k create ns argo || true
+	source ~/.bashrc; kn argo apply -f argo.yaml
 
