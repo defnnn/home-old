@@ -28,7 +28,7 @@ spec:
          - name: docker
            mountPath: /docker.sock
         ports:
-        - name: "ssh"
+        - name: ssh
           containerPort: 2222
           protocol: TCP
 ---
@@ -41,7 +41,7 @@ spec:
   - name: ssh
     port: 22
     protocol: TCP
-    targetPort: 2222
+    targetPort: ssh
   selector:
     app: defn
-  type: ClusterIP
+  type: LoadBalancer
