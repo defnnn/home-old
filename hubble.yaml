@@ -260,20 +260,3 @@ spec:
           ports:
             - containerPort: 12000
               name: http
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  namespace: kube-system
-  name: hubble
-  labels:
-    app: hubble-ui
-spec:
-  entryPoints:
-    - https
-  routes:
-  - match: Host(`hubble.eldri.ch`)
-    kind: Rule
-    services:
-    - name: hubble-ui
-      port: 12000

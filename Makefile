@@ -86,6 +86,9 @@ kind:
 	$(MAKE) cilium
 	source ~/.bashrc; while ks get nodes | grep NotReady; do sleep 5; done
 	source ~/.bashrc; while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
+	$(MAKE) kind-support
+
+kind-support:
 	$(MAKE) metal
 	$(MAKE) hubble
 	$(MAKE) pihole
