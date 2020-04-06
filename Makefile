@@ -69,13 +69,6 @@ zt0: # Launch zt0 multipass machine
 	multipass exec $@ -- make update
 	multipass exec $@ -- make upgrade
 	multipass exec $@ -- make install
-	multipass exec $@ -- mkdir -p work
-	multipass exec $@ -- git clone https://github.com/letfn/zerotier work/zerotier
-	multipass exec $@ -- docker pull letfn/zerotier
-	multipass exec $@ -- bash -c 'cd work/zerotier && docker-compose up -d'
-	multipass exec $@ -- bash -c 'cd work/zerotier && sleep 10 && make daemon.json'
-	multipass exec $@ -- sudo mv daemon.json /etc/docker/daemon.json
-	multipass exec $@ -- sudo systemctl restart docker
 
 docker: # Build docker os base
 	$(MAKE) os
