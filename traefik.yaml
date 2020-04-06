@@ -68,6 +68,8 @@ metadata:
   name: traefik
   labels:
     app: traefik
+  annotations:
+    metallb.universe.tf/address-pool: my-ip-space
 spec:
   type: LoadBalancer
   selector:
@@ -80,15 +82,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: traefik
+  name: traefik-proxy
   labels:
-    app: traefik
+    app: traefik-proxy
   annotations:
     metallb.universe.tf/address-pool: traefik
 spec:
   type: LoadBalancer
   selector:
-    app: traefik-proxy
+    app: traefik
   ports:
   - port: 80
     name: http

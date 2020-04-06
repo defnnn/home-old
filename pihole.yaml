@@ -28,6 +28,8 @@ data:
 
         access-control: 127.0.0.1/32 allow
         access-control: 10.70.0.0/16 allow
+        access-control: 192.168.64.0/24 allow
+        access-control: 0.0.0.0/0 allow
 
         local-data: "health.check.unbound A 127.0.0.1"
         local-data-ptr: "127.0.0.1 health.check.unbound"
