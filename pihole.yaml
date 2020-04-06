@@ -27,7 +27,7 @@ data:
         interface: 0.0.0.0
 
         access-control: 127.0.0.1/32 allow
-        access-control: 10.10.0.0/16 allow
+        access-control: 10.70.0.0/16 allow
 
         local-data: "health.check.unbound A 127.0.0.1"
         local-data-ptr: "127.0.0.1 health.check.unbound"
