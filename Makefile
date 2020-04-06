@@ -79,3 +79,32 @@ docker: # Build docker os base
 	$(MAKE) update0
 	$(MAKE) update1
 	$(MAKE) build
+
+kind:
+	kind create cluster --config kind.yaml --name kind || true
+	echo nameserver 8.8.8.8 | docker exec -i kind-control-plane tee /etc/resolv.conf
+	$(MAKE) cilium
+	source ~/.bashrc; while ks get nodes | grep NotReady; do sleep 5; done
+	source ~/.bashrc; while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
+	$(MAKE) metal
+	$(MAKE) hubble
+	$(MAKE) pihole
+	$(MAKE) openvpn
+
+cilium:
+	source ~/.bashrc; k apply -f cilium.yaml
+	source ~/.bashrc; while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
+
+metal:
+	source ~/.bashrc; k create ns metallb-system || true
+	source ~/.bashrc; k apply -f metal.yaml
+
+hubble:
+	source ~/.bashrc; k apply -f hubble.yaml
+
+pihole:
+	source ~/.bashrc; k apply -f pihole.yaml
+
+openvpn:
+	source ~/.bashrc; k apply -f openvpn.yaml
+
