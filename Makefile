@@ -53,6 +53,9 @@ warm: # Cache FROM images
 watch: # Watch for changes
 	@trap 'exit' INT; while true; do fswatch -0 src content | while read -d "" event; do case "$$event" in *.py) figlet woke; make lint test; break; ;; *.md) figlet docs; make docs; ;; esac; done; sleep 1; done
 
+top: # Monitor hyperkit processes
+	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
+
 zt0: # Launch zt0 multipass machine
 	multipass delete --purge $@ || true
 	multipass launch -m 4g -d 20g -c 2 -n $@ --cloud-init cloud-init.conf bionic
