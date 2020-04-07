@@ -134,8 +134,7 @@ data:
   tunnel: vxlan
 
   # Name of the cluster. Only relevant when building a mesh of clusters.
-  cluster-name: zt0
-  cluster-id: "70"
+  cluster-name: default
 
   # DNS Polling periodically issues a DNS lookup for each `matchName` from
   # cilium-agent. The result is used to regenerate endpoint policy.
@@ -177,8 +176,9 @@ data:
   enable-host-reachable-services: "false"
   enable-external-ips: "false"
   enable-node-port: "false"
-  # Chaining mode was enabled, disabling health checking
-  enable-endpoint-health-checking: "false"
+  enable-auto-protect-node-port-range: "true"
+  # Chaining mode is set to portmap, enable health checking
+  enable-endpoint-health-checking: "true"
   enable-well-known-identities: "true"
   enable-remote-node-identity: "true"
 ---
@@ -588,7 +588,7 @@ spec:
               key: custom-cni-conf
               name: cilium-config
               optional: true
-        image: "docker.io/cilium/cilium:v1.7.1"
+        image: "docker.io/cilium/cilium:v1.7.2"
         imagePullPolicy: IfNotPresent
         lifecycle:
           postStart:
@@ -660,7 +660,7 @@ spec:
               key: wait-bpf-mount
               name: cilium-config
               optional: true
-        image: "docker.io/cilium/cilium:v1.7.1"
+        image: "docker.io/cilium/cilium:v1.7.2"
         imagePullPolicy: IfNotPresent
         name: clean-cilium-state
         securityContext:
@@ -775,7 +775,7 @@ spec:
         - name: CILIUM_ETCD_OPERATOR_CLUSTER_DOMAIN
           value: "cluster.local"
         - name: CILIUM_ETCD_OPERATOR_ETCD_CLUSTER_SIZE
-          value: "1"
+          value: "3"
         - name: CILIUM_ETCD_OPERATOR_NAMESPACE
           valueFrom:
             fieldRef:
@@ -917,7 +917,7 @@ spec:
               key: identity-allocation-mode
               name: cilium-config
               optional: true
-        image: "docker.io/cilium/operator:v1.7.1"
+        image: "docker.io/cilium/operator:v1.7.2"
         imagePullPolicy: IfNotPresent
         name: cilium-operator
         livenessProbe:
