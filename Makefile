@@ -70,7 +70,7 @@ zt0: # Launch zt0 multipass machine
 	multipass exec $@ -- make upgrade
 	multipass exec $@ -- make install
 	multipass mount "$(pwd)" $@:work/home
-	multipass exec $@ -- bash -c "cd work/home && make kind"
+	multipass exec $@ -- bash -c "source .bash_profile && cd work/home && make kind"
 	multipass unmount $@:work/home
 
 docker: # Build docker os base
