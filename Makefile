@@ -69,8 +69,9 @@ zt0: # Launch zt0 multipass machine
 	multipass exec $@ -- make update
 	multipass exec $@ -- make upgrade
 	multipass exec $@ -- make install
-	multipass exec $@ -- git clone https://github.com/defn/home work/home
+	multipass mount "$(pwd)" $@:work/home
 	multipass exec $@ -- bash -c "cd work/home && make kind"
+	multipass unmount $@:work/home
 
 docker: # Build docker os base
 	$(MAKE) os
