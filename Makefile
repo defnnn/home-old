@@ -69,9 +69,13 @@ zt0: # Launch zt0 multipass machine
 	multipass exec $@ -- make update
 	multipass exec $@ -- make upgrade
 	multipass exec $@ -- make install
-	multipass mount "$(pwd)" $@:work/home
-	multipass exec $@ -- bash -c "source .bash_profile && cd work/home && make kind"
-	multipass unmount $@:work/home
+
+zt0-kind:
+	mkdir -p "$(HOME)/.kube"
+	multipass mount "$(HOME)/.kube" zt0:.kube
+	multipass mount "$(shell pwd)" zt0:work/home
+	multipass exec zt0 -- bash -c "source .bash_profile && cd work/home && make kind"
+	multipass exec zt0 -- perl -pe 's{https://(\S+)}{https://kubernetes}' .kube/config
 
 docker: # Build docker os base
 	$(MAKE) os
@@ -112,6 +116,9 @@ pihole:
 
 openvpn:
 	source ~/.bashrc; k apply -f openvpn.yaml
+
+nginx:
+	source ~/.bashrc; k apply -f nginx.yaml
 
 traefik:
 	source ~/.bashrc; k create ns traefik || true
