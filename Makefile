@@ -73,10 +73,10 @@ zt0: # Launch zt0 multipass machine
 
 zt0-kind:
 	mkdir -p "$(HOME)/.kube"
-	multipass mount "$(HOME)/.kube" zt0:.kube
 	multipass mount "$(shell pwd)" zt0:work/home
 	multipass exec zt0 -- bash -c "source .bash_profile && cd work/home && make kind"
-	multipass exec zt0 -- perl -pe 's{https://(\S+)}{https://kubernetes}' .kube/config
+	multipass unmount zt0:work/home
+	multipass exec zt0 -- perl -pe 's{https://(\S+)}{https://kubernetes}' .kube/config > ~/.kube/config
 
 docker: # Build docker os base
 	$(MAKE) os
