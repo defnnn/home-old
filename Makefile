@@ -33,19 +33,15 @@ requirements: # Compile requirements
 
 build: # Build update with homedir/dotfiles
 	docker build -t registry.eldri.ch/defn/home -f Dockerfile --no-cache .
-	docker push registry.eldri.ch/defn/home
 
 os: # Build os container
 	docker build -t registry.eldri.ch/defn/home:os -f Dockerfile.os --no-cache .
-	docker push registry.eldri.ch/defn/home:os
 
 update0: # Build base with homedir/dotfiles
 	docker build -t registry.eldri.ch/defn/home:update0 -f Dockerfile.update0 --no-cache .
-	docker push registry.eldri.ch/defn/home:update0
 
 update1: # Build initial install with homedir/dotfiles
 	docker build -t registry.eldri.ch/defn/home:update1 -f Dockerfile.update1 --no-cache .
-	docker push registry.eldri.ch/defn/home:update1
 
 warm: # Cache FROM images
 	docker run --rm -ti -v $(shell pwd)/cache:/cache gcr.io/kaniko-project/warmer:latest --cache-dir=/cache --image=letfn/python-cli:latest
