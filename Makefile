@@ -57,7 +57,8 @@ zt0: # Launch zt0 multipass machine
 	multipass launch -m 4g -d 40g -c 2 -n $@ --cloud-init cloud-init.conf bionic
 	multipass exec $@ -- bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
 	multipass exec $@ -- sudo mkdir -p /data
-	multipass exec $@ -- sudo mount -o rw,nolock,hard,nointr 192.168.64.1:/tmp/data/$@ /data
+	#multipass exec $@ -- sudo mount -o rw,nolock,hard,nointr 192.168.64.1:/tmp/data/$@ /data
+	multipass mount /tmp/data/$@ $@:/data
 	multipass exec $@ -- mkdir -p work
 	multipass exec $@ -- git clone https://github.com/amanibhavam/homedir homedir
 	multipass exec $@ -- mv homedir/.git .
