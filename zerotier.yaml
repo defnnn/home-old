@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zerotier
+data:
+  ZT_NETWORK: "8850338390f35bd0"
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: zerotier
+spec:
+  selector:
+    matchLabels:
+      app: zerotier
+  template:
+    metadata:
+      labels:
+        app: zerotier
+    spec:
+      volumes:
+        - name: zerotier
+          hostPath:
+            path: /data/zerotier
+            type: Directory
+        - name: tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+        - name: config
+          configMap:
+            name: zerotier
+      containers:
+      - name: zerotier
+        image: letfn/zerotier
+        imagePullPolicy: Always
+        volumeMounts:
+         - name: zerotier
+           mountPath: /var/lib/zerotier-one
+         - name: tun
+           mountPath: /dev/net/tun
+         - name: config
+           mountPath: /data/config
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN", "NET_RAW", "SYS_ADMIN"]
