@@ -141,3 +141,6 @@ public
 # Docker
 /cache
 git-*
+
+# misc
+cloudflare.yaml
