@@ -4,7 +4,9 @@ kind: ConfigMap
 metadata:
   name: zerotier
 data:
-  ZT_NETWORK: "8850338390f35bd0"
+  ZT_NETWORK: "12ac4a1e717442b4"
+  ZT_VIP: 192.0.2.2
+  ZT_DEST: traefik-proxy.traefik.svc.cluster.local
 ---
 apiVersion: apps/v1
 kind: DaemonSet
