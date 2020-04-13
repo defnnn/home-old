@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: defn
+  name: home
 spec:
   selector:
     matchLabels:
-      app: defn
+      app: home
   template:
     metadata:
       labels:
-        app: defn
+        app: home
         org: empire
         class: sofa
     spec:
@@ -19,7 +19,7 @@ spec:
             path: /var/run/docker.sock
             type: Socket
       containers:
-      - name: defn
+      - name: home
         image: registry.eldri.ch/defn/home
         imagePullPolicy: Always
         command: [ "/tini" ]
@@ -35,7 +35,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: defn
+  name: home
 spec:
   ports:
   - name: ssh
@@ -43,5 +43,5 @@ spec:
     protocol: TCP
     targetPort: ssh
   selector:
-    app: defn
+    app: home
   type: LoadBalancer

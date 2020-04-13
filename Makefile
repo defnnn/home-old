@@ -106,7 +106,7 @@ metal:
 	source ~/.bashrc; k create ns metallb-system || true
 	source ~/.bashrc; kn metallb-system  apply -f metal.yaml
 
-hubble pihole openvpn nginx registry defn kong:
+hubble pihole openvpn nginx registry home kong:
 	source ~/.bashrc; k apply -f $@.yaml
 
 traefik:
