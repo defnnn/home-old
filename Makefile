@@ -94,6 +94,7 @@ kind-support:
 	$(MAKE) nginx
 	$(MAKE) traefik
 	$(MAKE) hubble
+	$(MAKE) zerotier
 	$(MAKE) pihole
 	$(MAKE) openvpn
 	$(MAKE) registry
@@ -106,17 +107,8 @@ metal:
 	source ~/.bashrc; k create ns metallb-system || true
 	source ~/.bashrc; kn metallb-system  apply -f metal.yaml
 
-hubble:
-	source ~/.bashrc; k apply -f hubble.yaml
-
-pihole:
-	source ~/.bashrc; k apply -f pihole.yaml
-
-openvpn:
-	source ~/.bashrc; k apply -f openvpn.yaml
-
-nginx:
-	source ~/.bashrc; k apply -f nginx.yaml
+hubble zerotier pihole openvpn nginx registry defn:
+	source ~/.bashrc; k apply -f $@.yaml
 
 traefik:
 	source ~/.bashrc; k create ns traefik || true
@@ -124,13 +116,6 @@ traefik:
 	source ~/.bashrc; kt apply -f cloudflare.yaml
 	source ~/.bashrc; kt apply -f traefik.yaml
 
-registry:
-	source ~/.bashrc; k apply -f registry.yaml
-
-defn:
-	source ~/.bashrc; k apply -f defn.yaml
-
 argo:
 	source ~/.bashrc; k create ns argo || true
 	source ~/.bashrc; kn argo apply -f argo.yaml
-
