@@ -5,7 +5,7 @@ metadata:
   name: zerotier-eldri-ch
 data:
   ZT_NETWORK: "12ac4a1e717442b4"
-  ZT_VIP: 192.0.2.2
+  ZT_VIP: 10.88.88.88
   ZT_DEST: traefik-proxy.traefik.svc.cluster.local
 ---
 apiVersion: apps/v1
@@ -56,7 +56,7 @@ data:
   default.conf: |
     server {
         listen 8080;
-        server_name eldri.ch;
+        server_name www.eldri.ch;
 
         location / {
             root /usr/share/nginx/html;
@@ -129,7 +129,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`eldri.ch`)
+  - match: Host(`www.eldri.ch`) || Host(`w.eldri.ch`)
     kind: Rule
     services:
     - name: eldri-ch

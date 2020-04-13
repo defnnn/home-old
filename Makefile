@@ -73,7 +73,10 @@ zt0-kind:
 	multipass mount "$(shell pwd)" zt0:work/home
 	multipass exec zt0 -- bash -c "source .bash_profile && cd work/home && make kind"
 	multipass unmount zt0:work/home
-	multipass exec zt0 -- perl -pe 's{https://(\S+)}{https://kubernetes}' .kube/config > ~/.kube/config
+	$(MAKE) zt0-config
+
+zt0-config:
+	multipass exec zt0 -- perl -pe 's{https://(\S+)}{https://kubernetes.eldri.ch}' .kube/config > ~/.kube/config
 
 docker: # Build docker os base
 	$(MAKE) os

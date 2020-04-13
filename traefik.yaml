@@ -177,6 +177,8 @@ spec:
           - "--entrypoints.https.address=:443"
           - "--entrypoints.https.http.tls.certResolver=le"
           - "--entrypoints.https.http.tls.domains[0].main=*.eldri.ch"
+          - "--entrypoints.https.http.tls.domains[1].main=*.whoa.bot"
+          - "--entrypoints.https.http.tls.domains[2].main=*.defn.sh"
           - "--entrypoints.http.address=:80"
           - "--entrypoints.http.http.redirections.entryPoint.to=https"
           - "--entrypoints.http.http.redirections.entryPoint.scheme=https"
