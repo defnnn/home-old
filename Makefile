@@ -67,16 +67,10 @@ zt0: # Launch zt0 multipass machine
 	multipass exec $@ -- make update
 	multipass exec $@ -- make upgrade
 	multipass exec $@ -- make install
-
-zt0-kind:
-	mkdir -p "$(HOME)/.kube"
-	multipass mount "$(shell pwd)" zt0:work/home
-	multipass exec zt0 -- bash -c "source .bash_profile && cd work/home && make kind"
-	multipass unmount zt0:work/home
-	$(MAKE) zt0-config
-
-zt0-config:
-	multipass exec zt0 -- perl -pe 's{https://(\S+)}{https://kubernetes.eldri.ch}' .kube/config > ~/.kube/config
+	multipass mount "$(shell pwd)" $@:work/home
+	multipass exec $@ -- bash -c "source .bash_profile && cd work/home && make kind"
+	#multipass unmount $@:work/home
+	#multipass exec $@ -- perl -pe 's{https://(\S+)}{https://kubernetes.eldri.ch}' .kube/config > ~/.kube/config
 
 docker: # Build docker os base
 	$(MAKE) os
@@ -115,7 +109,6 @@ hubble pihole openvpn nginx registry home kong:
 traefik:
 	source ~/.bashrc; k create ns traefik || true
 	source ~/.bashrc; kt apply -f crds
-	source ~/.bashrc; kt apply -f cloudflare.yaml
 	source ~/.bashrc; kt apply -f traefik.yaml
 
 argo:
