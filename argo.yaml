@@ -400,7 +400,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: HostRegexp(`argo\..*`)
+  - match: HostRegexp(`argo.{domain:.+}`)
     kind: Rule
     services:
     - name: argo-server

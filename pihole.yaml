@@ -129,7 +129,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: HostRegexp(`pihole\..*`)
+  - match: HostRegexp(`pihole.{domain:.+}`)
     kind: Rule
     services:
     - name: pihole

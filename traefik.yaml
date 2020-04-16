@@ -194,7 +194,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: HostRegexp(`traefik\..*`)
+  - match: HostRegexp(`traefik.{domain:.+}`)
     kind: Rule
     services:
     - name: traefik

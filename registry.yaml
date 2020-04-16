@@ -107,7 +107,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: HostRegexp(`registry\..*`)
+  - match: HostRegexp(`registry.{domain:.+}`)
     kind: Rule
     services:
     - name: docker-registry
