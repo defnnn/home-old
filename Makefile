@@ -68,9 +68,10 @@ zt0: # Launch multipass machine
 	multipass exec $@ -- make upgrade
 	multipass exec $@ -- make install
 	multipass mount "$(shell pwd)" $@:work/home
-	multipass exec $@ -- bash -c "source .bash_profile && cd work/home && make kind"
+	multipass exec $@ -- bash -c "source .bash_profile && cd work/home && make kind-minimal"
 	#multipass unmount $@:work/home
 	#multipass exec $@ -- perl -pe 's{https://(\S+)}{https://kubernetes.eldri.ch}' .kube/config > ~/.kube/config
+	$(MAKE) registry
 
 zt1: # Launch multipass machine
 	multipass delete --purge $@ || true
@@ -107,15 +108,6 @@ kind-minimal:
 	$(MAKE) nginx
 	$(MAKE) traefik
 	$(MAKE) hubble
-
-kind:
-	$(MAKE) kind-minimal
-	$(MAKE) kind-support
-
-kind-support:
-	$(MAKE) registry
-	$(MAKE) pihole
-	$(MAKE) openvpn
 
 cilium:
 	source ~/.bashrc; k apply -f cilium.yaml
