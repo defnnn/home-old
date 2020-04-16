@@ -400,7 +400,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`argo.eldri.ch`)
+  - match: Host(`argo.eldri.ch`) || Host(`argo.defn.sh`)
     kind: Rule
     services:
     - name: argo-server

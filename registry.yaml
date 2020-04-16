@@ -107,7 +107,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`registry.eldri.ch`)
+  - match: Host(`registry.eldri.ch`) || Host(`registry.defn.sh`)
     kind: Rule
     services:
     - name: docker-registry

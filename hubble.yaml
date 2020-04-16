@@ -272,7 +272,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`hubble.eldri.ch`)
+  - match: Host(`hubble.eldri.ch`) || Host(`hubble.defn.sh`)
     kind: Rule
     services:
     - name: hubble-ui
