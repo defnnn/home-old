@@ -52,7 +52,7 @@ watch: # Watch for changes
 top: # Monitor hyperkit processes
 	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
 
-zt0: # Launch zt0 multipass machine
+zt0: # Launch multipass machine
 	multipass delete --purge $@ || true
 	multipass launch -m 4g -d 40g -c 1 -n $@ --cloud-init cloud-init.conf bionic
 	multipass exec $@ -- bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
@@ -72,28 +72,50 @@ zt0: # Launch zt0 multipass machine
 	#multipass unmount $@:work/home
 	#multipass exec $@ -- perl -pe 's{https://(\S+)}{https://kubernetes.eldri.ch}' .kube/config > ~/.kube/config
 
+zt1: # Launch multipass machine
+	multipass delete --purge $@ || true
+	multipass launch -m 4g -d 40g -c 1 -n $@ --cloud-init cloud-init.conf bionic
+	multipass exec $@ -- bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
+	multipass exec $@ -- sudo mkdir -p /data
+	multipass mount /tmp/data/$@ $@:/data
+	multipass exec $@ -- mkdir -p work
+	multipass exec $@ -- git clone https://github.com/amanibhavam/homedir homedir
+	multipass exec $@ -- mv homedir/.git .
+	multipass exec $@ -- rm -rf homedir
+	multipass exec $@ -- git reset --hard
+	multipass exec $@ -- make update
+	multipass exec $@ -- make upgrade
+	multipass exec $@ -- make install
+	multipass mount "$(shell pwd)" $@:work/home
+	multipass exec $@ -- bash -c "source .bash_profile && cd work/home && make kind-minimal"
+	#multipass unmount $@:work/home
+	#multipass exec $@ -- perl -pe 's{https://(\S+)}{https://kubernetes.eldri.ch}' .kube/config > ~/.kube/config
+
 docker: # Build docker os base
 	$(MAKE) os
 	$(MAKE) update0
 	$(MAKE) update1
 	$(MAKE) build
 
-kind:
+kind-minimal:
 	kind create cluster --config kind.yaml --name kind || true
 	echo nameserver 8.8.8.8 | docker exec -i kind-control-plane tee /etc/resolv.conf
 	$(MAKE) cilium
 	source ~/.bashrc; while ks get nodes | grep NotReady; do sleep 5; done
 	source ~/.bashrc; while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
-	$(MAKE) kind-support
-
-kind-support:
 	$(MAKE) metal
 	$(MAKE) nginx
 	$(MAKE) traefik
 	$(MAKE) hubble
+
+kind:
+	$(MAKE) kind-minimal
+	$(MAKE) kind-support
+
+kind-support:
+	$(MAKE) registry
 	$(MAKE) pihole
 	$(MAKE) openvpn
-	$(MAKE) registry
 
 cilium:
 	source ~/.bashrc; k apply -f cilium.yaml
@@ -106,9 +128,13 @@ metal:
 hubble pihole openvpn nginx registry home kong:
 	source ~/.bashrc; k apply -f $@.yaml
 
-traefik:
+cloudflare.yaml:
+	cp $@.example $@
+
+traefik: cloudflare.yaml
 	source ~/.bashrc; k create ns traefik || true
 	source ~/.bashrc; kt apply -f crds
+	source ~/.bashrc; kt apply -f cloudflare.yaml
 	source ~/.bashrc; kt apply -f traefik.yaml
 
 argo:
