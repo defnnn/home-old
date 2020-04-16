@@ -129,7 +129,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`www.whoa.bot`) || Host(`w.whoa.bot`)
+  - match: Host(`www.whoa.bot`,`w.whoa.bot`)
     kind: Rule
     services:
     - name: whoa-bot

@@ -129,7 +129,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`pihole.eldri.ch`)
+  - match: HostRegexp(`pihole\..*`)
     kind: Rule
     services:
     - name: pihole

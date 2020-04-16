@@ -129,7 +129,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`www.defn.sh`) || Host(`w.defn.sh`)
+  - match: Host(`www.defn.sh`,`w.defn.sh`)
     kind: Rule
     services:
     - name: defn-sh

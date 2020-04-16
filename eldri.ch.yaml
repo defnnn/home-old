@@ -129,7 +129,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`www.eldri.ch`) || Host(`w.eldri.ch`)
+  - match: Host(`www.eldri.ch`,`w.eldri.ch`)
     kind: Rule
     services:
     - name: eldri-ch

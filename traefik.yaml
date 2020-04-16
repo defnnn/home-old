@@ -194,7 +194,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`traefik.eldri.ch`) || Host(`traefik.defn.sh`)
+  - match: HostRegexp(`traefik\..*`)
     kind: Rule
     services:
     - name: traefik
