@@ -288,7 +288,7 @@ spec:
   limits:
   - min:
       memory: 90Mi
-      cpu: 100m
+      cpu: 10m
     type: Container
 ---
 kind: Service

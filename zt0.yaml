@@ -11,6 +11,9 @@ nodes:
   - containerPort: 1194
     hostPort: 1194
     protocol: TCP
+  - containerPort: 6443
+    hostPort: 6443
+    protocol: TCP
   extraMounts:
   - hostPath: /data
     containerPath: /data
@@ -30,6 +33,7 @@ kubeadmConfigPatches:
     - kubernetes
     - kubernetes.default.svc
     - kubernetes.default.svc.cluster.local
+    - zt0
   scheduler:
     extraArgs:
       "feature-gates": "EphemeralContainers=true"
