@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: docs
+.PHONY: docs zt0 zt1
 
 menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
@@ -49,46 +49,47 @@ warm: # Cache FROM images
 watch: # Watch for changes
 	@trap 'exit' INT; while true; do fswatch -0 src content | while read -d "" event; do case "$$event" in *.py) figlet woke; make lint test; break; ;; *.md) figlet docs; make docs; ;; esac; done; sleep 1; done
 
-top: # Monitor hyperkit processes
-	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
-
-zt0 zt1: # Launch multipass machine
-	if ! test -d /tmp/data/$@/home/.git; then \
-		git clone https://github.com/amanibhavam/homedir /tmp/data/$@/home/homedir; \
-		(pushd /tmp/data/$@/home && mv homedir/.git . && git reset --hard && rm -rf homedir); \
-	fi
-	mkdir -p /tmp/data/$@/home/.asdf
-	multipass delete --purge $@ || true
-	multipass launch -m 4g -d 40g -c 1 -n $@ --cloud-init cloud-init.conf bionic
-	multipass exec $@ -- bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
-	multipass exec $@ -- sudo mkdir -p /data
-	multipass mount /tmp/data/$@ $@:/data
-	multipass mount /tmp/data/$@/home/.git $@:.git
-	multipass mount /tmp/data/$@/home/.asdf $@:.asdf
-	multipass mount /tmp/data/$@/home/venv $@:venv
-	multipass exec $@ -- git reset --hard
-	multipass exec $@ -- make update
-	multipass exec $@ -- make upgrade
-	multipass exec $@ -- make install
-	multipass exec $@ -- mkdir -p work
-	multipass mount "$(shell pwd)" $@:work/home
-	multipass exec $@ -- bash -c "source .bash_profile && cd work/home && make NAME=$@ kind-cluster"
-	multipass exec $@ cat .kube/config | perl -pe 's{127.0.0.1:.*}{$@:6443}; s{kind-kind}{$@}' > ~/.kube/$@.conf
-	multipass unmount $@:work/home
-	$(MAKE) NAME=$@ kind-minimal"
-
-docker: # Build docker os base
+docker: # Build home Docker image
 	$(MAKE) os
 	$(MAKE) update0
 	$(MAKE) update1
 	$(MAKE) build
 
+top: # Monitor hyperkit processes
+	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
+
+zt0 zt1: # Launch multipass machine
+	if ! test -d $(PWD)/data/$@/home/.git; then \
+		git clone https://github.com/amanibhavam/homedir $(PWD)/data/$@/home/homedir; \
+		(pushd $(PWD)/data/$@/home && mv homedir/.git . && git reset --hard && rm -rf homedir); \
+	fi
+	mkdir -p $(PWD)/data/$@/home/.asdf
+	multipass delete --purge $@ || true
+	multipass launch -m 4g -d 40g -c 1 -n $@ --cloud-init cloud-init.conf bionic
+	$@ exec bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
+	$@ exec sudo mkdir -p /data
+	multipass mount $(PWD)/data/$@ $@:/data
+	multipass mount $(PWD)/data/$@/home/.git $@:.git
+	multipass mount $(PWD)/data/$@/home/.asdf $@:.asdf
+	multipass mount $(PWD)/data/$@/home/venv $@:venv
+	$@ exec git reset --hard
+	$@ exec make update
+	$@ exec make upgrade
+	$@ exec make install
+	$@ exec mkdir -p work
+	multipass mount "$(shell pwd)" $@:work/home
+	$@ exec bash -c "source .bash_profile && cd work/home && make NAME=$@ kind-cluster"
+	$@ exec cat .kube/config | perl -pe 's{127.0.0.1:.*}{$@:6443}; s{kind-kind}{$@}' > ~/.kube/$@.conf
+	multipass unmount $@:work/home
+	$@
+	$(MAKE) NAME=$@ kind-extras
+	$@ kt apply -f $@/
+
 kind-cluster:
 	env KUBECONFIG=$(HOME)/.kube/config kind create cluster --config $(NAME).yaml --name kind || true
 	echo nameserver 8.8.8.8 | docker exec -i kind-control-plane tee /etc/resolv.conf
 
-kind-minimal:
-	$(NAME)
+kind-extras:
 	$(MAKE) cilium
 	while ks get nodes | grep NotReady; do sleep 5; done
 	while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
@@ -105,12 +106,6 @@ metal:
 	k create ns metallb-system || true
 	kn metallb-system  apply -f metal.yaml
 
-hubble pihole openvpn nginx registry home kong:
-	k apply -f $@.yaml
-
-eldri.ch defn.sh:
-	kt apply -f $@.yaml
-
 cloudflare.yaml:
 	cp $@.example $@
 
@@ -123,3 +118,6 @@ traefik: cloudflare.yaml
 argo:
 	k create ns argo || true
 	kn argo apply -f argo.yaml
+
+hubble pihole openvpn nginx registry home kong:
+	k apply -f $@.yaml
