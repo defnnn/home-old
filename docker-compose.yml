@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   sshd:
-    image: registry.eldri.ch/defn/home:latest
+    image: defn/home
     restart: always
     entrypoint: [ "bash" ]
     command: [ "-c", "sudo chgrp app /var/run/docker.sock; exec /tini -- /service sshd" ]
