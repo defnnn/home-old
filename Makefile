@@ -68,6 +68,10 @@ recreate: # Recreate home container
 	$(MAKE) down
 	$(MAKE) up
 
+recycle: # Rebuild and recreate home container
+	$(MAKE) build
+	$(MAKE) recreate
+
 ssh: # ssh into home container
 	ssh -A -p 2222 app@localhost
 
