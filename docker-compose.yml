@@ -1,6 +1,6 @@
 version: '3.4'
 services:
-  zerotier:
+  sshd:
     image: registry.eldri.ch/defn/home:latest
     restart: always
     entrypoint: [ "bash" ]
