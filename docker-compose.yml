@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   sshd:
-    image: defn/home
+    image: defn/home:${HOME_VARIANT:-latest}
     restart: always
     entrypoint: [ "bash" ]
     command: [ "-c", "sudo chgrp app /var/run/docker.sock; exec /tini -- /service sshd" ]

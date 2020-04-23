@@ -34,9 +34,16 @@ requirements: # Compile requirements
 push: # Push to defn/home
 	docker push defn/home
 
+push-cypress: # Push to defn/home:cypress
+	docker push defn/home
+
 build: # Build update with homedir/dotfiles
 	docker build -t registry.eldri.ch/defn/home -f Dockerfile --no-cache .
 	docker tag registry.eldri.ch/defn/home:latest defn/home
+
+build-cypress: # Build cypress variant
+	docker build -t registry.eldri.ch/defn/home:cypress -f Dockerfile.cypress --no-cache .
+	docker tag registry.eldri.ch/defn/home:cypress defn/home:cypress
 
 os: # Build os container
 	docker build -t registry.eldri.ch/defn/home:os -f Dockerfile.os --no-cache .
