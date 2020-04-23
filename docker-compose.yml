@@ -3,8 +3,8 @@ services:
   zerotier:
     image: registry.eldri.ch/defn/home:latest
     restart: always
-    entrypoint: [ "/tini" ]
-    command: [ "--", "/service", "sshd" ]
+    entrypoint: [ "bash" ]
+    command: [ "-c", "sudo chgrp app /var/run/docker.sock; exec /tini -- /service sshd" ]
     ports:
       - 2222:2222
     volumes:
