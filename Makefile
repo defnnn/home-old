@@ -1,5 +1,9 @@
 SHELL := /bin/bash
 
+VARIANT ?= latest
+HOMEDIR ?= https://github.com/amanibhavam/homedir
+DOTFILES ?= https://github.com/amanibhavam/dotfiles
+
 .PHONY: docs zt0 zt1
 
 menu:
@@ -34,37 +38,33 @@ requirements: # Compile requirements
 push: # Push to defn/home
 	docker push defn/home
 
-push-cypress: # Push to defn/home:cypress
-	docker push defn/home
-
-build: # Build update with homedir/dotfiles
-	docker build -t registry.eldri.ch/defn/home -f Dockerfile --no-cache .
-	docker tag registry.eldri.ch/defn/home:latest defn/home
-
-build-cypress: # Build cypress variant
-	docker build -t registry.eldri.ch/defn/home:cypress -f Dockerfile.cypress --no-cache .
-	docker tag registry.eldri.ch/defn/home:cypress defn/home:cypress
+build: # Build home Docker image
+	$(MAKE) os
+	$(MAKE) update0
+	$(MAKE) update1
+	$(MAKE) variant
 
 os: # Build os container
-	docker build -t registry.eldri.ch/defn/home:os -f Dockerfile.os --no-cache .
+	docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache .
 
 update0: # Build base with homedir/dotfiles
-	docker build -t registry.eldri.ch/defn/home:update0 -f Dockerfile.update0 --no-cache .
+	docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache \
+		--build-arg HOMEDIR="$(HOMEDIR)" \
+		--build-arg DOTFILES="$(DOTFILES)" \
+		.
 
 update1: # Build initial install with homedir/dotfiles
-	docker build -t registry.eldri.ch/defn/home:update1 -f Dockerfile.update1 --no-cache .
+	docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache .
+
+variant: # Build update with homedir/dotfiles
+	docker build -t registry.eldri.ch/defn/home:$(VARIANT) -f Dockerfile.$(VARIANT) --no-cache .
+	docker tag registry.eldri.ch/defn/home:$(VARIANT) defn/home:$(VARIANT)
 
 warm: # Cache FROM images
 	docker run --rm -ti -v $(shell pwd)/cache:/cache gcr.io/kaniko-project/warmer:latest --cache-dir=/cache --image=letfn/python-cli:latest
 
 watch: # Watch for changes
 	@trap 'exit' INT; while true; do fswatch -0 src content | while read -d "" event; do case "$$event" in *.py) figlet woke; make lint test; break; ;; *.md) figlet docs; make docs; ;; esac; done; sleep 1; done
-
-docker: # Build home Docker image
-	$(MAKE) os
-	$(MAKE) update0
-	$(MAKE) update1
-	$(MAKE) build
 
 up: # Run home container with docker-compose
 	docker-compose up -d

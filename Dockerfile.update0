@@ -1,7 +1,7 @@
 FROM registry.eldri.ch/defn/home:os
 
-ARG HOMEDIR=https://github.com/amanibhavam/homedir
-ARG DOTFILES=https://github.com/amanibhavam/dotfiles
+ARG HOMEDIR
+ARG DOTFILES
 
 ENV PATH=/app/src/.asdf/bin:/app/src/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
