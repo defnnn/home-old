@@ -67,6 +67,7 @@ watch: # Watch for changes
 	@trap 'exit' INT; while true; do fswatch -0 src content | while read -d "" event; do case "$$event" in *.py) figlet woke; make lint test; break; ;; *.md) figlet docs; make docs; ;; esac; done; sleep 1; done
 
 up: # Run home container with docker-compose
+	ssh-keygen -R [localhost]:2222 || true
 	docker-compose up -d
 
 down: # Shut down home container
@@ -84,7 +85,7 @@ recycle: # Rebuild and recreate home container
 	$(MAKE) recreate
 
 ssh: # ssh into home container
-	ssh -A -p 2222 app@localhost
+	ssh -A -p 2222 -o StrictHostKeyChecking=no app@localhost
 
 top: # Monitor hyperkit processes
 	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
