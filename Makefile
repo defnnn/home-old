@@ -55,6 +55,22 @@ docker: # Build home Docker image
 	$(MAKE) update1
 	$(MAKE) build
 
+up: # Run home container with docker-compose
+	docker-compose up -d
+
+down: # Shut down home container
+	docker-compose down
+
+restart: # Restart home container
+	docker-compose restart
+
+recreate: # Recreate home container
+	$(MAKE) down
+	$(MAKE) up
+
+ssh: # ssh into home container
+	ssh -A -p 2222 app@localhost
+
 top: # Monitor hyperkit processes
 	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
 
