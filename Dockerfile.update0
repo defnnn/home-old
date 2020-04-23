@@ -1,6 +1,7 @@
 FROM registry.eldri.ch/defn/home:os
 
 ARG HOMEDIR=https://github.com/amanibhavam/homedir
+ARG DOTFILES=https://github.com/amanibhavam/dotfiles
 
 ENV PATH=/app/src/.asdf/bin:/app/src/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -8,6 +9,8 @@ RUN git clone $HOMEDIR homedir \
     && mv homedir/.git . \
     && rm -rf homedir \
     && git reset --hard
+
+RUN echo "$DOTFILES" > .dotfiles-repo
 
 RUN make update
 
