@@ -3,3 +3,4 @@
 .drone.env
 .env
 cache
+data
