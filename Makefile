@@ -76,7 +76,7 @@ restart: # Restart home container
 	docker-compose restart
 
 recreate: # Recreate home container
-	$(MAKE) down
+	-$(MAKE) down 
 	$(MAKE) up
 
 recycle: # Rebuild and recreate home container
