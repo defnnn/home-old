@@ -9,6 +9,7 @@ services:
       - 2222:2222
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOME}/work:/app/src/work
       - ${HOME}/.ssh:/app/src/.ssh
       - ${HOME}/.aws:/app/src/.aws
-      - ${HOME}/work:/app/src/work
+      - ${HOME}/.password-store:/app/src/.password-store
