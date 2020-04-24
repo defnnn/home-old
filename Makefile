@@ -111,16 +111,14 @@ zt0 zt1: # Launch multipass machine
 	$@ exec make install
 	$@ exec mkdir -p work
 	multipass mount "$(shell pwd)" $@:work/home
-	$@ exec bash -c "source .bash_profile && cd work/home && make NAME=$@ kind-cluster"
-	$@ exec cat .kube/config | perl -pe 's{127.0.0.1:.*}{$@:6443}; s{kind-kind}{$@}' > ~/.kube/$@.conf
-	multipass unmount $@:work/home
-	$@
+	$(MAKE) NAME=$@ kind-cluster
 	$(MAKE) NAME=$@ kind-extras
-	$@ kt apply -f $@/
+	multipass unmount $@:work/home
 
 kind-cluster:
-	env KUBECONFIG=$(HOME)/.kube/config kind create cluster --config $(NAME).yaml --name kind || true
-	echo nameserver 8.8.8.8 | docker exec -i kind-control-plane tee /etc/resolv.conf
+	$(NAME) exec bash -c "source .bash_profile && cd work/home && env KUBECONFIG=/home/ubuntu/.kube/config kind create cluster --config $(NAME).yaml --name kind"
+	$(NAME) exec bash -c "echo nameserver 8.8.8.8 | docker exec -i kind-control-plane tee /etc/resolv.conf"
+	$(NAME) exec cat .kube/config | perl -pe 's{127.0.0.1:.*}{$(NAME):6443}; s{kind-kind}{$(NAME)}' > ~/.kube/$(NAME).conf
 
 kind-extras:
 	$(MAKE) cilium
@@ -130,6 +128,7 @@ kind-extras:
 	$(MAKE) nginx
 	$(MAKE) traefik
 	$(MAKE) hubble
+	$(NAME) kt apply -f $(NAME)/
 
 cilium:
 	k apply -f cilium.yaml
