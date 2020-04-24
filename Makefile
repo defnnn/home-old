@@ -121,6 +121,7 @@ kind-cluster:
 	$(NAME) exec cat .kube/config | perl -pe 's{127.0.0.1:.*}{$(NAME):6443}; s{kind-kind}{$(NAME)}' > ~/.kube/$(NAME).conf
 
 kind-extras:
+	$(NAME)
 	$(MAKE) cilium
 	while ks get nodes | grep NotReady; do sleep 5; done
 	while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
