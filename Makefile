@@ -121,10 +121,9 @@ kind-cluster:
 	$(NAME) exec cat .kube/config | perl -pe 's{127.0.0.1:.*}{$(NAME):6443}; s{kind-kind}{$(NAME)}' > ~/.kube/$(NAME).conf
 
 kind-extras:
-	$(NAME)
 	$(MAKE) cilium
-	while ks get nodes | grep NotReady; do sleep 5; done
-	while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
+	while $(NAME) ks get nodes | grep NotReady; do sleep 5; done
+	while [[ "$$($(NAME) ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do $(NAME) ks get pods; sleep 5; echo; done
 	$(MAKE) metal
 	$(MAKE) nginx
 	$(MAKE) traefik
@@ -132,25 +131,25 @@ kind-extras:
 	$(NAME) kt apply -f $(NAME)/
 
 cilium:
-	k apply -f cilium.yaml
-	while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
+	$(NAME) k apply -f cilium.yaml
+	while [[ "$$($(NAME) ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do $(NAME) ks get pods; sleep 5; echo; done
 
 metal:
-	k create ns metallb-system || true
-	kn metallb-system  apply -f metal.yaml
+	$(NAME) k create ns metallb-system || true
+	$(NAME) kn metallb-system apply -f metal.yaml
 
 cloudflare.yaml:
 	cp $@.example $@
 
 traefik: cloudflare.yaml
-	k create ns traefik || true
-	kt apply -f crds
-	kt apply -f cloudflare.yaml
-	kt apply -f traefik.yaml
+	$(NAME) k create ns traefik || true
+	$(NAME) kt apply -f crds
+	$(NAME) kt apply -f cloudflare.yaml
+	$(NAME) kt apply -f traefik.yaml
 
 argo:
-	k create ns argo || true
-	kn argo apply -f argo.yaml
+	$(NAME) k create ns argo || true
+	$(NAME) kn argo apply -f argo.yaml
 
 hubble pihole openvpn nginx registry home kong:
-	k apply -f $@.yaml
+	$(NAME) k apply -f $@.yaml
