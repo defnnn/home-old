@@ -105,6 +105,7 @@ zt0 zt1: # Launch multipass machine
 	multipass mount $(PWD)/data/$@/home/.asdf $@:.asdf
 	multipass mount $(PWD)/data/$@/home/venv $@:venv
 	$@ exec git reset --hard
+	cat ~/.dotfiles-repo | $@ exec tee .dotfiles-repo
 	$@ exec make update
 	$@ exec make upgrade
 	$@ exec make install
