@@ -97,7 +97,7 @@ zt0 zt1: # Launch multipass machine
 	fi
 	mkdir -p $(PWD)/data/$@/home/.asdf
 	multipass delete --purge $@ || true
-	multipass launch -m 4g -d 40g -c 1 -n $@ --cloud-init cloud-init.conf bionic
+	multipass launch -m 4g -d 40g -c 2 -n $@ --cloud-init cloud-init.conf bionic
 	$@ exec bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
 	$@ exec sudo mkdir -p /data
 	multipass mount $(PWD)/data/$@ $@:/data
