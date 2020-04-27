@@ -9,3 +9,4 @@ RUN make upgrade
 RUN make install
 
 COPY service /service
+RUN sudo chmod 755 /service
