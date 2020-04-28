@@ -13,3 +13,9 @@ services:
       - ${HOME}/.ssh:/app/src/.ssh
       - ${HOME}/.aws:/app/src/.aws
       - ${HOME}/.password-store:/app/src/.password-store
+    cap_add:
+      - CAP_NET_ADMIN
+      - NET_ADMIN
+      - SYS_ADMIN
+    devices:
+    - /dev/net/tun
