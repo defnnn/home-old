@@ -45,19 +45,19 @@ build: # Build home Docker image
 	$(MAKE) variant
 
 os: # Build os container
-	docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache .
+	cd b && docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache .
 
 update0: # Build base with homedir/dotfiles
-	docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache \
+	cd b && docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache \
 		--build-arg HOMEDIR="$(HOMEDIR)" \
 		--build-arg DOTFILES="$(DOTFILES)" \
 		.
 
 update1: # Build initial install with homedir/dotfiles
-	docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache .
+	cd b && docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache .
 
 variant: # Build update with homedir/dotfiles
-	docker build -t registry.eldri.ch/defn/home:$(VARIANT) -f Dockerfile.$(VARIANT) --no-cache .
+	cd b && docker build -t registry.eldri.ch/defn/home:$(VARIANT) -f Dockerfile.$(VARIANT) --no-cache .
 	docker tag registry.eldri.ch/defn/home:$(VARIANT) defn/home:$(VARIANT)
 
 warm: # Cache FROM images
