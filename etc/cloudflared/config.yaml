@@ -1,2 +1,2 @@
 hostname: iam.defn.sh
-url: "ssh://localhost:2222"
+url: "ssh://sshd:2222"
