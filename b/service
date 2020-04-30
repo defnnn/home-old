@@ -3,7 +3,7 @@
 function main {
   case "${1:-}" in
     cloudflared)
-      exec /tinit -- sudo /usr/local/bin/cloudflared
+      exec /tini -- sudo /usr/local/bin/cloudflared
       return $?
       ;;
   esac
