@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+function main {
+  sudo yum install -y openssh-clients # for plain amazon linux
+  sudo yum install -y jq aws-cli # for basic aws ops
+  sudo yum install -y unzip wget git rsync bind-utils
+  sudo yum install -y amazon-efs-utils
+  sudo yum install -y python3
+  sudo yum install -y gnupg2 yum-utils # for tailscale repo
+  sudo yum upgrade -y
+
+  sudo curl -sSL -o /usr/local/bin/powerline-go \
+    https://github.com/justjanne/powerline-go/releases/download/v1.16.1/powerline-go-linux-amd64
+  sudo chmod 755 /usr/local/bin/powerline-go
+
+  sudo curl -sSL -o /usr/local/bin/docker-compose \
+    https://github.com/docker/compose/releases/download/1.25.5/docker-compose-Linux-x86_64
+  sudo chmod 755 /usr/local/bin/docker-compose
+
+  curl -s https://api.github.com/users/jojomomojo/keys | jq -r '.[].key' | sudo tee -a ~ec2-user/.ssh/authorized_keys
+}
+
+main "$@"

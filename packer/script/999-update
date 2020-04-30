@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+function main {
+  set -exfu
+
+  sudo yum upgrade -y
+
+  sudo sync
+}
+
+main "$@"

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+function main {
+  set -exfu
+
+  for s in /swap{0,1}; do
+    sudo fallocate -l 1G $s
+    sudo chmod 0600 $s
+    sudo mkswap $s
+    sudo swapon $s
+  done
+}
+
+main "$@"

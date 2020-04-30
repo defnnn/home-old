@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+function main {
+  set -exfu
+
+  sudo amazon-linux-extras install kernel-ng
+}
+
+main "$@"

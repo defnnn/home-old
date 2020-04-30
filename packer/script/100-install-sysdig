@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+function main {
+  set -x
+
+  curl -s https://s3.amazonaws.com/download.draios.com/stable/install-sysdig | sudo bash
+}
+
+main "$@"
