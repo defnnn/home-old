@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 
 function main {
+  case "${1:-}" in
+    cloudflared)
+      exec sudo /usr/local/bin/cloudflared
+      return $?
+      ;;
+  esac
+
   if [[ -S /docker.sock ]]; then
     sudo mkdir -p /var/run
     local gid="$(stat -c '%g' /docker.sock)"

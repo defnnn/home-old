@@ -56,6 +56,9 @@ update0: # Build base with homedir/dotfiles
 update1: # Build initial install with homedir/dotfiles
 	cd b && docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache .
 
+latest: # Build latest variant
+	make VARIANT=latest variant
+
 variant: # Build update with homedir/dotfiles
 	cd b && docker build -t registry.eldri.ch/defn/home:$(VARIANT) -f Dockerfile.$(VARIANT) --no-cache .
 	docker tag registry.eldri.ch/defn/home:$(VARIANT) defn/home:$(VARIANT)
@@ -65,6 +68,9 @@ warm: # Cache FROM images
 
 watch: # Watch for changes
 	@trap 'exit' INT; while true; do fswatch -0 src content | while read -d "" event; do case "$$event" in *.py) figlet woke; make lint test; break; ;; *.md) figlet docs; make docs; ;; esac; done; sleep 1; done
+
+logs: # Logs for docker-compose
+	docker-compose logs -f
 
 up: # Run home container with docker-compose
 	ssh-keygen -R [localhost]:2222 || true
