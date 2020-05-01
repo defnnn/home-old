@@ -304,3 +304,7 @@ data:
       protocol: layer2
       addresses:
       - 172.17.80.8/32
+    - name: home
+      protocol: layer2
+      addresses:
+      - 172.17.80.7/32

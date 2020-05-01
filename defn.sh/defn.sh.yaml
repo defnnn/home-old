@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: zerotier-defn-sh
 data:
-  ZT_NETWORK: "12ac4a1e717442b4"
+  ZT_NETWORK: abfd31bd47a6f9f5
   ZT_VIP: 10.88.88.90
   ZT_DEST: traefik-proxy.traefik.svc.cluster.local
 ---
@@ -56,7 +56,7 @@ data:
   default.conf: |
     server {
         listen 8080;
-        server_name www.defn.sh;
+        server_name defn.sh;
 
         location / {
             root /usr/share/nginx/html;
@@ -129,7 +129,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`www.defn.sh`,`w.defn.sh`)
+  - match: Host(`defn.sh`)
     kind: Rule
     services:
     - name: defn-sh

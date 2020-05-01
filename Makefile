@@ -4,7 +4,7 @@ VARIANT ?= latest
 HOMEDIR ?= https://github.com/amanibhavam/homedir
 DOTFILES ?= https://github.com/amanibhavam/dotfiles
 
-.PHONY: docs zt0 zt1
+.PHONY: docs
 
 menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
@@ -70,17 +70,17 @@ watch: # Watch for changes
 	@trap 'exit' INT; while true; do fswatch -0 src content | while read -d "" event; do case "$$event" in *.py) figlet woke; make lint test; break; ;; *.md) figlet docs; make docs; ;; esac; done; sleep 1; done
 
 logs: # Logs for docker-compose
-	docker-compose logs -f
+	cd c && docker-compose logs -f
 
 up: # Run home container with docker-compose
 	ssh-keygen -R [localhost]:2222 || true
-	docker-compose up -d
+	cd c && docker-compose up -d
 
 down: # Shut down home container
-	docker-compose down
+	cd c && docker-compose down
 
 restart: # Restart home container
-	docker-compose restart
+	cd c && docker-compose restart
 
 recreate: # Recreate home container
 	-$(MAKE) down 
@@ -96,14 +96,14 @@ ssh: # ssh into home container
 top: # Monitor hyperkit processes
 	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
 
-zt0 zt1: # Launch multipass machine
+multipass: # Launch multipass machine
 	if ! test -d $(PWD)/data/$@/home/.git; then \
 		git clone https://github.com/amanibhavam/homedir $(PWD)/data/$@/home/homedir; \
 		(pushd $(PWD)/data/$@/home && mv homedir/.git . && git reset --hard && rm -rf homedir); \
 	fi
 	mkdir -p $(PWD)/data/$@/home/.asdf
 	multipass delete --purge $@ || true
-	multipass launch -m 4g -d 40g -c 2 -n $@ --cloud-init cloud-init.conf focal
+	multipass launch -m 4g -d 40g -c 2 -n $@ --cloud-init multipass/cloud-init.conf focal
 	$@ exec bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
 	$@ exec sudo mkdir -p /data
 	multipass mount $(PWD)/data/$@ $@:/data
@@ -117,45 +117,52 @@ zt0 zt1: # Launch multipass machine
 	$@ exec make install
 	$@ exec mkdir -p work
 	multipass mount "$(shell pwd)" $@:work/home
-	$(MAKE) NAME=$@ kind-cluster
-	$(MAKE) NAME=$@ kind-extras
+	$(MAKE) kind-cluster
+	$@ bash -c "echo nameserver 8.8.8.8 | docker exec -i kind-control-plane tee /etc/resolv.conf"
+	$@ cat .kube/config | perl -pe 's{127.0.0.1:.*}{kind:6443}; s{kind-kind}{kind}' > ~/.kube/config
+	$(MAKE) kind-extras
 	multipass unmount $@:work/home
 
 kind-cluster:
-	$(NAME) exec bash -c "source .bash_profile && cd work/home && env KUBECONFIG=/home/ubuntu/.kube/config kind create cluster --config $(NAME).yaml --name kind"
-	$(NAME) exec bash -c "echo nameserver 8.8.8.8 | docker exec -i kind-control-plane tee /etc/resolv.conf"
-	$(NAME) exec cat .kube/config | perl -pe 's{127.0.0.1:.*}{$(NAME):6443}; s{kind-kind}{$(NAME)}' > ~/.kube/$(NAME).conf
+	kind delete cluster || true
+	kind create cluster --config kind/kind.yaml
+	$(MAKE) kind-config
+
+kind-config:
+	kind export kubeconfig
+	perl -pe 's{127.0.0.1:.*}{host.docker.internal:6443}' -i ~/.kube/config
+	k cluster-info
 
 kind-extras:
 	$(MAKE) cilium
-	while $(NAME) ks get nodes | grep NotReady; do sleep 5; done
-	while [[ "$$($(NAME) ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do $(NAME) ks get pods; sleep 5; echo; done
+	while ks get nodes | grep NotReady; do sleep 5; done
+	while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
 	$(MAKE) metal
 	$(MAKE) nginx
 	$(MAKE) traefik
+	$(MAKE) kong
 	$(MAKE) hubble
-	$(NAME) kt apply -f $(NAME)/
 
 cilium:
-	$(NAME) k apply -f cilium.yaml
-	while [[ "$$($(NAME) ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do $(NAME) ks get pods; sleep 5; echo; done
+	k apply -f k/cilium.yaml
+	while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
 
 metal:
-	$(NAME) k create ns metallb-system || true
-	$(NAME) kn metallb-system apply -f metal.yaml
+	k create ns metallb-system || true
+	kn metallb-system apply -f k/metal.yaml
 
-cloudflare.yaml:
+k/cloudflare.yaml:
 	cp $@.example $@
 
-traefik: cloudflare.yaml
-	$(NAME) k create ns traefik || true
-	$(NAME) kt apply -f crds
-	$(NAME) kt apply -f cloudflare.yaml
-	$(NAME) kt apply -f traefik.yaml
+traefik: k/cloudflare.yaml
+	k create ns traefik || true
+	kt apply -f k/crds
+	kt apply -f k/cloudflare.yaml
+	kt apply -f k/traefik.yaml
 
 argo:
-	$(NAME) k create ns argo || true
-	$(NAME) kn argo apply -f argo.yaml
+	k create ns argo || true
+	kn argo apply -f k/argo.yaml
 
 hubble pihole openvpn nginx registry home kong:
-	$(NAME) k apply -f $@.yaml
+	k apply -f k/$@.yaml

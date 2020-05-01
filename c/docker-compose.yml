@@ -5,6 +5,9 @@ services:
     restart: always
     entrypoint: [ "/service" ]
     command: [ "sshd" ]
+    network_mode: "bridge"
+    extra_hosts:
+      - host.docker.internal:172.17.0.1
     ports:
       - 2222:2222
     volumes:
@@ -13,6 +16,7 @@ services:
       - ${HOME}/.ssh:/app/src/.ssh
       - ${HOME}/.aws:/app/src/.aws
       - ${HOME}/.password-store:/app/src/.password-store
+      - ${HOME}/.kube:/app/src/.kube
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
@@ -23,5 +27,8 @@ services:
     restart: always
     entrypoint: [ "/service" ]
     command: [ "cloudflared" ]
+    network_mode: "bridge"
     volumes:
       - ./etc/cloudflared:/etc/cloudflared
+    links:
+      - sshd

@@ -4,12 +4,12 @@ kind: ConfigMap
 metadata:
   name: zerotier-whoa-bot
 data:
-  ZT_NETWORK: "12ac4a1e717442b4"
+  ZT_NETWORK: abfd31bd47a6f9f5
   ZT_VIP: 10.88.88.89
   ZT_DEST: traefik-proxy.traefik.svc.cluster.local
 ---
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: zerotier-whoa-bot
 spec:
@@ -56,7 +56,7 @@ data:
   default.conf: |
     server {
         listen 8080;
-        server_name www.whoa.bot;
+        server_name whoa.bot;
 
         location / {
             root /usr/share/nginx/html;
@@ -129,7 +129,7 @@ spec:
   entryPoints:
     - https
   routes:
-  - match: Host(`www.whoa.bot`,`w.whoa.bot`)
+  - match: Host(`whoa.bot`)
     kind: Rule
     services:
     - name: whoa-bot

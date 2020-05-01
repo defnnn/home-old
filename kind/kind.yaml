@@ -8,11 +8,11 @@ nodes:
 - role: control-plane
   image: kindest/node:v1.18.0
   extraPortMappings:
-  - containerPort: 1194
-    hostPort: 1194
-    protocol: TCP
   - containerPort: 6443
     hostPort: 6443
+    protocol: TCP
+  - containerPort: 1194
+    hostPort: 1194
     protocol: TCP
   extraMounts:
   - hostPath: /data
@@ -33,7 +33,9 @@ kubeadmConfigPatches:
     - kubernetes
     - kubernetes.default.svc
     - kubernetes.default.svc.cluster.local
-    - zt0
+    - kind
+    - 172.17.0.1
+    - host.docker.internal
   scheduler:
     extraArgs:
       "feature-gates": "EphemeralContainers=true"
