@@ -31,6 +31,9 @@ spec:
         - name: ssh
           containerPort: 2222
           protocol: TCP
+        - name: http
+          containerPort: 8080
+          protocol: TCP
 ---
 apiVersion: v1
 kind: Service
@@ -44,6 +47,10 @@ spec:
     port: 22
     protocol: TCP
     targetPort: ssh
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
   selector:
     app: home
   type: LoadBalancer
