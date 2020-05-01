@@ -10,7 +10,3 @@ RUN make install
 
 COPY service /service
 RUN sudo chmod 755 /service
-
-RUN sudo curl -sSL https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.tgz | (cd /usr/local/bin && sudo tar xvfz -)
-
-RUN echo GatewayPorts yes | sudo tee -a /etc/ssh/sshd_config

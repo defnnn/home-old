@@ -25,10 +25,14 @@ RUN apt-get update \
 
 RUN echo "app ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+RUN echo GatewayPorts yes >> /etc/ssh/sshd_config
+
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
     && locale-gen en_US.UTF-8 \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+
+RUN curl -sSL https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.tgz | (cd /usr/local/bin && tar xvfz -)
 
 RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
     && git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
