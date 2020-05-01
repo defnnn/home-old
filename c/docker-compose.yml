@@ -22,6 +22,7 @@ services:
       - SYS_ADMIN
     devices:
     - /dev/net/tun
+    - /dev/fuse
   cloudflared:
     image: defn/home:${HOME_VARIANT:-latest}
     restart: always
