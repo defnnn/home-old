@@ -35,6 +35,7 @@ kubeadmConfigPatches:
     - kubernetes.default.svc.cluster.local
     - kind
     - 172.17.0.1
+    - 172.21.0.1
     - host.docker.internal
   scheduler:
     extraArgs:

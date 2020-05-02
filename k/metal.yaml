@@ -295,16 +295,16 @@ data:
     - name: my-ip-space
       protocol: layer2
       addresses:
-      - 172.17.80.10-172.17.89.254
+      - 172.21.80.10-172.21.89.254
     - name: traefik
       protocol: layer2
       addresses:
-      - 172.17.80.9/32
+      - 172.21.80.9/32
     - name: pihole
       protocol: layer2
       addresses:
-      - 172.17.80.8/32
+      - 172.21.80.8/32
     - name: home
       protocol: layer2
       addresses:
-      - 172.17.80.7/32
+      - 172.21.80.7/32
