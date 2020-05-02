@@ -7,7 +7,7 @@ services:
     command: [ "sshd" ]
     network_mode: "bridge"
     extra_hosts:
-      - host.docker.internal:172.21.0.1
+      - host.docker.internal:172.18.0.1
     ports:
       - 2222:2222
     volumes:

@@ -22,13 +22,13 @@ data:
         statistics-interval: 0
         statistics-cumulative: no
 
-
         interface: 127.0.0.1
         interface: 0.0.0.0
 
         access-control: 127.0.0.1/32 allow
-        access-control: 10.70.0.0/16 allow
-        access-control: 192.168.64.0/24 allow
+        access-control: 10.0.0.0/8 allow
+        access-control: 192.168.0.0/16 allow
+        access-control: 172.16.0.0/12 allow
         access-control: 0.0.0.0/0 allow
 
         local-data: "health.check.unbound A 127.0.0.1"
