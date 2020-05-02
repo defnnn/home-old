@@ -9,6 +9,9 @@ nodes:
   - containerPort: 6443
     hostPort: 6443
     protocol: TCP
+  - containerPort: 1194
+    hostPort: 1194
+    protocol: TCP
   extraMounts:
   - hostPath: /data
     containerPath: /data
