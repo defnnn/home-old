@@ -42,27 +42,12 @@ kaniko: # Build home with kaniko
 	drone exec --pipeline build --secret-file ../.drone.secret
 
 build: # Build home Docker image
-	$(MAKE) os
-	$(MAKE) update0
-	$(MAKE) update1
-	$(MAKE) variant
-
-os: # Build os container
 	cd b && docker build -t defn/home:$@ -f Dockerfile.$@ --no-cache .
-
-update0: # Build base with homedir/dotfiles
 	cd b && docker build -t defn/home:$@ -f Dockerfile.$@ --no-cache \
 		--build-arg HOMEDIR="$(HOMEDIR)" \
 		--build-arg DOTFILES="$(DOTFILES)" \
 		.
-
-update1: # Build initial install with homedir/dotfiles
 	cd b && docker build -t defn/home:$@ -f Dockerfile.$@ --no-cache .
-
-latest: # Build latest variant
-	make VARIANT=latest variant
-
-variant: # Build update with homedir/dotfiles
 	cd b && docker build -t defn/home:$(VARIANT) -f Dockerfile.$(VARIANT) --no-cache .
 
 warm: # Cache FROM images
