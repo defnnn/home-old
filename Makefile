@@ -71,7 +71,7 @@ ssh: # ssh into home container
 top: # Monitor hyperkit processes
 	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
 
-multipass: # Launch multipass machine
+mp: # Launch multipass machine
 	if ! test -d $(PWD)/data/$@/home/.git; then \
 		git clone https://github.com/amanibhavam/homedir $(PWD)/data/$@/home/homedir; \
 		(pushd $(PWD)/data/$@/home && mv homedir/.git . && git reset --hard && rm -rf homedir); \
@@ -79,6 +79,7 @@ multipass: # Launch multipass machine
 	mkdir -p $(PWD)/data/$@/home/.asdf
 	multipass delete --purge $@ || true
 	multipass launch -m 4g -d 40g -c 2 -n $@ --cloud-init multipass/cloud-init.conf focal
+	false
 	$@ exec bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
 	$@ exec sudo mkdir -p /data
 	multipass mount $(PWD)/data/$@ $@:/data
