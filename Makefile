@@ -38,6 +38,12 @@ requirements: # Compile requirements
 push: # Push to defn/home
 	docker push defn/home
 
+kaniko-os: # Buld home:os with kaniko
+	drone exec --pipeline build-os --secret-file ../.drone.secret
+
+kaniko: # Build home with kaniko
+	drone exec --pipeline build --secret-file ../.drone.secret
+
 build: # Build home Docker image
 	$(MAKE) os
 	$(MAKE) update0

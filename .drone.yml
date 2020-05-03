@@ -91,7 +91,7 @@ steps:
   settings:
     context: b
     dockerfile: Dockerfile.kaniko
-    args: --destination=defn/home:latest
+    args: --destination=defn/home:latest --build-arg HOMEDIR=https://github.com/amanibhavam/homedir --build-arg DOTFILES=https://github.com/amanibhavam/dotfiles
     cache: true
     cache_repo: defn/home
     password:
