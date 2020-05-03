@@ -1,4 +1,4 @@
-FROM registry.eldri.ch/defn/home
+FROM defn/home
 
 RUN make update
 

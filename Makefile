@@ -48,23 +48,22 @@ build: # Build home Docker image
 	$(MAKE) variant
 
 os: # Build os container
-	cd b && docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache .
+	cd b && docker build -t defn/home:$@ -f Dockerfile.$@ --no-cache .
 
 update0: # Build base with homedir/dotfiles
-	cd b && docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache \
+	cd b && docker build -t defn/home:$@ -f Dockerfile.$@ --no-cache \
 		--build-arg HOMEDIR="$(HOMEDIR)" \
 		--build-arg DOTFILES="$(DOTFILES)" \
 		.
 
 update1: # Build initial install with homedir/dotfiles
-	cd b && docker build -t registry.eldri.ch/defn/home:$@ -f Dockerfile.$@ --no-cache .
+	cd b && docker build -t defn/home:$@ -f Dockerfile.$@ --no-cache .
 
 latest: # Build latest variant
 	make VARIANT=latest variant
 
 variant: # Build update with homedir/dotfiles
-	cd b && docker build -t registry.eldri.ch/defn/home:$(VARIANT) -f Dockerfile.$(VARIANT) --no-cache .
-	docker tag registry.eldri.ch/defn/home:$(VARIANT) defn/home:$(VARIANT)
+	cd b && docker build -t defn/home:$(VARIANT) -f Dockerfile.$(VARIANT) --no-cache .
 
 warm: # Cache FROM images
 	docker run --rm -ti -v $(shell pwd)/cache:/cache gcr.io/kaniko-project/warmer:latest --cache-dir=/cache --image=letfn/python-cli:latest

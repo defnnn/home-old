@@ -1,4 +1,4 @@
-FROM registry.eldri.ch/defn/home:os
+FROM defn/home:os
 
 ARG HOMEDIR
 ARG DOTFILES
