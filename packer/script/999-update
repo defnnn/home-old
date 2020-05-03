@@ -3,11 +3,6 @@
 function main {
   set -exfu
 
-  # TODO find another script
-  (echo; echo "172.18.0.1 host.docker.internal") | sudo tee -a /etc/hosts
-
-  sudo yum upgrade -y
-
   sudo sync
 }
 

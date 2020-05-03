@@ -1,11 +1,13 @@
-- name: debuging module
-  shell: uname -a
-  register: output
+- name: "host entry: host.docker.internal"
+  become: true
+  lineinfile:
+    path: /etc/hosts
+    regexp: 'host.docker.internal'
+    line: '172.18.0.1 host.docker.internal'
 
-- name: show the value of output
-  debug: var=output
-
-- name: install htop
-  package:
-    name: htop
-    state: present
+- name: yum update
+  become: true
+  yum:
+    state: latest
+    update_cache: yes
+    update_only: yes
