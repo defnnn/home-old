@@ -5,10 +5,3 @@
     path: /etc/hosts
     regexp: 'host.docker.internal'
     line: '172.18.0.1 host.docker.internal'
-
-- name: yum update
-  become: true
-  yum:
-    state: latest
-    update_cache: yes
-    update_only: yes
