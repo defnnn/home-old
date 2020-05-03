@@ -1,0 +1,11 @@
+- name: debuging module
+  shell: uname -a
+  register: output
+
+- name: show the value of output
+  debug: var=output
+
+- name: install htop
+  package:
+    name: htop
+    state: present
