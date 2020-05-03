@@ -74,13 +74,9 @@ RUN sudo apt-get update && sudo apt-get upgrade -y
 
 COPY .counter /.counter
 
-RUN make update
-
-RUN make upgrade
-
-RUN make install
-
-RUN sudo apt-get update && sudo apt-get upgrade -y
-
 COPY service /service
 RUN sudo chmod 755 /service
+
+RUN make update && make upgrade && make install
+
+RUN sudo apt-get update && sudo apt-get upgrade -y
