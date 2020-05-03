@@ -55,30 +55,6 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: build-os
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: kaniko
-  image: letfn/drone-kaniko
-  settings:
-    context: b
-    dockerfile: Dockerfile.os
-    args: --destination=defn/home:os
-    cache: true
-    cache_repo: defn/home
-    password:
-      from_secret: docker_password
-    repo: defn/home
-    tag: os
-    username:
-      from_secret: docker_username
----
-kind: pipeline
-type: docker
 name: build
 
 platform:

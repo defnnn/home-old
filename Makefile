@@ -35,20 +35,8 @@ requirements: # Compile requirements
 	@echo
 	drone exec --pipeline $@
 
-kaniko-os: # Buld home:os with kaniko
-	drone exec --pipeline build-os --secret-file ../.drone.secret
-
-kaniko: # Build home with kaniko
+build: # Build home with kaniko
 	drone exec --pipeline build --secret-file ../.drone.secret
-
-build: # Build home Docker image
-	cd b && docker build -t defn/home:$@ -f Dockerfile.$@ --no-cache .
-	cd b && docker build -t defn/home:$@ -f Dockerfile.$@ --no-cache \
-		--build-arg HOMEDIR="$(HOMEDIR)" \
-		--build-arg DOTFILES="$(DOTFILES)" \
-		.
-	cd b && docker build -t defn/home:$@ -f Dockerfile.$@ --no-cache .
-	cd b && docker build -t defn/home:$(VARIANT) -f Dockerfile.$(VARIANT) --no-cache .
 
 warm: # Cache FROM images
 	docker run --rm -ti -v $(shell pwd)/cache:/cache gcr.io/kaniko-project/warmer:latest --cache-dir=/cache --image=letfn/python-cli:latest
@@ -72,6 +60,10 @@ restart: # Restart home container
 recreate: # Recreate home container
 	-$(MAKE) down 
 	$(MAKE) up
+
+recycle: # Recycle home container
+	docker pull defn/home
+	$(MAKE) recreate
 
 ssh: # ssh into home container
 	ssh -A -p 2222 -o StrictHostKeyChecking=no app@localhost

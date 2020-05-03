@@ -2,7 +2,8 @@ ARG FROM_IMAGE=letfn/python-cli:latest
 
 FROM $FROM_IMAGE
 
-ARG FROM_VERSION
+ARG HOMEDIR
+ARG DOTFILES
 
 USER root
 
@@ -54,6 +55,32 @@ RUN brew bundle --help
 
 RUN brew install perl
 
-COPY service /service
+ENV PATH=/app/src/.asdf/bin:/app/src/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-ENTRYPOINT [ "/service" ]
+RUN git clone $HOMEDIR homedir \
+    && mv homedir/.git . \
+    && rm -rf homedir \
+    && git reset --hard
+
+RUN echo "$DOTFILES" > .dotfiles-repo
+
+RUN make update
+
+RUN make upgrade
+
+RUN make install
+
+RUN sudo apt-get update && sudo apt-get upgrade -y
+
+COPY .counter /.counter
+
+RUN make update
+
+RUN make upgrade
+
+RUN make install
+
+RUN sudo apt-get update && sudo apt-get upgrade -y
+
+COPY service /service
+RUN sudo chmod 755 /service
