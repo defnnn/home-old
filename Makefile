@@ -35,9 +35,6 @@ requirements: # Compile requirements
 	@echo
 	drone exec --pipeline $@
 
-push: # Push to defn/home
-	docker push defn/home
-
 kaniko-os: # Buld home:os with kaniko
 	drone exec --pipeline build-os --secret-file ../.drone.secret
 
