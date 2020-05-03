@@ -55,7 +55,7 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: build
+name: build-os
 
 platform:
   os: linux
@@ -65,13 +65,15 @@ steps:
 - name: kaniko
   image: letfn/drone-kaniko
   settings:
-    args: --destination=registry.eldri.ch/defn/home
+    context: b
+    dockerfile: Dockerfile.os
+    args: --destination=defn/home:os
     cache: true
-    cache_repo: registry.eldri.ch/cache/defn/home
+    cache_repo: defn/home
     password:
       from_secret: docker_password
-    repo: registry.eldri.ch/defn/home
-    tag: latest
+    repo: defn/home
+    tag: os
     username:
       from_secret: docker_username
 
