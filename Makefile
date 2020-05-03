@@ -72,22 +72,22 @@ top: # Monitor hyperkit processes
 	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
 
 mp:
+	multipass delete --purge mp || true
 	$(MAKE) mp-cluster
 	$(MAKE) mp-extras
 
 mp-cluster: # Launch multipass machine
-	if ! test -d $(PWD)/data/mp/home/.git; then \
-		git clone https://github.com/amanibhavam/homedir $(PWD)/data/mp/home/homedir; \
-		(pushd $(PWD)/data/mp/home && mv homedir/.git . && git reset --hard && rm -rf homedir); \
-	fi
-	mkdir -p $(PWD)/data/mp/home/.asdf
-	multipass delete --purge mp || true
 	multipass launch -m 4g -d 40g -c 2 -n mp --cloud-init multipass/cloud-init.conf focal
 	multipass exec mp -- bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
 
 mp-extras:
+	if ! test -d $(PWD)/data/mp/home/.git; then \
+		git clone https://github.com/amanibhavam/homedir $(PWD)/data/mp/home/homedir; \
+		(pushd $(PWD)/data/mp/home && mv homedir/.git . && git reset --hard && rm -rf homedir); \
+	fi
 	multipass exec mp -- sudo mkdir -p /data
 	mkdir -p $(PWD)/data/mp/home/venv
+	mkdir -p $(PWD)/data/mp/home/.asdf
 	multipass mount $(PWD)/data/mp mp:/data
 	multipass mount $(PWD)/data/mp/home/.git mp:.git
 	multipass mount $(PWD)/data/mp/home/.asdf mp:.asdf
