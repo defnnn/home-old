@@ -82,4 +82,5 @@ RUN make update && make upgrade && make install
 RUN sudo apt-get update && sudo apt-get upgrade -y
 
 COPY a/ .ansible/
-RUN cd a && ../env ansible-playbook docker.yml -c local
+RUN find .ansible
+RUN cd .ansible && ../env ansible-playbook docker.yml -c local
