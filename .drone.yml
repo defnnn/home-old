@@ -76,7 +76,30 @@ steps:
     tag: os
     username:
       from_secret: docker_username
+---
+kind: pipeline
+type: docker
+name: build
 
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: kaniko
+  image: letfn/drone-kaniko
+  settings:
+    context: b
+    dockerfile: Dockerfile.kaniko
+    args: --destination=defn/home:latest
+    cache: true
+    cache_repo: defn/home
+    password:
+      from_secret: docker_password
+    repo: defn/home
+    tag: latest
+    username:
+      from_secret: docker_username
 ---
 kind: pipeline
 type: docker
