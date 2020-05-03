@@ -71,6 +71,10 @@ ssh: # ssh into home container
 top: # Monitor hyperkit processes
 	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
 
+mp:
+	$(MAKE) mp-cluster
+	$(MAKE) mp-extras
+
 mp-cluster: # Launch multipass machine
 	if ! test -d $(PWD)/data/mp/home/.git; then \
 		git clone https://github.com/amanibhavam/homedir $(PWD)/data/mp/home/homedir; \
