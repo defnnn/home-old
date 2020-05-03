@@ -100,7 +100,7 @@ mp-extras:
 	multipass exec mp -- make install
 
 mp-kind:
-	multipass exec mp -- bash -c 'cd work/home && make kind'
+	multipass exec mp -- ./env bash -c 'cd work/home && make kind'
 	multipass exec mp -- cat .kube/config > ~/.kube/config
 
 kind:
