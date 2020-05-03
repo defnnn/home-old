@@ -4,7 +4,7 @@ VARIANT ?= latest
 HOMEDIR ?= https://github.com/amanibhavam/homedir
 DOTFILES ?= https://github.com/amanibhavam/dotfiles
 
-.PHONY: docs
+.PHONY: docs kind
 
 menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
@@ -123,8 +123,15 @@ multipass: # Launch multipass machine
 	$(MAKE) kind-extras
 	multipass unmount $@:work/home
 
-kind-cluster:
+kind:
 	kind delete cluster || true
+	docker network rm kind || true
+	docker network create --subnet 172.18.0.0/16 kind
+	$(MAKE) kind-cluster
+	$(MAKE) kind-cilium
+	$(MAKE) kind-extras
+
+kind-cluster:
 	kind create cluster --config kind/kind.yaml
 	$(MAKE) kind-config
 
@@ -133,10 +140,12 @@ kind-config:
 	perl -pe 's{127.0.0.1:.*}{host.docker.internal:6443}' -i ~/.kube/config
 	k cluster-info
 
-kind-extras:
+kind-cilium:
 	$(MAKE) cilium
 	while ks get nodes | grep NotReady; do sleep 5; done
 	while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
+
+kind-extras:
 	$(MAKE) metal
 	$(MAKE) nginx
 	$(MAKE) traefik
