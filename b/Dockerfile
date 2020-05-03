@@ -80,3 +80,6 @@ RUN sudo chmod 755 /service
 RUN make update && make upgrade && make install
 
 RUN sudo apt-get update && sudo apt-get upgrade -y
+
+COPY a/ .ansible/
+RUN cd a && ../env ansible-playbook docker.yml -c local
