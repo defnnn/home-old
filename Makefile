@@ -83,6 +83,7 @@ mp-cluster: # Launch multipass machine
 
 mp-extras:
 	multipass exec mp -- sudo mkdir -p /data
+	mkdir -p $(PWD)/data/mp/home/venv
 	multipass mount $(PWD)/data/mp mp:/data
 	multipass mount $(PWD)/data/mp/home/.git mp:.git
 	multipass mount $(PWD)/data/mp/home/.asdf mp:.asdf
