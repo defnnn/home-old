@@ -71,33 +71,28 @@ ssh: # ssh into home container
 top: # Monitor hyperkit processes
 	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
 
-mp: # Launch multipass machine
-	if ! test -d $(PWD)/data/$@/home/.git; then \
-		git clone https://github.com/amanibhavam/homedir $(PWD)/data/$@/home/homedir; \
-		(pushd $(PWD)/data/$@/home && mv homedir/.git . && git reset --hard && rm -rf homedir); \
+mp-cluster: # Launch multipass machine
+	if ! test -d $(PWD)/data/mp/home/.git; then \
+		git clone https://github.com/amanibhavam/homedir $(PWD)/data/mp/home/homedir; \
+		(pushd $(PWD)/data/mp/home && mv homedir/.git . && git reset --hard && rm -rf homedir); \
 	fi
-	mkdir -p $(PWD)/data/$@/home/.asdf
-	multipass delete --purge $@ || true
-	multipass launch -m 4g -d 40g -c 2 -n $@ --cloud-init multipass/cloud-init.conf focal
-	false
-	$@ exec bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
-	$@ exec sudo mkdir -p /data
-	multipass mount $(PWD)/data/$@ $@:/data
-	multipass mount $(PWD)/data/$@/home/.git $@:.git
-	multipass mount $(PWD)/data/$@/home/.asdf $@:.asdf
-	multipass mount $(PWD)/data/$@/home/venv $@:venv
-	$@ exec git reset --hard
-	cat ~/.dotfiles-repo | $@ exec tee .dotfiles-repo
-	$@ exec make update
-	$@ exec make upgrade
-	$@ exec make install
-	$@ exec mkdir -p work
-	multipass mount "$(shell pwd)" $@:work/home
-	$(MAKE) kind-cluster
-	$@ bash -c "echo nameserver 8.8.8.8 | docker exec -i kind-control-plane tee /etc/resolv.conf"
-	$@ cat .kube/config | perl -pe 's{127.0.0.1:.*}{kind:6443}; s{kind-kind}{kind}' > ~/.kube/config
-	$(MAKE) kind-extras
-	multipass unmount $@:work/home
+	mkdir -p $(PWD)/data/mp/home/.asdf
+	multipass delete --purge mp || true
+	multipass launch -m 4g -d 40g -c 2 -n mp --cloud-init multipass/cloud-init.conf focal
+	multipass exec mp -- bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
+
+mp-extras:
+	multipass exec mp -- sudo mkdir -p /data
+	multipass mount $(PWD)/data/mp mp:/data
+	multipass mount $(PWD)/data/mp/home/.git mp:.git
+	multipass mount $(PWD)/data/mp/home/.asdf mp:.asdf
+	multipass mount $(PWD)/data/mp/home/venv mp:venv
+	multipass mount $(HOME)/work mp:work
+	multipass exec mp -- git reset --hard
+	cat ~/.dotfiles-repo | multipass exec mp -- tee .dotfiles-repo
+	multipass exec mp -- make update
+	multipass exec mp -- make upgrade
+	multipass exec mp -- make install
 
 kind:
 	kind delete cluster || true
