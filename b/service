@@ -41,7 +41,7 @@ function main {
         set -- bash
       fi
       source /app/venv/bin/activate
-      exec /tini -- sudo -u app -i "$@"
+      exec "$@"
       ;;
   esac
 
