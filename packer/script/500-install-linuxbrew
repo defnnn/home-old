@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+function main {
+  set -exfu
+
+  sudo install -d -o ec2-user -g ec2-user  /home/linuxbrew
+
+  git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew
+  git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
+
+  brew list
+
+  brew bundle --help
+
+  brew install perl
+}
+
+main "$@"

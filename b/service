@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 function main {
+  make fixroot
+
   case "${1:-}" in
     cloudflared)
       exec /tini -- sudo /usr/local/bin/cloudflared

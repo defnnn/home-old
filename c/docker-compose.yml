@@ -23,13 +23,13 @@ services:
     devices:
     - /dev/net/tun
     - /dev/fuse
-  cloudflared:
-    image: defn/home:${HOME_VARIANT:-latest}
-    restart: always
-    entrypoint: [ "/service" ]
-    command: [ "cloudflared" ]
-    network_mode: "bridge"
-    volumes:
-      - ./etc/cloudflared:/etc/cloudflared
-    links:
-      - sshd
+# cloudflared:
+#   image: defn/home:${HOME_VARIANT:-latest}
+#   restart: always
+#   entrypoint: [ "/service" ]
+#   command: [ "cloudflared" ]
+#   network_mode: "bridge"
+#   volumes:
+#     - ./etc/cloudflared:/etc/cloudflared
+#   links:
+#     - sshd

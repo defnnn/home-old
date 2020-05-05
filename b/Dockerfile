@@ -79,7 +79,7 @@ COPY .counter /.counter
 COPY service /service
 RUN sudo chmod 755 /service
 
-RUN make update && make upgrade && make install
+RUN make update && make upgrade && make install && brew upgrade
 
 RUN sudo apt-get update && sudo apt-get upgrade -y
 

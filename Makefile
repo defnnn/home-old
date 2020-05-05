@@ -52,7 +52,7 @@ up: # Run home container with docker-compose
 	cd c && docker-compose up -d
 
 down: # Shut down home container
-	cd c && docker-compose down
+	cd c && docker-compose down --remove-orphans
 
 restart: # Restart home container
 	cd c && docker-compose restart
@@ -155,3 +155,6 @@ argo:
 
 hubble pihole openvpn nginx registry home kong:
 	k apply -f k/$@.yaml
+
+bump:
+	date > b/.counter
