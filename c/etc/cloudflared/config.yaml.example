@@ -1,2 +1,2 @@
-hostname: circus.defn.sh
-url: "ssh://172.18.80.7"
+hostname: iam.defn.sh
+url: "ssh://sshd:2222"

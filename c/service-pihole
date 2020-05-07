@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+function main {
+  set -x
+
+  local ip_unbound="$(host unbound | awk '{print $NF}')"
+
+  echo "server=/#/${ip_unbound}#53" > /etc/dnsmasq.d/98-unbound.conf
+
+  if [[ "$#" == 0 ]]; then
+    sudo pihole -a -p ""
+    set -- /s6-init
+  fi
+
+  exec "$@"
+}
+
+main "$@"

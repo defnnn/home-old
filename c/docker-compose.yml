@@ -6,7 +6,6 @@ services:
     restart: always
     entrypoint: [ "/service" ]
     command: [ "sshd" ]
-    network_mode: "bridge"
     extra_hosts:
       - host.docker.internal:172.18.0.1
     ports:
@@ -24,26 +23,46 @@ services:
     devices:
     - /dev/net/tun
     - /dev/fuse
+    links:
+      - unbound
+      - pihole
   pihole:
     image: pihole/pihole
+    entrypoint: [ "/service-pihole" ]
     dns:
       - 1.1.1.3
       - 1.0.0.3
     volumes:
-      - ./data/pihole:/etc/pihole
-      - ./data/dnsmasq:/etc/dnsmasq.d
+      - ./service-pihole:/service-pihole
+      - ./etc/pihole:/etc/pihole
+      - ./etc/dnsmasq:/etc/dnsmasq.d
     environment:
       - WEBPASSWORD=mehmehmeh
     ports:
       - 80
-
-# cloudflared:
-#   image: defn/home:${HOME_VARIANT:-latest}
-#   restart: always
-#   entrypoint: [ "/service" ]
-#   command: [ "cloudflared" ]
-#   network_mode: "bridge"
-#   volumes:
-#     - ./etc/cloudflared:/etc/cloudflared
-#   links:
-#     - sshd
+    links:
+      - unbound
+  unbound:
+    image: markbnj/unbound-docker:0.1.0
+    volumes:
+      - ./etc/unbound:/etc/unbound
+  cloudflared:
+    image: defn/home:${HOME_VARIANT:-latest}
+    entrypoint: [ "/usr/local/bin/cloudflared" ]
+    command: [ "--no-autoupdate", "tunnel" ]
+    restart: always
+    volumes:
+      - ./etc/cloudflared:/etc/cloudflared
+    environment:
+      - TUNNEL_HOSTNAME=iam.defn.sh
+      - TUNNEL_URL=ssh://sshd:2222
+    links:
+      - sshd
+  openvpn:
+    image: letfn/openvpn
+    volumes:
+      - ./etc/openvpn:/etc/openvpn
+    ports:
+      - 1194:1194
+    cap_add:
+      - NET_ADMIN

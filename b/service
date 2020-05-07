@@ -5,7 +5,7 @@ function main {
 
   case "${1:-}" in
     cloudflared)
-      exec /tini -- sudo /usr/local/bin/cloudflared
+      exec /tini -- sudo /usr/local/bin/cloudflared --no-autoupdate tunnel
       return $?
       ;;
   esac
