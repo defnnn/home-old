@@ -53,7 +53,7 @@ services:
     command: [ "--no-autoupdate", "tunnel" ]
     restart: always
     volumes:
-      - ./etc/cloudflared:/etc/cloudflared
+      - ${HOME}/.cloudflared:/etc/cloudflared
     environment:
       - TUNNEL_HOSTNAME=iam.defn.sh
       - TUNNEL_URL=ssh://sshd:2222
