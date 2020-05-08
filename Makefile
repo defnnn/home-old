@@ -65,9 +65,11 @@ recycle: # Recycle home container
 	docker pull defn/home
 	$(MAKE) recreate
 
-ssh: # ssh into home container
+sign:
 	vault write -field=signed_key home/sign/defn public_key=@$(HOME)/.ssh/id_rsa.pub \
 		> $(HOME)/.ssh/id_rsa-cert.pub
+
+ssh: # ssh into home container
 	ssh -v -A -p 2222 -o StrictHostKeyChecking=no app@localhost
 
 top: # Monitor hyperkit processes
