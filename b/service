@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function main {
-  make fixroot 1>/dev/null 2>/dev/null || true
+  #make fixroot 1>/dev/null 2>/dev/null || true
 
   case "${1:-}" in
     cloudflared)
