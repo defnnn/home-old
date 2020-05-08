@@ -12,8 +12,8 @@ services:
       - 2222:2222
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./etc/ssh:/etc/ssh
       - ${HOME}/work:/app/src/work
-      - ${HOME}/.ssh:/app/src/.ssh
       - ${HOME}/.aws:/app/src/.aws
       - ${HOME}/.password-store:/app/src/.password-store
       - ${HOME}/.kube:/app/src/.kube
