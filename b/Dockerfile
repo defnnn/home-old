@@ -72,7 +72,12 @@ RUN make update
 
 RUN make upgrade
 
-RUN make install
+RUN make install && brew upgrade
+
+RUN nvim --headless +PlugInstall +qa \
+    && curl -sSL -o jet.zip \
+        https://github.com/borkdude/jet/releases/download/v0.0.12/jet-0.0.12-linux-amd64.zip \
+    && unzip jet.zip && rm -f jet.zip && mv jet .config/nvim/plugged/vim-iced/bin/jet
 
 RUN sudo apt-get update && sudo apt-get upgrade -y
 
@@ -85,8 +90,4 @@ RUN cd .ansible && ../env ansible-playbook docker.yml -c local
 COPY .counter /.counter
 
 RUN make update && make upgrade && make install && brew upgrade \
-    && nvim --headless +PlugInstall +qa \
-    && curl -sSL -o jet.zip \
-        https://github.com/borkdude/jet/releases/download/v0.0.12/jet-0.0.12-linux-amd64.zip \
-    && unzip jet.zip && rm -f jet.zip && mv jet .config/nvim/plugged/vim-iced/bin/jet \
     && sudo apt-get update && sudo apt-get upgrade -y
