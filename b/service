@@ -3,13 +3,6 @@
 function main {
   #make fixroot 1>/dev/null 2>/dev/null || true
 
-  case "${1:-}" in
-    cloudflared)
-      exec /tini -- sudo /usr/local/bin/cloudflared --no-autoupdate tunnel
-      return $?
-      ;;
-  esac
-
   if [[ -S /docker.sock ]]; then
     sudo mkdir -p /var/run
     local gid="$(stat -c '%g' /docker.sock)"

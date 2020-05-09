@@ -71,6 +71,12 @@ ssh: # ssh into home container
 		> .ssh/id_rsa-cert.pub
 	@ssh -A -p 2222 -o StrictHostKeyChecking=no -o CertificateFile=.ssh/id_rsa-cert.pub app@localhost
 
+ssh-access: # ssh into home container via cloudflare access
+	@ssh-add -L | grep cardno: | head -1 > .ssh/id_rsa.pub
+	@vault write -field=signed_key home/sign/defn public_key=@.ssh/id_rsa.pub \
+		> .ssh/id_rsa-cert.pub
+	@ssh -A -p 2222 -o StrictHostKeyChecking=no -o CertificateFile=.ssh/id_rsa-cert.pub app@iam.defn.sh
+
 top: # Monitor hyperkit processes
 	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
 
