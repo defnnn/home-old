@@ -53,6 +53,8 @@ RUN brew install perl
 
 ENV PATH=/app/src/.asdf/bin:/app/src/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+COPY .homedir /tmp/.homedir
+
 RUN git clone $HOMEDIR homedir \
     && mv homedir/.git . \
     && rm -rf homedir \
