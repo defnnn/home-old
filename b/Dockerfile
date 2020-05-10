@@ -1,4 +1,4 @@
-ARG FROM_IMAGE=letfn/python-cli:latest
+ARG FROM_IMAGE=letfn/python:latest
 
 FROM $FROM_IMAGE
 
