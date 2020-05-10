@@ -9,8 +9,6 @@ ENV HOME=/root
 ENV DEBIAN_FRONTEND=noninteractive
 ENV container docker
 
-COPY .reset /.reset
-
 RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/udevadm
 
 RUN apt-get update \
@@ -55,8 +53,6 @@ RUN brew install perl
 
 ENV PATH=/app/src/.asdf/bin:/app/src/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-COPY .homedir /.homedir
-
 RUN git clone $HOMEDIR homedir \
     && mv homedir/.git . \
     && rm -rf homedir \
@@ -82,8 +78,6 @@ RUN sudo chmod 755 /service
 
 COPY --chown=app:app a/ .ansible/
 RUN cd .ansible && ../env ansible-playbook docker.yml -c local
-
-COPY .counter /.counter
 
 RUN make update && make upgrade && make install && brew upgrade \
     && sudo apt-get update && sudo apt-get upgrade -y
