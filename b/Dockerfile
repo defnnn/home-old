@@ -1,6 +1,4 @@
-ARG FROM_IMAGE=letfn/python:latest
-
-FROM $FROM_IMAGE
+FROM letfn/python:latest
 
 ARG HOMEDIR
 ARG DOTFILES
