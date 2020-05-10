@@ -159,4 +159,5 @@ hubble pihole openvpn nginx registry home kong:
 	k apply -f k/$@.yaml
 
 bump:
-	date > b/.counter
+	date > b/.bump
+	git add b/.bump
