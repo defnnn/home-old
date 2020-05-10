@@ -79,7 +79,6 @@ RUN sudo chmod 755 /service
 COPY --chown=app:app a/ .ansible/
 RUN cd .ansible && ../env ansible-playbook docker.yml -c local
 
-ARG BUMP=0
-
-RUN echo $BUMP make update && make upgrade && make install && brew upgrade \
+COPY .bump /tmp/.bump
+RUN make update && make upgrade && make install && brew upgrade \
     && sudo apt-get update && sudo apt-get upgrade -y
