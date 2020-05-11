@@ -36,7 +36,6 @@ services:
     volumes:
       - ./service-pihole:/service-pihole
       - ./etc/pihole:/etc/pihole
-      - ./etc/dnsmasq:/etc/dnsmasq.d
     environment:
       - WEBPASSWORD=mehmehmeh
     ports:
