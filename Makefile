@@ -61,18 +61,12 @@ ssh: # ssh into home container
 	@ssh-add -L | grep cardno: | head -1 > .ssh/id_rsa.pub
 	@vault write -field=signed_key home/sign/defn public_key=@.ssh/id_rsa.pub \
 		> .ssh/id_rsa-cert.pub
-	@ssh -v -A -o StrictHostKeyChecking=yes -o CertificateFile=.ssh/id_rsa-cert.pub app@ssh.whoa.bot
+	@tm app@ssh.whoa.bot bash
 
 attach:
 	@vault write -field=signed_key home/sign/defn public_key=@.ssh/id_rsa.pub \
 		> .ssh/id_rsa-cert.pub
 	@tm app@ssh.whoa.bot
-
-ssh-access: # ssh into home container via cloudflare access
-	@ssh-add -L | grep cardno: | head -1 > .ssh/id_rsa.pub
-	@vault write -field=signed_key home/sign/defn public_key=@.ssh/id_rsa.pub \
-		> .ssh/id_rsa-cert.pub
-	@ssh -A -o StrictHostKeyChecking=yes -o CertificateFile=.ssh/id_rsa-cert.pub app@iam.defn.sh
 
 top: # Monitor hyperkit processes
 	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')

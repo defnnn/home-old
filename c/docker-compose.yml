@@ -37,16 +37,6 @@ services:
     image: markbnj/unbound-docker:0.1.0
     volumes:
       - ./etc/unbound:/etc/unbound
-  cloudflared:
-    image: letfn/cloudflared
-    restart: always
-    volumes:
-      - ${HOME}/.cloudflared:/etc/cloudflared
-    environment:
-      - TUNNEL_HOSTNAME=iam.defn.sh
-      - TUNNEL_URL=ssh://ssh:2222
-    links:
-      - ssh
   openvpn:
     image: letfn/openvpn
     volumes:
