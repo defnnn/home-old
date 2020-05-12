@@ -33,7 +33,7 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
 
 RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
     && git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
-    && chown -R app:app /home/linuxbrew
+    && chown -hR app:app /home/linuxbrew
 
 RUN rm -rf main.py requirements.txt tests .cache __pycache__
 
@@ -66,7 +66,9 @@ RUN make update
 
 RUN make upgrade
 
-RUN make install && brew upgrade
+RUN chown -hR app:app /home/linuxbrew \
+    && make install && brew upgrade \
+    && chown -hR app:app /home/linuxbrew
 
 RUN nvim --headless +PlugInstall +qa \
     && curl -sSL -o jet.zip \
@@ -84,6 +86,7 @@ RUN cd .ansible && ../env ansible-playbook docker.yml -c local
 COPY .bump /tmp/.bump
 RUN make update && make upgrade && make install \
     && sudo apt-get update && sudo apt-get upgrade -y
-RUN cd /home/linuxbrew/.linuxbrew && git reset --hard origin/master \
-    && find /home/linuxbrew/ -uid 0 | xargs -n 1 bash -c 'sudo chown -h -v  app:app "$@" || true' '' \
-    && brew upgrade
+RUN chown -hR app:app /home/linuxbrew \
+    && cd /home/linuxbrew/.linuxbrew && git reset --hard origin/master \
+    && brew upgrade \
+    && chown -hR app:app /home/linuxbrew
