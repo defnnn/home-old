@@ -1,15 +1,13 @@
 version: '3.7'
 
 services:
-  sshd:
-    image: defn/home:${HOME_VARIANT:-latest}
+  ssh:
+    image: defn/home
     restart: always
     entrypoint: [ "/service" ]
     command: [ "sshd" ]
     extra_hosts:
       - host.docker.internal:172.18.0.1
-    ports:
-      - 2222:2222
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./etc/ssh:/etc/ssh
@@ -24,22 +22,15 @@ services:
     devices:
     - /dev/net/tun
     - /dev/fuse
-    links:
-      - unbound
-      - pihole
   pihole:
-    image: pihole/pihole
-    entrypoint: [ "/service-pihole" ]
-    dns:
-      - 1.1.1.3
-      - 1.0.0.3
+    image: letfn/pihole
     volumes:
-      - ./service-pihole:/service-pihole
       - ./etc/pihole:/etc/pihole
+      - ./service-pihole:/service
     environment:
       - WEBPASSWORD=mehmehmeh
-    ports:
-      - 80
+    depends_on:
+      - unbound
     links:
       - unbound
   unbound:
@@ -53,14 +44,14 @@ services:
       - ${HOME}/.cloudflared:/etc/cloudflared
     environment:
       - TUNNEL_HOSTNAME=iam.defn.sh
-      - TUNNEL_URL=ssh://sshd:2222
+      - TUNNEL_URL=ssh://ssh:2222
     links:
-      - sshd
+      - ssh
   openvpn:
     image: letfn/openvpn
     volumes:
       - ./etc/openvpn:/etc/openvpn
-    ports:
-      - 1194:1194
     cap_add:
       - NET_ADMIN
+    depends_on:
+      - pihole
