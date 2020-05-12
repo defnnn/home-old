@@ -32,6 +32,7 @@ requirements: # Compile requirements
 
 build: # Build container
 	@echo
+	docker system prune -f
 	drone exec --pipeline $@ --secret-file ../.drone.secret
 
 warm: # Cache FROM images
@@ -159,4 +160,3 @@ hubble pihole openvpn nginx registry home kong:
 bump:
 	date > b/.bump
 	git add b/.bump
-	$(MAKE) build

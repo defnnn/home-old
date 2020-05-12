@@ -82,5 +82,8 @@ COPY --chown=app:app a/ .ansible/
 RUN cd .ansible && ../env ansible-playbook docker.yml -c local
 
 COPY .bump /tmp/.bump
-RUN make update && make upgrade && make install && brew upgrade \
+RUN make update && make upgrade && make install \
     && sudo apt-get update && sudo apt-get upgrade -y
+RUN cd /home/linuxbrew/.linuxbrew && git reset --hard origin/master \
+    && find /home/linuxbrew/ -uid 0 | xargs -n 1 bash -c 'sudo chown app:app "$@" || true' '' \
+    && brew upgrade
