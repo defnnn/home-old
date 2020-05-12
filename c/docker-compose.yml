@@ -37,6 +37,7 @@ services:
     image: markbnj/unbound-docker:0.1.0
     volumes:
       - ./etc/unbound:/etc/unbound
+      - ./var/unbound:/var/lib/unbound
   openvpn:
     image: letfn/openvpn
     volumes:
