@@ -51,6 +51,7 @@ restart: # Restart home container
 	cd c && docker-compose restart
 
 recreate: # Recreate home container
+	docker system prune -f
 	-$(MAKE) down 
 	$(MAKE) up
 
