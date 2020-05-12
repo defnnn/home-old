@@ -85,5 +85,5 @@ COPY .bump /tmp/.bump
 RUN make update && make upgrade && make install \
     && sudo apt-get update && sudo apt-get upgrade -y
 RUN cd /home/linuxbrew/.linuxbrew && git reset --hard origin/master \
-    && find /home/linuxbrew/ -uid 0 | xargs -n 1 bash -c 'sudo chown app:app "$@" || true' '' \
+    && find /home/linuxbrew/ -uid 0 | xargs -n 1 bash -c 'sudo chown -h -v  app:app "$@" || true' '' \
     && brew upgrade
