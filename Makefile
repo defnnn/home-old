@@ -54,6 +54,7 @@ recreate: # Recreate home container
 	docker system prune -f
 	-$(MAKE) down 
 	$(MAKE) up
+	docker system prune -f
 
 recycle: # Recycle home container
 	docker pull defn/home
