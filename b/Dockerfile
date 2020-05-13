@@ -66,9 +66,9 @@ RUN make update
 
 RUN make upgrade
 
-RUN chown -hR app:app /home/linuxbrew \
+RUN sudo chown -hR app:app /home/linuxbrew \
     && make install && brew upgrade \
-    && chown -hR app:app /home/linuxbrew
+    && sudo chown -hR app:app /home/linuxbrew
 
 RUN nvim --headless +PlugInstall +qa \
     && curl -sSL -o jet.zip \
@@ -86,7 +86,7 @@ RUN cd .ansible && ../env ansible-playbook docker.yml -c local
 COPY .bump /tmp/.bump
 RUN make update && make upgrade && make install \
     && sudo apt-get update && sudo apt-get upgrade -y
-RUN chown -hR app:app /home/linuxbrew \
+RUN sudo chown -hR app:app /home/linuxbrew \
     && cd /home/linuxbrew/.linuxbrew && git reset --hard origin/master \
     && brew upgrade \
-    && chown -hR app:app /home/linuxbrew
+    && sudo chown -hR app:app /home/linuxbrew
