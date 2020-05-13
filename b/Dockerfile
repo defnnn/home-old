@@ -14,7 +14,7 @@ RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/ud
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        openssh-server tzdata locales iputils-ping iproute2 net-tools git curl xz-utils unzip jq make vim less wget \
+        openssh-server tzdata locales iputils-ping iproute2 net-tools dnsutils git curl xz-utils unzip jq make vim less wget \
         docker.io docker-compose sshfs libusb-1.0-0 \
         sudo \
         build-essential \
