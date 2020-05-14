@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
   ssh:
+    hostname: defn-home
     image: defn/home
     restart: always
     entrypoint: [ "/service" ]
