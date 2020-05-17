@@ -61,14 +61,14 @@ recycle: # Recycle home container
 	$(MAKE) recreate
 
 ssh: # ssh into home container
-	@ssh-add -L | grep cardno: | head -1 > .ssh/id_rsa.pub
-	@vault write -field=signed_key home/sign/defn public_key=@.ssh/id_rsa.pub \
-		> .ssh/id_rsa-cert.pub
-	@tm app@ssh.whoa.bot bash
+	@ssh-add -L | grep cardno: | head -1 > $(HOME)/.ssh/id_rsa.pub
+	@vault write -field=signed_key home/sign/defn public_key=@$(HOME)/.ssh/id_rsa.pub \
+		> $(HOME)/.ssh/id_rsa-cert.pub
+	@tm app@ssh.whoa.bot bash -l
 
 attach:
-	@vault write -field=signed_key home/sign/defn public_key=@.ssh/id_rsa.pub \
-		> .ssh/id_rsa-cert.pub
+	@vault write -field=signed_key home/sign/defn public_key=@$(HOME)/.ssh/id_rsa.pub \
+		> $(HOME)/.ssh/id_rsa-cert.pub
 	@tm app@ssh.whoa.bot
 
 top: # Monitor hyperkit processes

@@ -12,11 +12,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./etc/ssh:/etc/ssh
-      - ./.ssh:/app/src/.ssh
       - ${HOME}/work:/app/src/work
-      - ${HOME}/.aws:/app/src/.aws
       - ${HOME}/.password-store:/app/src/.password-store
-      - ${HOME}/.kube:/app/src/.kube
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
