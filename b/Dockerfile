@@ -62,11 +62,8 @@ RUN git clone $HOMEDIR homedir \
 
 RUN echo "$DOTFILES" > .dotfiles-repo
 
-RUN make update
-
-RUN make upgrade
-
-RUN sudo chown -hR app:app /home/linuxbrew \
+RUN make update && make upgrade \
+    && sudo chown -hR app:app /home/linuxbrew \
     && make install && brew upgrade \
     && sudo chown -hR app:app /home/linuxbrew
 
@@ -84,9 +81,10 @@ COPY --chown=app:app a/ .ansible/
 RUN cd .ansible && ../env ansible-playbook docker.yml -c local
 
 COPY .bump /tmp/.bump
-RUN make update && make upgrade && make install \
-    && sudo apt-get update && sudo apt-get upgrade -y
-RUN sudo chown -hR app:app /home/linuxbrew \
-    && cd /home/linuxbrew/.linuxbrew && git reset --hard origin/master \
+RUN make update && make upgrade \
+    && make install \
+    && sudo apt-get update && sudo apt-get upgrade -y \
+    && sudo chown -hR app:app /home/linuxbrew \
+    && (cd /home/linuxbrew/.linuxbrew && git reset --hard origin/master) \
     && brew upgrade \
     && sudo chown -hR app:app /home/linuxbrew
