@@ -107,12 +107,15 @@ mp-kind:
 	multipass exec mp -- cat .kube/config > ~/.kube/config
 
 kind:
-	kind delete cluster || true
-	docker network rm kind || true
-	docker network create --subnet 172.18.0.0/16 kind
+	$(MAKE) kind-once
 	$(MAKE) kind-cluster
 	$(MAKE) kind-cilium
 	$(MAKE) kind-extras
+
+kind-once:
+	kind delete cluster || true
+	docker network rm kind || true
+	docker network create --subnet 172.18.0.0/16 kind
 
 kind-cluster:
 	kind create cluster --config kind/kind.yaml
