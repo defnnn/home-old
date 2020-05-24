@@ -47,6 +47,8 @@ ENV LC_ALL en_US.UTF-8
 
 RUN brew list
 
+RUN brew tap linuxbrew/xorg
+
 RUN brew bundle --help
 
 RUN brew install perl
@@ -77,8 +79,8 @@ RUN sudo apt-get update && sudo apt-get upgrade -y
 COPY service /service
 RUN sudo chmod 755 /service
 
-COPY --chown=app:app a/ .ansible/
-RUN cd .ansible && ../env ansible-playbook docker.yml -c local
+#COPY --chown=app:app a/ .ansible/
+#RUN cd .ansible && ../env ansible-playbook docker.yml -c local
 
 COPY .bump /tmp/.bump
 RUN make update && make upgrade \
