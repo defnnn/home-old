@@ -13,27 +13,33 @@ spec:
         org: empire
         class: sofa
     spec:
-      volumes:
-        - name: docker
-          hostPath:
-            path: /var/run/docker.sock
-            type: Socket
       containers:
       - name: home
         image: defn/home
         imagePullPolicy: Always
         command: [ "/service" ]
         args: [ "sshd" ]
-        volumeMounts:
-         - name: docker
-           mountPath: /docker.sock
         ports:
         - name: ssh
           containerPort: 2222
           protocol: TCP
-        - name: http
-          containerPort: 8080
-          protocol: TCP
+      - name: cloudflared
+        image: letfn/cloudflared
+        imagePullPolicy: Always
+        env:
+        - name: TUNNEL_HOSTNAME
+          value: meh.defn.sh
+        - name: TUNNEL_URL
+          value: ssh://localhost:2222
+        volumeMounts:
+        - mountPath: /etc/cloudflared
+          name: cloudflared
+          readOnly: true
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: cloudflared
+        secret:
+          secretName: cloudflared-defn-sh-secret
 ---
 apiVersion: v1
 kind: Service
@@ -47,10 +53,6 @@ spec:
     port: 22
     protocol: TCP
     targetPort: ssh
-  - name: http
-    port: 80
-    protocol: TCP
-    targetPort: http
   selector:
     app: home
   type: LoadBalancer
