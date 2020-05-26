@@ -9,52 +9,14 @@ DOTFILES ?= https://github.com/amanibhavam/dotfiles
 menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
-all: # Run everything except build
-	$(MAKE) fmt
-	$(MAKE) lint
-	$(MAKE) docs
-
-fmt: # Format drone fmt
-	@echo
-	drone exec --pipeline $@
-
-lint: # Run drone lint
-	@echo
-	drone exec --pipeline $@
-
-docs: # Build docs
-	@echo
-	drone exec --pipeline $@
-
-requirements: # Compile requirements
-	@echo
-	drone exec --pipeline $@
-
 build: # Build container
 	@echo
 	docker system prune -f
 	drone exec --pipeline $@ --secret-file ../.drone.secret
 
-warm: # Cache FROM images
-	docker run --rm -ti -v $(shell pwd)/cache:/cache gcr.io/kaniko-project/warmer:latest --cache-dir=/cache --image=letfn/python-cli:latest
-
-logs: # Logs for docker-compose
-	cd c && docker-compose logs -f
-
-up: # Run home container with docker-compose
-	cd c && docker-compose up -d
-
-down: # Shut down home container
-	cd c && docker-compose down --remove-orphans
-
-restart: # Restart home container
-	cd c && docker-compose restart
-
 recreate: # Recreate home container
 	docker system prune -f
-	-$(MAKE) down 
-	$(MAKE) up
-	docker system prune -f
+	kitt recreate
 
 recycle: # Recycle home container
 	docker pull defn/home
