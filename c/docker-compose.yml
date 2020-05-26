@@ -5,8 +5,8 @@ services:
     hostname: defn-home
     image: defn/home
     restart: always
-    entrypoint: [ "/service" ]
-    command: [ "sshd" ]
+    entrypoint: [ "bash", "-c" ]
+    command: [ "sudo chown root:root /run/sshd; sudo /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e" ]
     extra_hosts:
       - host.docker.internal:172.18.0.1
     volumes:
@@ -44,3 +44,13 @@ services:
       - NET_ADMIN
     depends_on:
       - pihole
+  cloudflared:
+    image: letfn/cloudflared
+    restart: always
+    volumes:
+      - ${HOME}/.cloudflared:/etc/cloudflared
+    environment:
+      - TUNNEL_URL=ssh://ssh:2222
+      - TUNNEL_HOSTNAME=ssh.defn.sh
+    links:
+      - ssh
