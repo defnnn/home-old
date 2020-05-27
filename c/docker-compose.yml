@@ -6,14 +6,16 @@ services:
     image: defn/home
     restart: always
     entrypoint: [ "bash", "-c" ]
-    command: [ "sudo chown root:root /run/sshd; sudo /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e" ]
+    command: [ "if [[ -x /etc/kitt-init ]]; then sudo /etc/kitt-init; fi; sudo chown root:root /run/sshd; sudo /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e" ]
     extra_hosts:
       - host.docker.internal:172.18.0.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./etc/ssh:/etc/ssh
+      - ./etc/kitt-init:/etc/kitt-init
       - ${HOME}/work:/app/src/work
       - ${HOME}/.password-store:/app/src/.password-store
+      - home:/home
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
@@ -54,3 +56,5 @@ services:
       - TUNNEL_HOSTNAME
     links:
       - ssh
+volumes:
+  home:
