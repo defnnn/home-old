@@ -51,6 +51,6 @@ services:
       - ${HOME}/.cloudflared:/etc/cloudflared
     environment:
       - TUNNEL_URL=ssh://ssh:2222
-      - TUNNEL_HOSTNAME=ssh.defn.sh
+      - TUNNEL_HOSTNAME
     links:
       - ssh
