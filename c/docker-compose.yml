@@ -11,17 +11,11 @@ services:
       - host.docker.internal:172.18.0.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./etc/ssh:/etc/ssh
-      - ./etc/kitt-init:/etc/kitt-init
+      - ./etc/ssh:/etc/ssh:ro
+      - ./etc/kitt-init:/etc/kitt-init:ro
       - ${HOME}/work:/app/src/work
       - ${HOME}/.password-store:/app/src/.password-store
       - home:/home
-    cap_add:
-      - NET_ADMIN
-      - SYS_ADMIN
-    devices:
-    - /dev/net/tun
-    - /dev/fuse
   pihole:
     image: letfn/pihole
     volumes:
