@@ -95,9 +95,7 @@ kind-cilium:
 
 kind-extras:
 	$(MAKE) metal
-	$(MAKE) nginx
 	$(MAKE) traefik
-	$(MAKE) kong
 	$(MAKE) hubble
 
 cilium:
