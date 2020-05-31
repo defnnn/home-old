@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: zerotier-eldri-ch
 data:
-  ZT_NETWORK: abfd31bd47a6f9f5
+  ZT_NETWORK: 565799d8f6913c7d
   ZT_VIP: 10.88.88.88
   ZT_DEST: traefik-proxy.traefik.svc.cluster.local
 ---
