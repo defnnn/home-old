@@ -1,6 +1,6 @@
 cilium:
 	helm repo add cilium https://helm.cilium.io/
-	helm template cilium/cilium --version 1.7.4 \
+	helm template cilium/cilium --version 1.8.0-rc2 \
 		--namespace=kube-system \
 		--set global.cni.chainingMode=portmap \
 		> cilium.yaml
