@@ -8,37 +8,34 @@ nodes:
 - role: worker
   image: kindest/node:v1.18.2
   extraMounts:
-  - hostPath: /data
+  - hostPath: /usr/local/data
     containerPath: /data
   - hostPath: /var/run/docker.sock
     containerPath: /var/run/docker.sock
 - role: worker
   image: kindest/node:v1.18.2
   extraMounts:
-  - hostPath: /data
+  - hostPath: /usr/local/data
     containerPath: /data
   - hostPath: /var/run/docker.sock
     containerPath: /var/run/docker.sock
 - role: worker
   image: kindest/node:v1.18.2
   extraMounts:
-  - hostPath: /data
+  - hostPath: /usr/local/data
     containerPath: /data
   - hostPath: /var/run/docker.sock
     containerPath: /var/run/docker.sock
 - role: control-plane
   image: kindest/node:v1.18.2
   extraMounts:
-  - hostPath: /data
+  - hostPath: /usr/local/data
     containerPath: /data
   - hostPath: /var/run/docker.sock
     containerPath: /var/run/docker.sock
   extraPortMappings:
   - containerPort: 6443
     hostPort: 6443
-    protocol: TCP
-  - containerPort: 1194
-    hostPort: 1194
     protocol: TCP
 kubeadmConfigPatches:
 - |
