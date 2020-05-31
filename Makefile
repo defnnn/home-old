@@ -85,7 +85,7 @@ kind-cluster:
 
 kind-config:
 	kind export kubeconfig
-	perl -pe 's{127.0.0.1:.*}{host.docker.internal:6443}' -i ~/.kube/config
+	#perl -pe 's{127.0.0.1:.*}{host.docker.internal:6443}' -i ~/.kube/config
 	k cluster-info
 
 kind-cilium:
