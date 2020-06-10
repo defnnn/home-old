@@ -1,4 +1,4 @@
-vault 1.4.1
-helm 3.2.1
-kubectl 1.18.2
+vault 1.4.2
+helm 3.2.3
+kubectl 1.18.3
 kind 0.8.1
