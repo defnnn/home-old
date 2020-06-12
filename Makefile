@@ -125,3 +125,5 @@ hubble pihole openvpn nginx registry home kong:
 bump:
 	date > b/.bump
 	git add b/.bump
+	git commit -m 'bump build'
+	$(MAKE) build
