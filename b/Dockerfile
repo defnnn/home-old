@@ -14,11 +14,11 @@ RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/ud
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        openssh-server tzdata locales iputils-ping iproute2 net-tools dnsutils git curl xz-utils unzip jq make vim less wget \
-        docker.io docker-compose sshfs libusb-1.0-0 \
-        sudo \
-        build-essential \
+        openssh-server tzdata locales iputils-ping iproute2 net-tools dnsutils curl wget unzip jq xz-utils \
+        sudo git vim less \
+        build-essential m4 make \
         libssl-dev zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev libncursesw5-dev libffi-dev liblzma-dev libreadline-dev \
+        docker.io docker-compose sshfs libusb-1.0-0 \
     && rm -f /usr/bin/gs \
     && mkdir -p /run/sshd /var/run/sshd /run && chown -R app:app /var/run/sshd /run /etc/ssh
 
