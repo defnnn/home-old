@@ -127,3 +127,15 @@ bump:
 	git add b/.bump
 	git commit -m 'bump build'
 	$(MAKE) build
+
+bump-brew:
+	date > b/.linuxbrew
+	git add b/.linuxbrew
+	git commit -m 'bump brew build'
+	$(MAKE) build
+
+bump-home:
+	date > b/.homedir
+	git add b/.homedir
+	git commit -m 'bump home build'
+	$(MAKE) build
