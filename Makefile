@@ -16,7 +16,7 @@ build: # Build container
 
 recreate: # Recreate home container
 	docker system prune -f
-	kitt recreate
+	cd c && kitt recreate
 
 recycle: # Recycle home container
 	docker pull defn/home
