@@ -72,32 +72,13 @@ data:
   #
   # Only effective when monitor aggregation is set to "medium" or higher.
   monitor-aggregation-flags: all
-
-  # bpf-ct-global-*-max specifies the maximum number of connections
-  # supported across all endpoints, split by protocol: tcp or other. One pair
-  # of maps uses these values for IPv4 connections, and another pair of maps
-  # use these values for IPv6 connections.
-  #
-  # If these values are modified, then during the next Cilium startup the
-  # tracking of ongoing connections may be disrupted. This may lead to brief
-  # policy drops or a change in loadbalancing decisions for a connection.
-  #
-  # For users upgrading from Cilium 1.2 or earlier, to minimize disruption
-  # during the upgrade process, set bpf-ct-global-tcp-max to 1000000.
-  bpf-ct-global-tcp-max: "524288"
-  bpf-ct-global-any-max: "262144"
-
-  # bpf-nat-global-max specified the maximum number of entries in the BPF NAT
-  # table.
-  bpf-nat-global-max: "524288"
-
   # bpf-policy-map-max specified the maximum number of entries in endpoint
   # policy map (per endpoint)
   bpf-policy-map-max: "16384"
 
   # Specifies the ratio (0.0-1.0) of total system memory to use for dynamic
   # sizing of the TCP CT, non-TCP CT, NAT and policy BPF maps.
-  bpf-map-dynamic-size-ratio: "0.03"
+  bpf-map-dynamic-size-ratio: "0.0025"
 
   # Pre-allocation of map entries allows per-packet latency to be reduced, at
   # the expense of up-front memory allocation for the entries in the maps. The
@@ -164,7 +145,7 @@ data:
   cni-chaining-mode: portmap
 
   masquerade: "true"
-  enable-bpf-masquerade: "false"
+  enable-bpf-masquerade: "true"
   enable-xt-socket-fallback: "true"
   install-iptables-rules: "true"
   auto-direct-node-routes: "false"
@@ -185,6 +166,24 @@ data:
 
   # Enable Hubble gRPC service.
   enable-hubble: "true"
+  # UNIX domain socket for Hubble server to listen to.
+  hubble-socket-path:  "/var/run/cilium/hubble.sock"
+  # Address to expose Hubble metrics (e.g. ":7070"). Metrics server will be disabled if this
+  # field is not set.
+  hubble-metrics-server: ":9091"
+  # A space separated list of metrics to enable. See [0] for available metrics.
+  #
+  # https://github.com/cilium/hubble/blob/master/Documentation/metrics.md
+  hubble-metrics:
+    dns
+    drop
+    tcp
+    flow
+    port-distribution
+    icmp
+    http
+  # An additional address for Hubble server to listen to (e.g. ":4244").
+  hubble-listen-address: ""
 
   # A space separated list of iptables chains to disable when installing feeder rules.
   disable-iptables-feeder-rules: ""
@@ -353,6 +352,28 @@ subjects:
   name: cilium-operator
   namespace: kube-system
 ---
+# Source: cilium/charts/agent/templates/svc.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: hubble-metrics
+  namespace: kube-system
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: "9091"
+  labels:
+    k8s-app: hubble
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+  - name: hubble-metrics
+    port: 9091
+    protocol: TCP
+    targetPort: hubble-metrics
+  selector:
+    k8s-app: cilium
+---
 # Source: cilium/charts/agent/templates/daemonset.yaml
 apiVersion: apps/v1
 kind: DaemonSet
@@ -376,6 +397,16 @@ spec:
       labels:
         k8s-app: cilium
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: k8s-app
+                operator: In
+                values:
+                - cilium
+            topologyKey: kubernetes.io/hostname
       containers:
       - args:
         - --config-dir=/tmp/cilium/config-map
@@ -449,7 +480,7 @@ spec:
               key: custom-cni-conf
               name: cilium-config
               optional: true
-        image: "docker.io/cilium/cilium:v1.8.0-rc2"
+        image: "docker.io/cilium/cilium:v1.8.0-rc3"
         imagePullPolicy: IfNotPresent
         lifecycle:
           postStart:
@@ -462,6 +493,11 @@ spec:
               command:
               - /cni-uninstall.sh
         name: cilium-agent
+        ports:
+        - containerPort: 9091
+          hostPort: 9091
+          name: hubble-metrics
+          protocol: TCP
         securityContext:
           capabilities:
             add:
@@ -512,7 +548,7 @@ spec:
               key: wait-bpf-mount
               name: cilium-config
               optional: true
-        image: "docker.io/cilium/cilium:v1.8.0-rc2"
+        image: "docker.io/cilium/cilium:v1.8.0-rc3"
         imagePullPolicy: IfNotPresent
         name: clean-cilium-state
         securityContext:
@@ -614,7 +650,7 @@ spec:
         - --config-dir=/tmp/cilium/config-map
         - --debug=$(CILIUM_DEBUG)
         command:
-        - cilium-operator
+        - cilium-operator-generic
         env:
         - name: K8S_NODE_NAME
           valueFrom:
@@ -650,7 +686,7 @@ spec:
               key: AWS_DEFAULT_REGION
               name: cilium-aws
               optional: true
-        image: "docker.io/cilium/operator:v1.8.0-rc2"
+        image: "docker.io/cilium/operator-generic:v1.8.0-rc3"
         imagePullPolicy: IfNotPresent
         name: cilium-operator
         livenessProbe:
