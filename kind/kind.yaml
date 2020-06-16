@@ -6,28 +6,28 @@ networking:
   serviceSubnet: "10.71.0.0/16"
 nodes:
 - role: worker
-  image: kindest/node:v1.18.2
+  image: kindest/node:v1.18.3
   extraMounts:
   - hostPath: /usr/local/data
     containerPath: /data
   - hostPath: /var/run/docker.sock
     containerPath: /var/run/docker.sock
 - role: worker
-  image: kindest/node:v1.18.2
+  image: kindest/node:v1.18.3
   extraMounts:
   - hostPath: /usr/local/data
     containerPath: /data
   - hostPath: /var/run/docker.sock
     containerPath: /var/run/docker.sock
 - role: worker
-  image: kindest/node:v1.18.2
+  image: kindest/node:v1.18.3
   extraMounts:
   - hostPath: /usr/local/data
     containerPath: /data
   - hostPath: /var/run/docker.sock
     containerPath: /var/run/docker.sock
 - role: control-plane
-  image: kindest/node:v1.18.2
+  image: kindest/node:v1.18.3
   extraMounts:
   - hostPath: /usr/local/data
     containerPath: /data
