@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   ssh:
-    hostname: defn-home
+    hostname: kitt
     image: defn/home
     restart: always
     entrypoint: [ "bash", "-c" ]

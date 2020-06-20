@@ -11,6 +11,7 @@ spec:
       labels:
         app: home
     spec:
+      hostname: katt
       containers:
       - name: home
         image: defn/home

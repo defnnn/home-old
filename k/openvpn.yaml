@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: openvpn
+spec:
+  selector:
+    matchLabels:
+      app: openvpn
+  template:
+    metadata:
+      labels:
+        app: openvpn
+        org: empire
+        class: sofa
+    spec:
+      volumes:
+        - name: openvpn
+          hostPath:
+            path: /data/openvpn
+            type: Directory
+      containers:
+      - name: openvpn
+        image: letfn/openvpn
+        imagePullPolicy: Always
+        volumeMounts:
+         - name: openvpn
+           mountPath: /etc/openvpn
+        ports:
+        - name: "openvpn"
+          hostPort: 1194
+          containerPort: 1194
+          protocol: TCP
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
