@@ -10,6 +10,8 @@ spec:
     metadata:
       labels:
         app: home
+      annotations:
+        io.cilium.proxy-visibility: "<Egress/53/UDP/DNS>"
     spec:
       hostname: katt
       containers:
