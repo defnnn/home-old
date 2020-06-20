@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: cloudflare
-data:
-  email: dG9kbwo=
-  dns-token: dG9kbwo=
-  zone-token: dG9kbwo=

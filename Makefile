@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: docs kind
+.PHONY: docs
 
 VARIANT ?= latest
 HOMEDIR ?= https://github.com/amanibhavam/homedir
@@ -67,59 +67,6 @@ mp-extras:
 mp-kind:
 	multipass exec mp -- ./env bash -c 'cd work/home && make kind'
 	multipass exec mp -- cat .kube/config > ~/.kube/config
-
-kind:
-	$(MAKE) kind-once
-	$(MAKE) kind-cluster
-	$(MAKE) kind-cilium
-	$(MAKE) kind-extras
-
-kind-once:
-	kind delete cluster || true
-	docker network rm kind || true
-	docker network create --subnet 172.18.0.0/16 kind
-
-kind-cluster:
-	kind create cluster --config kind/kind.yaml
-	$(MAKE) kind-config
-
-kind-config:
-	kind export kubeconfig
-	#perl -pe 's{127.0.0.1:.*}{host.docker.internal:6443}' -i ~/.kube/config
-	k cluster-info
-
-kind-cilium:
-	$(MAKE) cilium
-	while ks get nodes | grep NotReady; do sleep 5; done
-	while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
-
-kind-extras:
-	$(MAKE) metal
-	$(MAKE) traefik
-
-cilium:
-	k apply -f k/cilium.yaml
-	while [[ "$$(ks get -o json pods | jq -r '.items[].status | "\(.phase) \(.containerStatuses[].ready)"' | sort -u)" != "Running true" ]]; do ks get pods; sleep 5; echo; done
-
-metal:
-	k create ns metallb-system || true
-	kn metallb-system apply -f k/metal.yaml
-
-k/cloudflare.yaml:
-	cp $@.example $@
-
-traefik: k/cloudflare.yaml
-	k create ns traefik || true
-	kt apply -f k/crds
-	kt apply -f k/cloudflare.yaml
-	kt apply -f k/traefik.yaml
-
-argo:
-	k create ns argo || true
-	kn argo apply -f k/argo.yaml
-
-pihole openvpn nginx registry home kong:
-	k apply -f k/$@.yaml
 
 bump:
 	date > b/.bump
