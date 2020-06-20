@@ -6,6 +6,13 @@ metadata:
   name: cilium
   namespace: kube-system
 ---
+# Source: cilium/charts/hubble-ui/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: hubble-ui
+  namespace: kube-system
+---
 # Source: cilium/charts/operator/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -33,18 +40,8 @@ data:
   #   setting it to "kvstore".
   identity-allocation-mode: crd
 
-  # identity-change-grace-period is the grace period that needs to pass
-  # before an endpoint that has changed its identity will start using
-  # that new identity. During the grace period, the new identity has
-  # already been allocated and other nodes in the cluster have a chance
-  # to whitelist the new upcoming identity of the endpoint.
-  identity-change-grace-period: "5s"
-
   # If you want to run cilium in debug mode change this value to true
   debug: "false"
-  # Set the TCP port for the agent health status API. This is not the port used
-  # for cilium-health.
-  agent-health-port: "9876"
 
   # Enable IPv4 addressing. If enabled, all endpoints are allocated an IPv4
   # address.
@@ -53,7 +50,6 @@ data:
   # Enable IPv6 addressing. If enabled, all endpoints are allocated an IPv6
   # address.
   enable-ipv6: "false"
-
   enable-bpf-clock-probe: "true"
 
   # If you want cilium monitor to aggregate tracing for packets, set this level
@@ -75,7 +71,6 @@ data:
   # bpf-policy-map-max specified the maximum number of entries in endpoint
   # policy map (per endpoint)
   bpf-policy-map-max: "16384"
-
   # Specifies the ratio (0.0-1.0) of total system memory to use for dynamic
   # sizing of the TCP CT, non-TCP CT, NAT and policy BPF maps.
   bpf-map-dynamic-size-ratio: "0.0025"
@@ -149,21 +144,17 @@ data:
   enable-xt-socket-fallback: "true"
   install-iptables-rules: "true"
   auto-direct-node-routes: "false"
-  kube-proxy-replacement:  "probe"
+  kube-proxy-replacement:  "partial"
+  enable-host-port: "true"
+  enable-external-ips: "true"
+  enable-node-port: "true"
   node-port-bind-protection: "true"
   enable-auto-protect-node-port-range: "true"
   enable-session-affinity: "true"
-  k8s-require-ipv4-pod-cidr: "true"
-  k8s-require-ipv6-pod-cidr: "false"
   enable-endpoint-health-checking: "true"
-  enable-health-checking: "true"
   enable-well-known-identities: "false"
   enable-remote-node-identity: "true"
-
-  synchronize-k8s-nodes: "true"
-  policy-audit-mode: "false"
-  operator-api-serve-addr: '127.0.0.1:9234'
-
+  operator-api-serve-addr: "127.0.0.1:9234"
   # Enable Hubble gRPC service.
   enable-hubble: "true"
   # UNIX domain socket for Hubble server to listen to.
@@ -183,13 +174,8 @@ data:
     icmp
     http
   # An additional address for Hubble server to listen to (e.g. ":4244").
-  hubble-listen-address: ""
-
-  # A space separated list of iptables chains to disable when installing feeder rules.
-  disable-iptables-feeder-rules: ""
-  ipam: "cluster-pool"
-  cluster-pool-ipv4-cidr: "10.0.0.0/8"
-  cluster-pool-ipv4-mask-size: "24"
+  hubble-listen-address: ":4244"
+  ipam: "kubernetes"
   disable-cnp-status-updates: "true"
 ---
 # Source: cilium/charts/agent/templates/clusterrole.yaml
@@ -267,6 +253,50 @@ rules:
   verbs:
   - '*'
 ---
+# Source: cilium/charts/hubble-ui/templates/clusterrole.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: hubble-ui 
+rules:
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - networkpolicies
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - componentstatuses
+      - endpoints
+      - namespaces
+      - nodes
+      - pods
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - cilium.io
+    resources:
+      - "*"
+    verbs:
+      - get
+      - list
+      - watch
+---
 # Source: cilium/charts/operator/templates/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -295,10 +325,6 @@ rules:
 - apiGroups:
   - ""
   resources:
-  # to automatically read from k8s and import the node's pod CIDR to cilium's
-  # etcd so all nodes know how to reach another pod running in in a different
-  # node.
-  - nodes
   # to perform the translation of a CNP that contains `ToGroup` to its endpoints
   - services
   - endpoints
@@ -323,6 +349,14 @@ rules:
   - ciliumidentities/status
   verbs:
   - '*'
+- apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  verbs:
+  - get
+  - list
+  - watch
 ---
 # Source: cilium/charts/agent/templates/clusterrolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -337,6 +371,20 @@ subjects:
 - kind: ServiceAccount
   name: cilium
   namespace: kube-system
+---
+# Source: cilium/charts/hubble-ui/templates/clusterrolebinding.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: hubble-ui
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: hubble-ui 
+subjects:
+  - kind: ServiceAccount
+    namespace: kube-system
+    name: hubble-ui
 ---
 # Source: cilium/charts/operator/templates/clusterrolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -373,6 +421,38 @@ spec:
     targetPort: hubble-metrics
   selector:
     k8s-app: cilium
+---
+# Source: cilium/charts/hubble-relay/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: hubble-relay
+  namespace: kube-system
+  labels:
+    k8s-app: hubble-relay
+spec:
+  type: ClusterIP
+  selector:
+    k8s-app: hubble-relay
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 4245
+---
+# Source: cilium/charts/hubble-ui/templates/svc.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: kube-system
+  name: hubble-ui
+spec:
+  selector:
+    k8s-app: hubble-ui
+  ports:
+    - name: http
+      port: 80
+      targetPort: 12000
+  type: ClusterIP
 ---
 # Source: cilium/charts/agent/templates/daemonset.yaml
 apiVersion: apps/v1
@@ -480,7 +560,7 @@ spec:
               key: custom-cni-conf
               name: cilium-config
               optional: true
-        image: "docker.io/cilium/cilium:v1.8.0-rc3"
+        image: "docker.io/cilium/cilium:v1.8.0-rc4"
         imagePullPolicy: IfNotPresent
         lifecycle:
           postStart:
@@ -527,6 +607,13 @@ spec:
           name: xtables-lock
       hostNetwork: true
       initContainers:
+      - name: wait-for-node-init
+        command: ['sh', '-c', 'until stat /tmp/cilium-bootstrap-time > /dev/null 2>&1; do echo "Waiting on node-init to run..."; sleep 1; done']
+        image: "docker.io/cilium/cilium:v1.8.0-rc4"
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /tmp/cilium-bootstrap-time
+          name: cilium-bootstrap-file
       - command:
         - /init-container.sh
         env:
@@ -548,7 +635,7 @@ spec:
               key: wait-bpf-mount
               name: cilium-config
               optional: true
-        image: "docker.io/cilium/cilium:v1.8.0-rc3"
+        image: "docker.io/cilium/cilium:v1.8.0-rc4"
         imagePullPolicy: IfNotPresent
         name: clean-cilium-state
         securityContext:
@@ -603,6 +690,10 @@ spec:
           path: /run/xtables.lock
           type: FileOrCreate
         name: xtables-lock
+      - hostPath:
+          path: /tmp/cilium-bootstrap-time
+          type: FileOrCreate
+        name: cilium-bootstrap-file
         # To read the clustermesh configuration
       - name: clustermesh-secrets
         secret:
@@ -617,6 +708,198 @@ spec:
     rollingUpdate:
       maxUnavailable: 2
     type: RollingUpdate
+---
+# Source: cilium/charts/nodeinit/templates/daemonset.yaml
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: cilium-node-init
+  namespace: kube-system
+  labels:
+    app: cilium-node-init
+spec:
+  selector:
+    matchLabels:
+      app: cilium-node-init
+  template:
+    metadata:
+      labels:
+        app: cilium-node-init
+    spec:
+      tolerations:
+      - operator: Exists
+      hostPID: true
+      hostNetwork: true
+      priorityClassName: system-node-critical
+      containers:
+        - name: node-init
+          image: docker.io/cilium/startup-script:af2a99046eca96c0138551393b21a5c044c7fe79
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          env:
+          - name: CHECKPOINT_PATH
+            value: /tmp/node-init.cilium.io
+          # STARTUP_SCRIPT is the script run on node bootstrap. Node
+          # bootstrapping can be customized in this script.
+          - name: STARTUP_SCRIPT
+            value: |
+              #!/bin/bash
+
+              set -o errexit
+              set -o pipefail
+              set -o nounset
+
+              mount | grep "/sys/fs/bpf type bpf" || {
+                # Mount the filesystem until next reboot
+                echo "Mounting BPF filesystem..."
+                mount bpffs /sys/fs/bpf -t bpf
+
+                # Configure systemd to mount after next boot
+                echo "Installing BPF filesystem mount"
+                cat >/tmp/sys-fs-bpf.mount <<EOF
+              [Unit]
+              Description=Mount BPF filesystem (Cilium)
+              Documentation=http://docs.cilium.io/
+              DefaultDependencies=no
+              Before=local-fs.target umount.target
+              After=swap.target
+
+              [Mount]
+              What=bpffs
+              Where=/sys/fs/bpf
+              Type=bpf
+              Options=rw,nosuid,nodev,noexec,relatime,mode=700
+
+              [Install]
+              WantedBy=multi-user.target
+              EOF
+
+                if [ -d "/etc/systemd/system/" ]; then
+                  mv /tmp/sys-fs-bpf.mount /etc/systemd/system/
+                  echo "Installed sys-fs-bpf.mount to /etc/systemd/system/"
+                elif [ -d "/lib/systemd/system/" ]; then
+                  mv /tmp/sys-fs-bpf.mount /lib/systemd/system/
+                  echo "Installed sys-fs-bpf.mount to /lib/systemd/system/"
+                fi
+
+                # Ensure that filesystem gets mounted on next reboot
+                systemctl enable sys-fs-bpf.mount
+                systemctl start sys-fs-bpf.mount
+              }
+
+              echo "Link information:"
+              ip link
+
+              echo "Routing table:"
+              ip route
+
+              echo "Addressing:"
+              ip -4 a
+              ip -6 a
+              date > /tmp/cilium-bootstrap-time
+              echo "Node initialization complete"
+---
+# Source: cilium/charts/hubble-relay/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hubble-relay
+  namespace: kube-system
+  labels:
+    k8s-app: hubble-relay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: hubble-relay
+  template:
+    metadata:
+      labels:
+        k8s-app: hubble-relay
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: "k8s-app"
+                  operator: In
+                  values:
+                    - cilium
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: hubble-relay
+          image: "docker.io/cilium/hubble-relay:v1.8.0-rc4"
+          imagePullPolicy: IfNotPresent
+          command:
+            - "hubble-relay"
+          args:
+            - "serve"
+            - "--peer-service=unix:///var/run/cilium/hubble.sock"
+            - "--listen-address=:4245"
+          ports:
+            - name: grpc
+              containerPort: 4245
+          readinessProbe:
+            tcpSocket:
+              port: grpc
+          livenessProbe:
+            tcpSocket:
+              port: grpc
+          volumeMounts:
+          - mountPath: /var/run/cilium
+            name: hubble-sock-dir
+            readOnly: true
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 0
+      tolerations:
+      - operator: Exists
+      volumes:
+      - hostPath:
+          path: /var/run/cilium
+          type: Directory
+        name: hubble-sock-dir
+---
+# Source: cilium/charts/hubble-ui/templates/deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: kube-system
+  name: hubble-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: hubble-ui
+  template:
+    metadata:
+      labels:
+        k8s-app: hubble-ui
+    spec:
+      securityContext:
+        runAsUser: 1001
+      serviceAccountName: hubble-ui
+      containers:
+        - name: hubble-ui
+          image: "quay.io/cilium/hubble-ui:v0.6.0"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: LOG_LEVEL
+              value: "info"
+            - name: HUBBLE
+              value: "true"
+            - name: HUBBLE_SERVICE
+              value: "hubble-relay"
+            - name: HUBBLE_PORT
+              value: "80"
+          ports:
+            - containerPort: 12000
+              name: http
+          resources:
+            {}
 ---
 # Source: cilium/charts/operator/templates/deployment.yaml
 apiVersion: apps/v1
@@ -686,7 +969,7 @@ spec:
               key: AWS_DEFAULT_REGION
               name: cilium-aws
               optional: true
-        image: "docker.io/cilium/operator-generic:v1.8.0-rc3"
+        image: "docker.io/cilium/operator-generic:v1.8.0-rc4"
         imagePullPolicy: IfNotPresent
         name: cilium-operator
         livenessProbe:

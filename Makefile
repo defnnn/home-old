@@ -96,7 +96,6 @@ kind-cilium:
 kind-extras:
 	$(MAKE) metal
 	$(MAKE) traefik
-	$(MAKE) hubble
 
 cilium:
 	k apply -f k/cilium.yaml
@@ -119,7 +118,7 @@ argo:
 	k create ns argo || true
 	kn argo apply -f k/argo.yaml
 
-hubble pihole openvpn nginx registry home kong:
+pihole openvpn nginx registry home kong:
 	k apply -f k/$@.yaml
 
 bump:
