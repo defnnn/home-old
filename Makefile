@@ -33,9 +33,6 @@ attach:
 		> $(HOME)/.ssh/id_rsa-cert.pub
 	@tm app@ssh.whoa.bot
 
-top: # Monitor hyperkit processes
-	top $(shell pgrep hyperkit | perl -pe 's{^}{-pid }')
-
 mp:
 	multipass delete --purge mp || true
 	$(MAKE) mp-cluster
