@@ -27,7 +27,11 @@ function main {
 
   case "${1:-}" in
     sshd)
-      exec /tini -- sudo -u app /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+      if [[ "$$" == 1 ]]; then
+        exec /tini -- sudo -u app /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+      else
+        exec sudo -u app /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+      fi
       ;;
     *)
       if [[ "$#" == 0 ]]; then
