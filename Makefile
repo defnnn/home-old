@@ -24,10 +24,10 @@ recycle: # Recycle home container
 	$(MAKE) recreate
 
 ssh: # ssh into home container
+	#@ssh-add -L | grep cardno: | head -1 > $(HOME)/.ssh/id_rsa.pub
+	#@vault write -field=signed_key home/sign/defn public_key=@$(HOME)/.ssh/id_rsa.pub \
+	#	> $(HOME)/.ssh/id_rsa-cert.pub
 	@cloudflared access ssh-gen --hostname kitt.defn.sh
-	@ssh-add -L | grep cardno: | head -1 > $(HOME)/.ssh/id_rsa.pub
-	@vault write -field=signed_key home/sign/defn public_key=@$(HOME)/.ssh/id_rsa.pub \
-		> $(HOME)/.ssh/id_rsa-cert.pub
 	@tm app@kitt.defn.sh bash -l
 
 attach:

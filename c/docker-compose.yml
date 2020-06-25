@@ -6,7 +6,8 @@ services:
     image: defn/home
     restart: always
     entrypoint: [ "bash", "-c" ]
-    command: [ "if [[ -x /etc/kitt-init ]]; then sudo /etc/kitt-init; fi; sudo chown root:root /run/sshd; exec sudo /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e" ]
+    user: root
+    command: [ "if [[ -x /etc/kitt-init ]]; then /etc/kitt-init; fi; chown root:root /run/sshd; exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e" ]
     extra_hosts:
       - host.docker.internal:172.18.0.1
     volumes:
