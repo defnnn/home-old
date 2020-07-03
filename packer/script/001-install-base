@@ -21,6 +21,8 @@ function main {
 
     sudo apt-get install -y unzip wget git rsync bind9-utils
     sudo apt-get install -y python3 python3-venv
+    sudo apt-get install -y docker.io
+    sudo usermod -G docker app
   fi
 
   sudo curl -sSL -o /usr/local/bin/powerline-go \

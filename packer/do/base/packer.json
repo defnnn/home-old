@@ -24,10 +24,10 @@
         "../script/110-install-netdata",
         "../script/200-install-zerotier",
         "../script/201-install-tailscale",
-        "../script/500-install-linuxbrew",
-        "../script/900-update-kernel",
         "../script/901-add-swap",
+        "../script/900-update-kernel",
         "../script/901-install-jdk11",
+        "../script/500-install-linuxbrew",
         "../script/990-defn-home",
         "../script/999-update"
       ]
