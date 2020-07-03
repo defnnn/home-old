@@ -3,7 +3,7 @@ provider "digitalocean" {
 
 locals {
   regions = {
-    "default" : ["nyc1", "sfo2", "sfo3"]
+    "default" : ["nyc1", "nyc3", "sfo2", "sfo3", "lon1", "tor1"]
   }
 }
 
