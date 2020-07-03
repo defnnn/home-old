@@ -11,6 +11,7 @@ function main {
   ssh -o StrictHostKeyChecking=no git@github.com true || true
   git clone https://github.com/amanibhavam/homedir
   homedir/bin/install-homedir
+  docker pull defn/home
 }
 
 main "$@"
