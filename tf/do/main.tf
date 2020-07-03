@@ -1,22 +1,16 @@
 provider "digitalocean" {
 }
 
-data "digitalocean_vpc" "nyc1" {
-  name = "default-nyc1"
-}
-
-data "digitalocean_vpc" "sfo2" {
-  name = "default-sfo2"
-}
-
-data "digitalocean_vpc" "sfo3" {
-  name = "default-sfo3"
-}
-
 locals {
   regions = {
     "default" : ["nyc1", "sfo2", "sfo3"]
   }
+}
+
+data "digitalocean_vpc" "defn" {
+  for_each = toset(local.regions[terraform.workspace])
+
+  name = "default-${each.key}"
 }
 
 data "digitalocean_droplet_snapshot" "defn_home" {
