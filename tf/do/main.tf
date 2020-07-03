@@ -136,20 +136,32 @@ resource "digitalocean_droplet" "defn_nyc1" {
   region = "nyc1"
   size   = "s-1vcpu-2gb"
   ipv6   = true
+
+  lifecycle {
+    ignore_changes = [image]
+  }
 }
 
 resource "digitalocean_droplet" "defn_sfo2" {
-  image  = 66179221 # data.digitalocean_droplet_snapshot.defn_home_sfo2.id
+  image  = data.digitalocean_droplet_snapshot.defn_home_sfo2.id
   name   = "defn-sfo2"
   region = "sfo2"
   size   = "s-1vcpu-2gb"
   ipv6   = true
+
+  lifecycle {
+    ignore_changes = [image]
+  }
 }
 
 resource "digitalocean_droplet" "defn_sfo3" {
-  image  = 66179221 # data.digitalocean_droplet_snapshot.defn_home_sfo3.id
+  image  = data.digitalocean_droplet_snapshot.defn_home_sfo3.id
   name   = "defn-sfo3"
   region = "sfo3"
   size   = "s-1vcpu-2gb"
   ipv6   = true
+
+  lifecycle {
+    ignore_changes = [image]
+  }
 }
