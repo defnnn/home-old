@@ -14,11 +14,13 @@ data "digitalocean_vpc" "sfo3" {
 }
 
 locals {
-  regions = ["nyc1", "sfo2", "sfo3"]
+  regions = {
+    "default" : ["nyc1", "sfo2", "sfo3"]
+  }
 }
 
 data "digitalocean_droplet_snapshot" "defn_home" {
-  for_each = toset(local.regions)
+  for_each = toset(local.regions[terraform.workspace])
 
   name_regex  = "^defn-home"
   region      = each.key
@@ -85,7 +87,7 @@ resource "digitalocean_firewall" "defn" {
 }
 
 resource "digitalocean_volume" "defn" {
-  for_each = toset(local.regions)
+  for_each = toset(local.regions[terraform.workspace])
 
   region                  = each.key
   name                    = "volume-${each.key}-01"
@@ -94,14 +96,14 @@ resource "digitalocean_volume" "defn" {
 }
 
 resource "digitalocean_volume_attachment" "defn" {
-  for_each = toset(local.regions)
+  for_each = toset(local.regions[terraform.workspace])
 
   droplet_id = digitalocean_droplet.defn[each.key].id
   volume_id  = digitalocean_volume.defn[each.key].id
 }
 
 resource "digitalocean_droplet" "defn" {
-  for_each = toset(local.regions)
+  for_each = toset(local.regions[terraform.workspace])
 
   image  = data.digitalocean_droplet_snapshot.defn_home[each.key].id
   name   = "defn-${each.key}"
