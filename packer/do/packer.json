@@ -8,7 +8,7 @@
       "api_token": "{{user `api_token`}}",
       "image": "ubuntu-20-04-x64",
       "region": "sfo3",
-      "size": "1gb",
+      "size": "s-1vcpu-1gb",
       "ssh_username": "root",
       "snapshot_name": "defn-home",
       "snapshot_regions": [ "sfo2", "sfo3", "nyc1", "nyc3", "lon1", "tor1" ]
