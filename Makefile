@@ -25,7 +25,7 @@ recycle: # Recycle home container
 
 ssh: # ssh into home container
 	@cloudflared access ssh-gen --hostname kitt.defn.sh
-	@ssh jojomomojo@kitt.defn.sh
+	@ssh -A jojomomojo@kitt.defn.sh
 
 attach:
 	@tm app@kitt.defn.sh bash -il
