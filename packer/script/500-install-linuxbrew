@@ -1,18 +1,25 @@
 #!/usr/bin/env bash
 
 function main {
+  if [[ "$(whoami)" == "root" ]]; then
+    exec sudo -H -i -u app "$0" "$@"
+    return $?
+  fi
+
   set -exfu
 
-  sudo install -d -o ec2-user -g ec2-user  /home/linuxbrew
+  sudo install -d -o app -g app /home/linuxbrew
 
   git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew
   git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
+
+  PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
 
   brew list
 
   brew bundle --help
 
-  brew install perl
+  brew install perl || true
 }
 
 main "$@"

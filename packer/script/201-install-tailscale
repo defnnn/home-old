@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
 
 function main {
+  if [[ "$(whoami)" == "root" ]]; then
+    exec sudo -H -i -u app "$0" "$@"
+    return $?
+  fi
+
   set -exfu
 
-  sudo yum-config-manager --add-repo https://pkgs.tailscale.com/stable/amazon-linux/2/tailscale.repo
-  sudo yum install -y tailscale
+  if type -P yum; then
+    sudo yum-config-manager --add-repo https://pkgs.tailscale.com/stable/amazon-linux/2/tailscale.repo
+    sudo yum install -y tailscale
+  elif type -P apt-get; then
+    curl https://pkgs.tailscale.com/stable/ubuntu/focal.gpg | sudo apt-key add -
+    curl https://pkgs.tailscale.com/stable/ubuntu/focal.list | sudo tee /etc/apt/sources.list.d/tailscale.list
+    sudo apt-get update
+    sudo apt-get install -y tailscale
+  fi
 }
 
 main "$@"

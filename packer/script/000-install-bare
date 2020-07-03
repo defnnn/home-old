@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+function main {
+  if type -P apt-get; then
+    sudo useradd -m -s /bin/bash app
+    echo "app ALL=(ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers
+  fi
+}
+
+main "$@"

@@ -6,14 +6,11 @@ function main {
     return $?
   fi
 
-  set -exfu
+  set -x
 
-  for s in /swap{0,1}; do
-    sudo fallocate -l 1G $s
-    sudo chmod 0600 $s
-    sudo mkswap $s
-    sudo swapon $s
-  done
+  curl -Ss https://my-netdata.io/kickstart.sh > /tmp/netdata.sh
+  sudo bash /tmp/netdata.sh
+  rm -f /tmp/netdata.sh
 }
 
 main "$@"

@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 
 function main {
+  if [[ "$(whoami)" == "root" ]]; then
+    exec sudo -H -i -u app "$0" "$@"
+    return $?
+  fi
+
   set -exfu
 
-  sudo amazon-linux-extras install kernel-ng
+  if type -P yum; then
+    sudo amazon-linux-extras install kernel-ng
+  fi
 }
 
 main "$@"

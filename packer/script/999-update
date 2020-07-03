@@ -1,9 +1,19 @@
 #!/usr/bin/env bash
 
 function main {
+  if [[ "$(whoami)" == "root" ]]; then
+    exec sudo -H -i -u app "$0" "$@"
+    return $?
+  fi
+
   set -exfu
 
-  sudo yum upgrade -y
+  if type -P yum; then
+    sudo yum upgrade -y
+  elif type -P apt-get; then
+    sudo env DEBIAN_FRONTEND=noninteractive apt-get update -y
+    sudo env DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+  fi
 
   sudo sync
 }

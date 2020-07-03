@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
 function main {
+  if [[ "$(whoami)" == "root" ]]; then
+    exec sudo -H -i -u app "$0" "$@"
+    return $?
+  fi
+
   set -exfu
 
   if curl -s 'https://raw.githubusercontent.com/zerotier/ZeroTierOne/master/doc/contact%40zerotier.com.gpg' | gpg --import; then
