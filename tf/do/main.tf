@@ -2,6 +2,12 @@ provider "digitalocean" {}
 
 provider "cloudflare" {}
 
+provider "consul" {
+  address    = "consul.kitt.run:443"
+  scheme     = "https"
+  datacenter = "dc1"
+}
+
 terraform {
   backend "consul" {
     address = "consul.kitt.run"
@@ -45,6 +51,16 @@ locals {
         volume_size : "10"
       }
     }
+  }
+}
+
+data "consul_keys" "beans" {
+  datacenter = "dc1"
+
+  key {
+    path    = "defn/home/beans"
+    name    = "beans"
+    default = "cool"
   }
 }
 
@@ -172,9 +188,15 @@ resource "digitalocean_droplet" "defn" {
   size   = each.value.droplet_size
   ipv6   = true
 
+  tags = [digitalocean_tag.beans.id]
+
   lifecycle {
     ignore_changes = [image]
   }
+}
+
+resource "digitalocean_tag" "beans" {
+  name = "beans_${data.consul_keys.beans.var.beans}"
 }
 
 data "cloudflare_zones" "defn_sh" {
