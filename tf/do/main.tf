@@ -6,30 +6,34 @@ locals {
   cf_account_id   = var.cf_account_id
   spiral_networks = var.spiral_networks
   domain_name     = "defn.sh"
-  work = {
+  droplet = {
     default : {
       sfo2 : {
-        droplet_size : "s-1vcpu-2gb",
+        droplet_size : "s-1vcpu-2gb"
+      },
+      sfo3 : {
+        droplet_size : "s-1vcpu-2gb"
+      }
+    }
+  }
+  volume = {
+    default : {
+      sfo2 : {
         volume_size : "10"
       },
       sfo3 : {
-        droplet_size : "s-1vcpu-2gb",
         volume_size : "10"
       },
       nyc1 : {
-        droplet_size : "s-1vcpu-1gb",
         volume_size : "10"
       },
       nyc3 : {
-        droplet_size : "s-1vcpu-1gb",
         volume_size : "10"
       },
       lon1 : {
-        droplet_size : "s-1vcpu-1gb",
         volume_size : "10"
       },
       tor1 : {
-        droplet_size : "s-1vcpu-1gb",
         volume_size : "10"
       }
     }
@@ -37,13 +41,13 @@ locals {
 }
 
 data "digitalocean_vpc" "defn" {
-  for_each = local.work[terraform.workspace]
+  for_each = local.droplet[terraform.workspace]
 
   name = "default-${each.key}"
 }
 
 data "digitalocean_droplet_snapshot" "defn_home" {
-  for_each = local.work[terraform.workspace]
+  for_each = local.droplet[terraform.workspace]
 
   name_regex  = "^defn-home"
   region      = each.key
@@ -110,7 +114,7 @@ resource "digitalocean_firewall" "defn" {
 }
 
 resource "digitalocean_volume" "defn" {
-  for_each = local.work[terraform.workspace]
+  for_each = local.volume[terraform.workspace]
 
   region                  = each.key
   name                    = "volume-${each.key}-01"
@@ -119,14 +123,14 @@ resource "digitalocean_volume" "defn" {
 }
 
 resource "digitalocean_volume_attachment" "defn" {
-  for_each = local.work[terraform.workspace]
+  for_each = local.droplet[terraform.workspace]
 
   droplet_id = digitalocean_droplet.defn[each.key].id
   volume_id  = digitalocean_volume.defn[each.key].id
 }
 
 resource "digitalocean_droplet" "defn" {
-  for_each = local.work[terraform.workspace]
+  for_each = local.droplet[terraform.workspace]
 
   image  = data.digitalocean_droplet_snapshot.defn_home[each.key].id
   name   = "${each.key}.${local.domain_name}"
@@ -151,7 +155,7 @@ resource "digitalocean_domain" "defn_sh" {
 }
 
 resource "cloudflare_record" "defn" {
-  for_each = local.work[terraform.workspace]
+  for_each = local.droplet[terraform.workspace]
 
   zone_id = data.cloudflare_zones.defn_sh.zones[0].id
   name    = "${each.key}.${data.cloudflare_zones.defn_sh.zones[0].name}"
@@ -161,7 +165,7 @@ resource "cloudflare_record" "defn" {
 }
 
 resource "digitalocean_record" "defn" {
-  for_each = local.work[terraform.workspace]
+  for_each = local.droplet[terraform.workspace]
 
   domain = digitalocean_domain.defn_sh.name
   type   = "A"
