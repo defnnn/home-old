@@ -17,50 +17,20 @@ terraform {
 }
 
 locals {
-  cf_account_id   = var.cf_account_id
-  spiral_networks = var.spiral_networks
-  domain_name     = "defn.sh"
-  droplet = {
-    default : {
-      sfo2 : {
-        droplet_size : "s-1vcpu-2gb"
-      },
-      sfo3 : {
-        droplet_size : "s-1vcpu-2gb"
-      }
-    }
-  }
-  volume = {
-    default : {
-      sfo2 : {
-        volume_size : "10"
-      },
-      sfo3 : {
-        volume_size : "10"
-      },
-      nyc1 : {
-        volume_size : "10"
-      },
-      nyc3 : {
-        volume_size : "10"
-      },
-      lon1 : {
-        volume_size : "10"
-      },
-      tor1 : {
-        volume_size : "10"
-      }
-    }
-  }
+  workspace       = jsondecode(data.consul_keys.workspace.var.workspace)
+  domain_name     = local.workspace.domain_name
+  cf_account_id   = local.workspace.cf_account_id
+  spiral_networks = local.workspace.spiral_networks
+  droplet         = local.workspace.droplet
+  volume          = local.workspace.volume
 }
 
-data "consul_keys" "beans" {
+data "consul_keys" "workspace" {
   datacenter = "dc1"
 
   key {
-    path    = "defn/home/beans"
-    name    = "beans"
-    default = "cool"
+    path = "defn/home/workspace/${terraform.workspace}"
+    name = "workspace"
   }
 }
 
@@ -188,15 +158,15 @@ resource "digitalocean_droplet" "defn" {
   size   = each.value.droplet_size
   ipv6   = true
 
-  tags = [digitalocean_tag.beans.id]
+  tags = [digitalocean_tag.workspace.id]
 
   lifecycle {
     ignore_changes = [image]
   }
 }
 
-resource "digitalocean_tag" "beans" {
-  name = "beans_${jsondecode(data.consul_keys.beans.var.beans).name}"
+resource "digitalocean_tag" "workspace" {
+  name = "workspace_${jsondecode(data.consul_keys.workspace.var.workspace).name}"
 }
 
 data "cloudflare_zones" "defn_sh" {
