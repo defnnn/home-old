@@ -18,6 +18,7 @@ terraform {
 
 locals {
   workspace       = jsondecode(data.consul_keys.workspace.var.workspace)
+  name            = local.workspace.name
   domain_name     = local.workspace.domain_name
   cf_account_id   = local.workspace.cf_account_id
   spiral_networks = local.workspace.spiral_networks
@@ -145,7 +146,7 @@ resource "digitalocean_volume" "defn" {
   for_each = local.volume
 
   region                  = each.key
-  name                    = "${local.workspace.name}-${each.key}-01"
+  name                    = "${local.name}-${each.key}-01"
   size                    = each.value.volume_size
   initial_filesystem_type = "ext4"
 }
