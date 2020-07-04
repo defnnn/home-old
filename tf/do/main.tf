@@ -196,7 +196,7 @@ resource "digitalocean_droplet" "defn" {
 }
 
 resource "digitalocean_tag" "beans" {
-  name = "beans_${data.consul_keys.beans.var.beans}"
+  name = "beans_${jsondecode(data.consul_keys.beans.var.beans).name}"
 }
 
 data "cloudflare_zones" "defn_sh" {
