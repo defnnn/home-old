@@ -1,7 +1,9 @@
-provider "digitalocean" {
-}
+provider "digitalocean" {}
+
+provider "cloudflare" {}
 
 locals {
+  domain_name = "defn.sh"
   work = {
     default : {
       sfo2 : {
@@ -133,4 +135,21 @@ resource "digitalocean_droplet" "defn" {
   lifecycle {
     ignore_changes = [image]
   }
+}
+
+data "cloudflare_zones" "defn_sh" {
+  filter {
+    name   = local.domain_name
+    status = "active"
+  }
+}
+
+resource "cloudflare_record" "defn" {
+  for_each = local.work[terraform.workspace]
+
+  zone_id = data.cloudflare_zones.defn_sh.zones[0].id
+  name    = "${each.key}.${data.cloudflare_zones.defn_sh.zones[0].name}"
+  value   = digitalocean_droplet.defn[each.key].ipv4_address
+  type    = "A"
+  ttl     = 60
 }
