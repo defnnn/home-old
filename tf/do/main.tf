@@ -16,22 +16,22 @@ locals {
         droplet_size : "s-1vcpu-2gb",
         volume_size : "10"
       },
-      # nyc1 : {
-      # droplet_size : "s-1vcpu-1gb",
-      # volume_size : "10"
-      # },
-      # nyc3 : {
-      # droplet_size : "s-1vcpu-1gb",
-      # volume_size : "10"
-      # },
-      # lon1 : {
-      # droplet_size : "s-1vcpu-1gb",
-      # volume_size : "10"
-      # },
-      # tor1 : {
-      # droplet_size : "s-1vcpu-1gb",
-      # volume_size : "10"
-      # }
+      nyc1 : {
+        droplet_size : "s-1vcpu-1gb",
+        volume_size : "10"
+      },
+      nyc3 : {
+        droplet_size : "s-1vcpu-1gb",
+        volume_size : "10"
+      },
+      lon1 : {
+        droplet_size : "s-1vcpu-1gb",
+        volume_size : "10"
+      },
+      tor1 : {
+        droplet_size : "s-1vcpu-1gb",
+        volume_size : "10"
+      }
     }
   }
 }
