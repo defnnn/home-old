@@ -5,7 +5,7 @@ provider "cloudflare" {}
 locals {
   cf_account_id   = var.cf_account_id
   spiral_networks = var.spiral_networks
-  domain_name = "defn.sh"
+  domain_name     = "defn.sh"
   work = {
     default : {
       sfo2 : {
