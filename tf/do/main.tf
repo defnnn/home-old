@@ -127,7 +127,7 @@ resource "digitalocean_droplet" "defn" {
   for_each = local.work[terraform.workspace]
 
   image  = data.digitalocean_droplet_snapshot.defn_home[each.key].id
-  name   = "defn-${each.key}"
+  name   = "${each.key}.${local.domain_name}"
   region = each.key
   size   = each.value.droplet_size
   ipv6   = true
@@ -144,6 +144,10 @@ data "cloudflare_zones" "defn_sh" {
   }
 }
 
+resource "digitalocean_domain" "defn_sh" {
+  name = local.domain_name
+}
+
 resource "cloudflare_record" "defn" {
   for_each = local.work[terraform.workspace]
 
@@ -153,3 +157,14 @@ resource "cloudflare_record" "defn" {
   type    = "A"
   ttl     = 60
 }
+
+resource "digitalocean_record" "defn" {
+  for_each = local.work[terraform.workspace]
+
+  domain = digitalocean_domain.defn_sh.name
+  type   = "A"
+  name   = each.key
+  value  = digitalocean_droplet.defn[each.key].ipv4_address
+}
+
+
