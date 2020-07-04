@@ -2,6 +2,14 @@ provider "digitalocean" {}
 
 provider "cloudflare" {}
 
+terraform {
+  backend "consul" {
+    address = "consul.kitt.run"
+    scheme  = "https"
+    path    = "defn/home/terraform-remote-state"
+  }
+}
+
 locals {
   cf_account_id   = var.cf_account_id
   spiral_networks = var.spiral_networks
@@ -79,6 +87,7 @@ resource "digitalocean_firewall" "defn" {
       "96.78.173.0/24",
     ]
   }
+
   inbound_rule {
     port_range = "9993"
     protocol   = "udp"
@@ -88,6 +97,29 @@ resource "digitalocean_firewall" "defn" {
     ]
   }
 
+  inbound_rule {
+    source_addresses = [
+      for e in digitalocean_droplet.defn : e.ipv4_address
+    ]
+    protocol = "icmp"
+  }
+
+  inbound_rule {
+    source_addresses = [
+      for e in digitalocean_droplet.defn : e.ipv4_address
+    ]
+    port_range = "all"
+    protocol   = "tcp"
+  }
+
+  inbound_rule {
+    source_addresses = [
+      for e in digitalocean_droplet.defn : e.ipv4_address
+    ]
+    port_range = "all"
+    protocol   = "udp"
+  }
+
   outbound_rule {
     destination_addresses = [
       "0.0.0.0/0",
@@ -95,6 +127,7 @@ resource "digitalocean_firewall" "defn" {
     ]
     protocol = "icmp"
   }
+
   outbound_rule {
     destination_addresses = [
       "0.0.0.0/0",
@@ -103,6 +136,7 @@ resource "digitalocean_firewall" "defn" {
     port_range = "all"
     protocol   = "tcp"
   }
+
   outbound_rule {
     destination_addresses = [
       "0.0.0.0/0",
