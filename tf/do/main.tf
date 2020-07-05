@@ -176,12 +176,12 @@ resource "digitalocean_droplet" "defn" {
 resource "digitalocean_kubernetes_cluster" "defn" {
   for_each = local.kubernetes
 
-  name    = "${each.key}-k8s.${local.domain_name}"
+  name    = each.key
   region  = each.key
   version = each.value.cluster_version
 
   node_pool {
-    name       = "${each.key}-general"
+    name       = each.key
     size       = each.value.droplet_size
     node_count = each.value.droplet_count
   }
