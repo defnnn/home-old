@@ -24,6 +24,7 @@ locals {
   spiral_networks = local.workspace.spiral_networks
   droplet         = local.workspace.droplet
   volume          = local.workspace.volume
+  kubernetes      = local.workspace.kubernetes
 }
 
 data "consul_keys" "workspace" {
@@ -169,6 +170,20 @@ resource "digitalocean_droplet" "defn" {
 
   lifecycle {
     ignore_changes = [image]
+  }
+}
+
+resource "digitalocean_kubernetes_cluster" "defn" {
+  for_each = local.kubernetes
+
+  name    = "${each.key}-k8s.${local.domain_name}"
+  region  = each.key
+  version = each.value.cluster_version
+
+  node_pool {
+    name       = "${each.key}-general"
+    size       = each.value.droplet_size
+    node_count = each.value.droplet_count
   }
 }
 
