@@ -162,11 +162,12 @@ resource "digitalocean_volume_attachment" "defn" {
 resource "digitalocean_droplet" "defn" {
   for_each = local.droplet
 
-  image  = data.digitalocean_droplet_snapshot.defn_home[each.key].id
-  name   = "${each.key}.${local.domain_name}"
-  region = each.key
-  size   = each.value.droplet_size
-  ipv6   = true
+  image              = data.digitalocean_droplet_snapshot.defn_home[each.key].id
+  name               = "${each.key}.${local.domain_name}"
+  region             = each.key
+  size               = each.value.droplet_size
+  ipv6               = true
+  private_networking = true
 
   lifecycle {
     ignore_changes = [image]
