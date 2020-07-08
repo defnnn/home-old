@@ -66,15 +66,11 @@ steps:
   image: letfn/drone-kaniko
   settings:
     context: b
-    args: --destination=defn/home:latest --build-arg HOMEDIR=https://github.com/amanibhavam/homedir --build-arg DOTFILES=https://github.com/amanibhavam/dotfiles
+    args: --destination=registry.kitt.run/defn/home:latest --build-arg HOMEDIR=https://github.com/amanibhavam/homedir --build-arg DOTFILES=https://github.com/amanibhavam/dotfiles
     cache: true
-    cache_repo: defn/home
-    password:
-      from_secret: docker_password
-    repo: defn/home
+    cache_repo: registry.kitt.run/defn/home/cache
+    repo: registry.kitt.run/defn/home
     tag: latest
-    username:
-      from_secret: docker_username
 ---
 kind: pipeline
 type: docker

@@ -3,7 +3,7 @@ version: '3.7'
 services:
   ssh:
     hostname: kitt
-    image: defn/home
+    image: registry.kitt.run/defn/home
     restart: always
     entrypoint: [ "/etc/kitt-init" ]
     user: root

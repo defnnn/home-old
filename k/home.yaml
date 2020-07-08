@@ -16,7 +16,7 @@ spec:
       hostname: katt
       containers:
       - name: home
-        image: defn/home
+        image: registry.kitt.run/defn/home
         imagePullPolicy: Always
         command: [ "/service" ]
         args: [ "sshd" ]
