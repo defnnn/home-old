@@ -12,7 +12,7 @@ menu:
 build: # Build container
 	@echo
 	docker system prune -f
-	drone exec --pipeline $@ --secret-file ../.drone.secret
+	drone exec --pipeline $@
 
 recreate: # Recreate home container
 	docker system prune -f
