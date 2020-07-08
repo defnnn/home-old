@@ -31,30 +31,6 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: requirements
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: everything
-  image: letfn/python
-  commands:
-  - . /app/venv/bin/activate
-  - pip-compile /drone/src/requirements.in -o /tmp/requirements.in.txt
-  - if test -w . ; then cp /tmp/requirements.in.txt requirements.in.txt; else diff requirements.in.txt /tmp/requirements.in.txt || true; fi
-  - pip-compile /drone/src/requirements.in.txt requirements.dev -o /tmp/requirements.txt
-  - if test -w . ; then cp /tmp/requirements.txt requirements.txt; else diff requirements.txt /tmp/requirements.txt || true;  fi
-
-trigger:
-  instance:
-    exclude:
-    - cloud.drone.io
-
----
-kind: pipeline
-type: docker
 name: build
 
 platform:
@@ -65,12 +41,13 @@ steps:
 - name: kaniko
   image: letfn/drone-kaniko
   settings:
-    context: b
     args: --destination=registry.kitt.run/defn/home:latest --build-arg HOMEDIR=https://github.com/amanibhavam/homedir --build-arg DOTFILES=https://github.com/amanibhavam/dotfiles
     cache: true
     cache_repo: registry.kitt.run/defn/home/cache
+    context: b
     repo: registry.kitt.run/defn/home
     tag: latest
+
 ---
 kind: pipeline
 type: docker
