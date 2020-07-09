@@ -1,7 +1,0 @@
-- name: "host entry: host.docker.internal"
-  become: yes
-  ignore_errors: yes
-  lineinfile:
-    path: /etc/hosts
-    regexp: 'host.docker.internal'
-    line: '172.18.0.1 host.docker.internal'

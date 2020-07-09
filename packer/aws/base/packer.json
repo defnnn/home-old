@@ -47,15 +47,6 @@
   ],
   "provisioners": [
     {
-      "type": "file",
-      "source": "../a/roles",
-      "destination": ".ansible/"
-    },
-    {
-      "type": "ansible-local",
-      "playbook_file": "../a/ami-base.yml"
-    },
-    {
       "type": "shell",
       "scripts": [
         "../script/001-install-base",
