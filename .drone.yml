@@ -41,7 +41,7 @@ steps:
 - name: kaniko
   image: letfn/drone-kaniko
   settings:
-    args: --destination=registry.kitt.run/defn/home:latest --build-arg HOMEDIR=https://github.com/amanibhavam/homedir --build-arg DOTFILES=https://github.com/amanibhavam/dotfiles
+    args: --use-new-run --destination=registry.kitt.run/defn/home:latest --build-arg HOMEDIR=https://github.com/amanibhavam/homedir --build-arg DOTFILES=https://github.com/amanibhavam/dotfiles
     cache: true
     cache_repo: registry.kitt.run/defn/home/cache
     context: b
@@ -60,11 +60,6 @@ platform:
 steps:
 - name: local
   image: letfn/drone-hugo
-
-- name: gh-pages
-  image: letfn/drone-hugo
-  settings:
-    github_pages: true
 
 depends_on:
 - build
