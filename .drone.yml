@@ -41,7 +41,7 @@ steps:
 - name: kaniko
   image: letfn/drone-kaniko
   settings:
-    args: --use-new-run --destination=registry.kitt.run/defn/home:latest --build-arg HOMEDIR=https://github.com/amanibhavam/homedir --build-arg DOTFILES=https://github.com/amanibhavam/dotfiles
+    args: --destination=registry.kitt.run/defn/home:latest --build-arg HOMEDIR=https://github.com/amanibhavam/homedir --build-arg DOTFILES=https://github.com/amanibhavam/dotfiles
     cache: true
     cache_repo: registry.kitt.run/defn/home/cache
     context: b

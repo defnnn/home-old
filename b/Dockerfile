@@ -82,7 +82,7 @@ COPY service /service
 RUN sudo chmod 755 /service
 
 COPY .bump /tmp/.bump
-RUN make update && make upgrade \
-    && make install \
-    && sudo apt-get update && sudo apt-get upgrade -y \
-    && brew upgrade
+
+RUN sudo apt-get update && sudo apt-get upgrade -y && brew upgrade
+
+RUN make update && make upgrade && make install
