@@ -30,34 +30,6 @@ ssh: # ssh into home container
 attach:
 	@tm app@kitt.defn.sh bash -il
 
-mp:
-	multipass delete --purge mp || true
-	$(MAKE) mp-cluster
-	$(MAKE) mp-extras
-
-mp-cluster: # Launch multipass machine
-	multipass launch -m 4g -d 40g -c 2 -n mp --cloud-init multipass/cloud-init.conf focal
-	multipass exec mp -- bash -c 'while ! test -f /tmp/done.txt; do ps axuf; sleep 10; date; done'
-
-mp-extras:
-	if ! test -d $(PWD)/data/mp/home/.git; then \
-		git clone https://github.com/amanibhavam/homedir $(PWD)/data/mp/home/homedir; \
-		(pushd $(PWD)/data/mp/home && mv homedir/.git . && git reset --hard && rm -rf homedir); \
-	fi
-	multipass exec mp -- sudo mkdir -p /data
-	mkdir -p $(PWD)/data/mp/home/venv
-	mkdir -p $(PWD)/data/mp/home/.asdf
-	multipass mount $(PWD)/data/mp mp:/data
-	multipass mount $(PWD)/data/mp/home/.git mp:.git
-	multipass mount $(PWD)/data/mp/home/.asdf mp:.asdf
-	multipass mount $(PWD)/data/mp/home/venv mp:venv
-	multipass mount $(HOME)/work mp:work
-	multipass exec mp -- git reset --hard
-	cat ~/.dotfiles-repo | multipass exec mp -- tee .dotfiles-repo
-	multipass exec mp -- make update
-	multipass exec mp -- make upgrade
-	multipass exec mp -- make install
-
 bump: # Refresh build
 	date > b/.bump
 	git add b/.bump
