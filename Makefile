@@ -34,16 +34,13 @@ bump: # Refresh build
 	date > b/.bump
 	git add b/.bump
 	git commit -m 'bump build'
-	$(MAKE) build
 
 bump-brew: # Rebuild homebrew
 	date > b/.linuxbrew
 	git add b/.linuxbrew
 	git commit -m 'bump brew build'
-	$(MAKE) build
 
 bump-home: # Rebuild home directory
 	date > b/.homedir
 	git add b/.homedir
 	git commit -m 'bump home build'
-	$(MAKE) build
