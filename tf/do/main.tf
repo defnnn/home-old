@@ -3,14 +3,14 @@ provider "digitalocean" {}
 provider "cloudflare" {}
 
 provider "consul" {
-  address    = "consul.kitt.run:443"
+  address    = "consul.defn.sh:443"
   scheme     = "https"
   datacenter = "dc1"
 }
 
 terraform {
   backend "consul" {
-    address = "consul.kitt.run"
+    address = "consul.defn.sh"
     scheme  = "https"
     path    = "defn/home/terraform-remote-state"
   }

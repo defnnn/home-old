@@ -20,7 +20,7 @@ recreate: # Recreate home container
 	ssh-add -L | grep cardno | (cd c && docker-compose exec -T ssh tee .ssh/authorized_keys)
 
 recycle: # Recycle home container
-	docker pull registry.kitt.run/defn/home
+	docker pull registry.defn.sh/defn/home
 	$(MAKE) recreate
 
 ssh: # ssh into home container
