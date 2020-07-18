@@ -254,20 +254,6 @@ resource "cloudflare_access_application" "default_apex" {
   session_duration = "24h"
 }
 
-resource "cloudflare_access_application" "consul" {
-  name             = "Consul"
-  zone_id          = data.cloudflare_zones.defn.zones[0].id
-  domain           = "consul.${local.domain_name}"
-  session_duration = "24h"
-}
-
-resource "cloudflare_access_application" "vault" {
-  name             = "Vault"
-  zone_id          = data.cloudflare_zones.defn.zones[0].id
-  domain           = "vault.${local.domain_name}"
-  session_duration = "24h"
-}
-
 resource "cloudflare_access_application" "press" {
   name             = "Press"
   zone_id          = data.cloudflare_zones.defn.zones[0].id
@@ -286,20 +272,6 @@ resource "cloudflare_access_application" "press_login" {
   name             = "Press"
   zone_id          = data.cloudflare_zones.defn.zones[0].id
   domain           = "press.${local.domain_name}/wp-login.php"
-  session_duration = "24h"
-}
-
-resource "cloudflare_access_application" "drone" {
-  name             = "Drone"
-  zone_id          = data.cloudflare_zones.defn.zones[0].id
-  domain           = "drone.${local.domain_name}"
-  session_duration = "24h"
-}
-
-resource "cloudflare_access_application" "drone_webhook" {
-  name             = "Drone Webhook"
-  zone_id          = data.cloudflare_zones.defn.zones[0].id
-  domain           = "drone.${local.domain_name}/hook"
   session_duration = "24h"
 }
 
@@ -332,54 +304,6 @@ resource "cloudflare_access_policy" "default_apex_deny" {
   zone_id        = data.cloudflare_zones.defn.zones[0].id
   name           = "Deny"
   precedence     = "1"
-  decision       = "deny"
-
-  include {
-    everyone = true
-  }
-}
-
-resource "cloudflare_access_policy" "consul_bypass" {
-  application_id = cloudflare_access_application.consul.id
-  zone_id        = data.cloudflare_zones.defn.zones[0].id
-  name           = "Bypass"
-  precedence     = "1"
-  decision       = "bypass"
-
-  include {
-    group = [cloudflare_access_group.spiral.id]
-  }
-}
-
-resource "cloudflare_access_policy" "consul_deny" {
-  application_id = cloudflare_access_application.consul.id
-  zone_id        = data.cloudflare_zones.defn.zones[0].id
-  name           = "Deny"
-  precedence     = "3"
-  decision       = "deny"
-
-  include {
-    everyone = true
-  }
-}
-
-resource "cloudflare_access_policy" "vault_bypass" {
-  application_id = cloudflare_access_application.vault.id
-  zone_id        = data.cloudflare_zones.defn.zones[0].id
-  name           = "Bypass"
-  precedence     = "1"
-  decision       = "bypass"
-
-  include {
-    group = [cloudflare_access_group.spiral.id]
-  }
-}
-
-resource "cloudflare_access_policy" "vault_deny" {
-  application_id = cloudflare_access_application.vault.id
-  zone_id        = data.cloudflare_zones.defn.zones[0].id
-  name           = "Deny"
-  precedence     = "3"
   decision       = "deny"
 
   include {
@@ -441,42 +365,6 @@ resource "cloudflare_access_policy" "press_login_deny" {
   name           = "Deny"
   precedence     = "2"
   decision       = "deny"
-
-  include {
-    everyone = true
-  }
-}
-
-resource "cloudflare_access_policy" "drone_allow" {
-  application_id = cloudflare_access_application.drone.id
-  zone_id        = data.cloudflare_zones.defn.zones[0].id
-  name           = "Allow"
-  precedence     = "1"
-  decision       = "allow"
-
-  include {
-    group = [cloudflare_access_group.admins.id]
-  }
-}
-
-resource "cloudflare_access_policy" "drone_deny" {
-  application_id = cloudflare_access_application.drone.id
-  zone_id        = data.cloudflare_zones.defn.zones[0].id
-  name           = "Deny"
-  precedence     = "2"
-  decision       = "deny"
-
-  include {
-    everyone = true
-  }
-}
-
-resource "cloudflare_access_policy" "drone_webhook_bypass" {
-  application_id = cloudflare_access_application.drone_webhook.id
-  zone_id        = data.cloudflare_zones.defn.zones[0].id
-  name           = "Bypass"
-  precedence     = "1"
-  decision       = "bypass"
 
   include {
     everyone = true
