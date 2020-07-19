@@ -27,7 +27,11 @@ services:
       - unbound
     links:
       - unbound
-  unbound:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.${KITT_DOMAIN}`)"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+   unbound:
     image: markbnj/unbound-docker:0.1.0
     volumes:
       - ./etc/unbound:/etc/unbound
@@ -40,6 +44,11 @@ services:
       - NET_ADMIN
     depends_on:
       - pihole
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.openvpn.entrypoints=openvpn"
+      - "traefik.tcp.routers.openvpn.rule=HostSNI(`*`)"
+      - "traefik.tcp.services.openvpn.loadbalancer.server.port=1194"
   cloudflared:
     image: letfn/cloudflared
     restart: always
@@ -50,5 +59,8 @@ services:
       - TUNNEL_HOSTNAME
     links:
       - ssh
-volumes:
-  home:
+
+networks:
+  default:
+    external:
+      name: kitt
