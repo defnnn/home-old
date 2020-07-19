@@ -254,6 +254,13 @@ resource "cloudflare_access_application" "default_apex" {
   session_duration = "24h"
 }
 
+resource "cloudflare_access_application" "hello" {
+  name             = "Hello"
+  zone_id          = data.cloudflare_zones.defn.zones[0].id
+  domain           = "hello.${local.domain_name}"
+  session_duration = "24h"
+}
+
 resource "cloudflare_access_application" "press" {
   name             = "Press"
   zone_id          = data.cloudflare_zones.defn.zones[0].id
@@ -361,6 +368,30 @@ resource "cloudflare_access_policy" "press_login_bypass" {
 
 resource "cloudflare_access_policy" "press_login_deny" {
   application_id = cloudflare_access_application.press_login.id
+  zone_id        = data.cloudflare_zones.defn.zones[0].id
+  name           = "Deny"
+  precedence     = "2"
+  decision       = "deny"
+
+  include {
+    everyone = true
+  }
+}
+
+resource "cloudflare_access_policy" "hello_bypass" {
+  application_id = cloudflare_access_application.hello.id
+  zone_id        = data.cloudflare_zones.defn.zones[0].id
+  name           = "Bypass"
+  precedence     = "1"
+  decision       = "bypass"
+
+  include {
+    group = [cloudflare_access_group.spiral.id]
+  }
+}
+
+resource "cloudflare_access_policy" "hello_deny" {
+  application_id = cloudflare_access_application.hello.id
   zone_id        = data.cloudflare_zones.defn.zones[0].id
   name           = "Deny"
   precedence     = "2"
