@@ -16,8 +16,8 @@ build: # Build container
 
 recreate: # Recreate home container
 	docker system prune -f
-	cd c && kitt recreate
-	ssh-add -L | grep cardno | (cd c && docker-compose exec -T ssh tee .ssh/authorized_keys)
+	kitt recreate
+	ssh-add -L | grep cardno | docker-compose exec -T ssh tee .ssh/authorized_keys
 
 recycle: # Recycle home container
 	docker pull registry.defn.sh/defn/home
