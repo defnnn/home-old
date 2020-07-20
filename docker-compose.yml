@@ -16,6 +16,7 @@ services:
       - ${HOME}/work:/app/src/work
       - ${HOME}/.password-store:/app/src/.password-store
       - home:/home
+      - ./b/cache:/cache
 
 networks:
   default:
