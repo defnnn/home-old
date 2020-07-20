@@ -1,9 +1,0 @@
-version: '3.8'
-
-services:
-  ssh:
-    image: defn/home
-    entrypoint: [ "bash", "-c" ]
-    command: [ "set -x; cd; mkdir -p .ssh; curl -sSL https://github.com/jojomomojo.keys > .ssh/authorized_keys; exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e" ]
-    ports:
-      - 2222
