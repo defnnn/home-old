@@ -33,6 +33,9 @@ attach: # attach to home container via app@cloudflared
 ssh-init: # ssh to home container via zerotier
 	ssh-add -L | docker-compose exec -T ssh tee .ssh/authorized_keys
 
+ssh-connect: # connect bridge to home container
+	docker network connect bridge "$(shell docker-compose ps -q ssh)"
+
 ssh:
 	@ssh -A -p 2222 app@$(shell docker inspect "$(shell docker-compose ps -q ssh)" | jq -r '.[] | .NetworkSettings.Networks.bridge.GlobalIPv6Address')
 
