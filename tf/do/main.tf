@@ -261,6 +261,13 @@ resource "cloudflare_access_application" "hello" {
   session_duration = "24h"
 }
 
+resource "cloudflare_access_application" "app" {
+  name             = "cljs App"
+  zone_id          = data.cloudflare_zones.defn.zones[0].id
+  domain           = "app.${local.domain_name}"
+  session_duration = "24h"
+}
+
 resource "cloudflare_access_application" "press" {
   name             = "Press"
   zone_id          = data.cloudflare_zones.defn.zones[0].id
@@ -392,6 +399,30 @@ resource "cloudflare_access_policy" "hello_bypass" {
 
 resource "cloudflare_access_policy" "hello_deny" {
   application_id = cloudflare_access_application.hello.id
+  zone_id        = data.cloudflare_zones.defn.zones[0].id
+  name           = "Deny"
+  precedence     = "2"
+  decision       = "deny"
+
+  include {
+    everyone = true
+  }
+}
+
+resource "cloudflare_access_policy" "app_bypass" {
+  application_id = cloudflare_access_application.app.id
+  zone_id        = data.cloudflare_zones.defn.zones[0].id
+  name           = "Bypass"
+  precedence     = "1"
+  decision       = "bypass"
+
+  include {
+    group = [cloudflare_access_group.spiral.id]
+  }
+}
+
+resource "cloudflare_access_policy" "app_deny" {
+  application_id = cloudflare_access_application.app.id
   zone_id        = data.cloudflare_zones.defn.zones[0].id
   name           = "Deny"
   precedence     = "2"
