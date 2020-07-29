@@ -261,6 +261,13 @@ resource "cloudflare_access_application" "hello" {
   session_duration = "24h"
 }
 
+resource "cloudflare_access_application" "next" {
+  name             = "Next.js"
+  zone_id          = data.cloudflare_zones.defn.zones[0].id
+  domain           = "next.${local.domain_name}"
+  session_duration = "24h"
+}
+
 resource "cloudflare_access_application" "app" {
   name             = "cljs App"
   zone_id          = data.cloudflare_zones.defn.zones[0].id
@@ -408,6 +415,19 @@ resource "cloudflare_access_policy" "hello_deny" {
     everyone = true
   }
 }
+
+resource "cloudflare_access_policy" "next_bypass" {
+  application_id = cloudflare_access_application.next.id
+  zone_id        = data.cloudflare_zones.defn.zones[0].id
+  name           = "Bypass"
+  precedence     = "1"
+  decision       = "bypass"
+
+  include {
+    everyone = true
+  }
+}
+
 
 resource "cloudflare_access_policy" "app_bypass" {
   application_id = cloudflare_access_application.app.id
