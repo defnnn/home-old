@@ -39,14 +39,14 @@ data "consul_keys" "workspace" {
 data "digitalocean_vpc" "defn" {
   for_each = local.droplet
 
-  name = "default-${each.key}"
+  name = "default-${each.value.region}"
 }
 
 data "digitalocean_droplet_snapshot" "defn_home" {
   for_each = local.droplet
 
   name_regex  = "^defn-home"
-  region      = each.key
+  region      = each.value.region
   most_recent = true
 }
 
@@ -156,7 +156,7 @@ resource "digitalocean_volume_attachment" "defn" {
   for_each = local.droplet
 
   droplet_id = digitalocean_droplet.defn[each.key].id
-  volume_id  = digitalocean_volume.defn[each.key].id
+  volume_id  = digitalocean_volume.defn[each.value.region].id
 }
 
 resource "digitalocean_droplet" "defn" {
@@ -164,7 +164,7 @@ resource "digitalocean_droplet" "defn" {
 
   image              = data.digitalocean_droplet_snapshot.defn_home[each.key].id
   name               = "${each.key}.${local.domain_name}"
-  region             = each.key
+  region             = each.value.region
   size               = each.value.droplet_size
   ipv6               = true
   private_networking = true
