@@ -28,5 +28,8 @@ refresh:
 shell:
 	terraform console
 
+defn.sh:
+	terraform workspace select $@
+
 %:
 	terraform workspace select $@
