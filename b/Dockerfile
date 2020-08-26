@@ -24,10 +24,14 @@ RUN apt-get update \
         libssl-dev zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev libncursesw5-dev libffi-dev liblzma-dev libreadline-dev \
         docker.io docker-compose sshfs libusb-1.0-0 \
     && rm -f /usr/bin/gs \
-    && mkdir -p /run/sshd /var/run/sshd /run && chown -R app:app /var/run/sshd /run /etc/ssh
+    && mkdir -p /run/sshd /var/run/sshd /run && chown -R root:root /var/run/sshd /run /etc/ssh
 
+RUN sudo useradd -m -s /bin/bash jojomomojo
+
+RUN echo 'jojomomojo ALL=(ALL) NOPASSWD: ALL' | sudo tee -a /etc/sudoers
 RUN echo "app ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+RUN echo TrustedUserCAKeys /efs/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
 RUN echo GatewayPorts yes >> /etc/ssh/sshd_config
 
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
@@ -57,7 +61,7 @@ RUN brew tap linuxbrew/xorg
 
 RUN brew bundle --help
 
-RUN brew install perl
+RUN brew install perl -s
 
 ENV PATH=/app/src/.asdf/bin:/app/src/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
