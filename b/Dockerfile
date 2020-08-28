@@ -9,6 +9,8 @@ ENV HOME=/root
 ENV DEBIAN_FRONTEND=noninteractive
 ENV container docker
 
+COPY .reset /tmp/.reset
+
 RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/udevadm
 
 COPY cache /cache

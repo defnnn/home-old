@@ -44,6 +44,11 @@ bump: # Refresh build
 	git add b/.bump
 	git commit -m 'bump build'
 
+bump-reset : # Rebuild from scratch
+	date > b/.linuxbrew
+	git add b/.linuxbrew
+	git commit -m 'bump reset build'
+
 bump-brew: # Rebuild homebrew
 	date > b/.linuxbrew
 	git add b/.linuxbrew
