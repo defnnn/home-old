@@ -45,8 +45,8 @@ bump: # Refresh build
 	git commit -m 'bump build'
 
 bump-reset : # Rebuild from scratch
-	date > b/.linuxbrew
-	git add b/.linuxbrew
+	date > b/.reset
+	git add b/.reset
 	git commit -m 'bump reset build'
 
 bump-brew: # Rebuild homebrew
