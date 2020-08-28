@@ -84,6 +84,8 @@ RUN nvim --headless +PlugInstall +qa \
         https://github.com/borkdude/jet/releases/download/v0.0.12/jet-0.0.12-linux-amd64.zip \
     && unzip jet.zip && rm -f jet.zip && mv jet .config/nvim/plugged/vim-iced/bin/jet
 
+RUN vim +GoInstallBinaries +qa
+
 RUN sudo apt-get update && sudo apt-get upgrade -y
 
 COPY service /service
