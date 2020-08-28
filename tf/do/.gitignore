@@ -1,4 +1,0 @@
-.terraform
-*tfstate*
-site.tf
-.plan*
