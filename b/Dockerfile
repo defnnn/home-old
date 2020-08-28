@@ -29,7 +29,6 @@ RUN apt-get update \
 RUN sudo useradd -m -s /bin/bash jojomomojo
 
 RUN echo 'jojomomojo ALL=(ALL) NOPASSWD: ALL' | sudo tee -a /etc/sudoers
-RUN echo "app ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 RUN echo TrustedUserCAKeys /efs/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
 RUN echo GatewayPorts yes >> /etc/ssh/sshd_config
@@ -43,13 +42,13 @@ COPY .linuxbrew /tmp/.linuxbrew
 
 RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
     && git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
-    && chown -hR app:app /home/linuxbrew
+    && chown -hR jojomomojo:jojomomojo/home/linuxbrew
 
 RUN rm -rf main.py requirements.txt tests .cache __pycache__
 
-USER app
+USER jojomomojo
 
-ENV HOME=/app/src
+ENV HOME=/home/jojomomojo
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
@@ -63,7 +62,7 @@ RUN brew bundle --help
 
 RUN brew install perl -s
 
-ENV PATH=/app/src/.asdf/bin:/app/src/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH=/home/jojomomojo/.asdf/bin:/home/jojomomojo/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 COPY .homedir /tmp/.homedir
 
@@ -75,16 +74,13 @@ RUN git clone $HOMEDIR homedir \
 RUN echo "$DOTFILES" > .dotfiles-repo
 
 RUN make update && make upgrade \
-    && sudo chown -hR app:app /home/linuxbrew \
+    && sudo chown -hR jojomomojo:jojomomojo/home/linuxbrew \
     && make install && brew upgrade \
-    && sudo chown -hR app:app /home/linuxbrew
+    && sudo chown -hR jojomomojo:jojomomojo/home/linuxbrew
 
-RUN nvim --headless +PlugInstall +qa \
-    && curl -sSL -o jet.zip \
-        https://github.com/borkdude/jet/releases/download/v0.0.12/jet-0.0.12-linux-amd64.zip \
-    && unzip jet.zip && rm -f jet.zip && mv jet .config/nvim/plugged/vim-iced/bin/jet
-
-RUN vim +GoInstallBinaries +qa
+RUN curl -sSL -o jet.zip https://github.com/borkdude/jet/releases/download/v0.0.12/jet-0.0.12-linux-amd64.zip \
+    && unzip jet.zip && rm -f jet.zip \
+    && mkdir -p .config/nvim/plugged/vim-iced/bin && mv jet .config/nvim/plugged/vim-iced/bin/jet
 
 RUN sudo apt-get update && sudo apt-get upgrade -y
 
