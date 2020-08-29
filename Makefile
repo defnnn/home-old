@@ -17,6 +17,7 @@ build: # Build container
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
 		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
 		b
+	docker tag registry.defn.sh/defn/home:latest defn/home
 
 build-kaniko:
 	@echo
