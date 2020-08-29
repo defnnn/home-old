@@ -79,6 +79,8 @@ RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade
 
 RUN make update && make upgrade
 
+RUN sudo apt-get install -y libudev-dev
+
 RUN make install || true
 
 RUN $HOME/env make install
