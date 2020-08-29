@@ -9,7 +9,7 @@ DOTFILES ?= https://github.com/amanibhavam/dotfiles
 menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
-build: # Build container
+build-docker: # Build container with docker build
 	@echo
 	docker system prune -f
 	docker build -t registry.defn.sh/defn/home:latest \
@@ -19,10 +19,12 @@ build: # Build container
 		b
 	docker tag registry.defn.sh/defn/home:latest defn/home
 
-build-kaniko:
+build: # Build container with kaniko
 	@echo
 	docker system prune -f
 	drone exec --pipeline $@
+	docker pull registry.defn.sh/defn/home:latest
+	docker tag registry.defn.sh/defn/home:latest defn/home
 
 recreate: # Recreate home container
 	docker system prune -f
@@ -48,7 +50,7 @@ bump: # Rebuild with update
 	git add b/.bump
 	git commit -m 'bump build'
 
-bump-reset : # Rebuild from scratch
+bump-reset: # Rebuild from scratch
 	date > b/.reset
 	git add b/.reset
 	git commit -m 'bump reset build'
