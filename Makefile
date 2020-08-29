@@ -12,8 +12,8 @@ menu:
 build-jojomomojo: # Build jojomomojo container
 	$(MAKE) HOMEUSER=jojomomojo build-docker
 
-build-dgwyn: # Build dgwyn container
-	$(MAKE) HOMEUSER=dgwyn build-docker
+build-lamda: # Build lamda container
+	$(MAKE) HOMEUSER=lamda build-docker
 
 build-docker: # Build container with docker build
 	@echo
