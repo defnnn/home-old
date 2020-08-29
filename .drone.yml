@@ -31,6 +31,26 @@ steps:
 ---
 kind: pipeline
 type: docker
+name: build
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: kaniko
+  image: letfn/drone-kaniko
+  settings:
+    args: --destination=registry.defn.sh/defn/home:latest --build-arg HOMEUSER=jojomomojo --build-arg HOMEDIR=https://github.com/amanibhavam/homedir --build-arg DOTFILES=https://github.com/amanibhavam/dotfiles
+    cache: true
+    cache_repo: registry.defn.sh/defn/home/cache
+    context: b
+    repo: registry.defn.sh/defn/home
+    tag: latest
+
+---
+kind: pipeline
+type: docker
 name: docs
 
 platform:
@@ -40,5 +60,8 @@ platform:
 steps:
 - name: local
   image: letfn/drone-hugo
+
+depends_on:
+- build
 
 ...
