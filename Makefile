@@ -29,7 +29,7 @@ build: # Build container with kaniko
 recreate: # Recreate home container
 	docker system prune -f
 	kitt recreate
-	$(MAKE) ssh-init ssh-connect
+	$(MAKE) ssh-init
 
 recycle: # Recycle home container
 	docker pull registry.defn.sh/defn/home
@@ -40,7 +40,7 @@ ssh-init:
 	ssh-add -L | docker-compose exec -T sshd tee .ssh/authorized_keys
 
 ssh:
-	ssh -v -A -p 2222 jojomomojo@kitt.defn.sh
+	ssh -v -A -p 2223 jojomomojo@kitt.defn.sh
 
 bash:
 	docker-compose exec sshd bash

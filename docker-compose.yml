@@ -15,7 +15,7 @@ services:
       - ${HOME}/work:/home/jojomomojo/work
       - ${HOME}/.password-store://home/jojomomojo/.password-store
     ports:
-      - 169.254.32.1:2222:2222
+      - 169.254.32.1:2223:2222
 
 networks:
   default:
