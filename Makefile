@@ -17,7 +17,6 @@ build-lamda: # Build lamda container
 
 build-docker: # Build container with docker build
 	@echo
-	docker system prune -f
 	docker build -t defn/home:$(HOMEUSER) \
 		--build-arg HOMEUSER=$(HOMEUSER) \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
@@ -26,13 +25,11 @@ build-docker: # Build container with docker build
 
 build-kaniko: # Build container with kaniko
 	@echo
-	docker system prune -f
 	drone exec --pipeline $@
 	docker pull registry.defn.sh/defn/home:latest
 	docker tag registry.defn.sh/defn/home:latest defn/home
 
 recreate: # Recreate home container
-	docker system prune -f
 	kitt recreate
 	$(MAKE) ssh-init
 

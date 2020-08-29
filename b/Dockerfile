@@ -54,15 +54,17 @@ ENV LC_ALL en_US.UTF-8
 COPY .linuxbrew /tmp/.linuxbrew
 
 RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
-    && git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
+    && git clone --depth 100 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
+    && cd /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
+    && git reset --hard fc2411fccf30cacfc4db3363c10ea5ad4df5defc
 
-RUN brew list
+RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew list
 
-RUN brew tap linuxbrew/xorg
+RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew tap linuxbrew/xorg
 
-RUN brew bundle --help
+RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --help
 
-RUN brew install perl -s
+RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew install perl
 
 ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -73,7 +75,7 @@ RUN git clone $HOMEDIR homedir \
 
 RUN echo "$DOTFILES" > .dotfiles-repo
 
-RUN brew upgrade
+RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade
 
 RUN make update && make upgrade
 
