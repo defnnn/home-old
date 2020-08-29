@@ -40,7 +40,7 @@ ssh-init:
 	ssh-add -L | docker-compose exec -T sshd tee .ssh/authorized_keys
 
 ssh:
-	ssh -v -A -p 2223 jojomomojo@kitt.defn.sh
+	ssh -A -p 2223 jojomomojo@kitt.defn.sh
 
 bash:
 	docker-compose exec sshd bash
