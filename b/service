@@ -4,6 +4,7 @@ function main {
   case "$1" in
 
   cloudflared)
+    shift
     cd
     cp /efs/bin/cloudflared .
     chmod 755 cloudflared
@@ -12,7 +13,7 @@ function main {
     if grep sshd /etc/hosts; then
       origin=sshd
     fi
-    export TUNNEL_LB_POOL="bastion-1" TUNNEL_URL=ssh://${origin}:2222 TUNNEL_HOSTNAME=ssh.defn.sh TUNNEL_ORIGIN_CERT=/efs/cloudflare/cert.pem
+    export TUNNEL_LB_POOL="${1}" TUNNEL_URL=ssh://${origin}:2222 TUNNEL_HOSTNAME="${1}" TUNNEL_ORIGIN_CERT="/efs/cloudflare/cert-${1}.pem"
     exec ./cloudflared tunnel --no-autoupdate
     ;;
 
