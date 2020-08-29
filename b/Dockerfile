@@ -104,6 +104,8 @@ COPY .bump /tmp/.bump
 
 RUN make update && make upgrade && make install && brew upgrade
 
+RUN rm -f /home/linuxbrew/.linuxbrew/bin/gs
+
 COPY service /service
 RUN sudo chmod 755 /service
 
