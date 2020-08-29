@@ -56,7 +56,7 @@ COPY .linuxbrew /tmp/.linuxbrew
 RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
     && git clone --depth 100 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
     && cd /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
-    && git reset --hard fc2411fccf30cacfc4db3363c10ea5ad4df5defc
+    && git reset --hard ff972618ce70bc7b0906913d3ad62b3615172e80
 
 RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew list
 
