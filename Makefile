@@ -12,6 +12,15 @@ menu:
 build: # Build container
 	@echo
 	docker system prune -f
+	docker build -t registry.defn.sh/defn/home:latest \
+		--build-arg HOMEUSER=jojomomojo \
+		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
+		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
+		b
+
+build-kaniko:
+	@echo
+	docker system prune -f
 	drone exec --pipeline $@
 
 recreate: # Recreate home container
@@ -33,7 +42,7 @@ ssh:
 bash:
 	docker-compose exec sshd bash
 
-bump: # Refresh build
+bump: # Rebuild with update
 	date > b/.bump
 	git add b/.bump
 	git commit -m 'bump build'

@@ -56,17 +56,15 @@ COPY .linuxbrew /tmp/.linuxbrew
 RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
     && git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
 
-RUN brew list && sudo chown -vhR $HOMEUSER:$HOMEUSER /home/linuxbrew | grep -v retained
+RUN brew list
 
-RUN brew tap linuxbrew/xorg && sudo chown -vhR $HOMEUSER:$HOMEUSER /home/linuxbrew | grep -v retained
+RUN brew tap linuxbrew/xorg
 
-RUN brew bundle --help && sudo chown -vhR $HOMEUSER:$HOMEUSER /home/linuxbrew | grep -v retained
+RUN brew bundle --help
 
-RUN brew install perl -s && sudo chown -vhR $HOMEUSER:$HOMEUSER /home/linuxbrew | grep -v retained
+RUN brew install perl -s
 
 ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
-COPY .homedir /tmp/.homedir
 
 RUN git clone $HOMEDIR homedir \
     && mv homedir/.git . \
@@ -75,23 +73,22 @@ RUN git clone $HOMEDIR homedir \
 
 RUN echo "$DOTFILES" > .dotfiles-repo
 
-RUN sudo chown -vhR $HOMEUSER:$HOMEUSER /home/linuxbrew | grep -v retained
-
 RUN brew upgrade
 
 RUN make update && make upgrade
 
+RUN make install || true
+
 RUN $HOME/env make install
 
-RUN sudo apt-get update && sudo apt-get upgrade -y
+COPY .bump /tmp/.bump
+
+RUN make update && make upgrade && make install && brew upgrade
 
 COPY service /service
 RUN sudo chmod 755 /service
 
-COPY .bump /tmp/.bump
-
-RUN sudo apt-get update && sudo apt-get upgrade -y && brew upgrade
+RUN sudo apt-get update && sudo apt-get upgrade -y
 
 RUN sudo mkdir -p /run/sshd /run && sudo chown -R $HOMEUSER:$HOMEUSER /run /etc/ssh
 
-RUN make update && make upgrade && make install
