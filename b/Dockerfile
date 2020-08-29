@@ -81,6 +81,25 @@ RUN make install || true
 
 RUN $HOME/env make install
 
+RUN go mod init github.com/defn/home
+RUN go get github.com/klauspost/asmfmt/cmd/asmfmt@master
+RUN go get github.com/go-delve/delve/cmd/dlv@master
+RUN go get github.com/kisielk/errcheck@master
+RUN go get github.com/davidrjenni/reftools/cmd/fillstruct@master
+RUN go get github.com/rogpeppe/godef@master
+RUN go get golang.org/x/tools/cmd/goimports@master
+RUN go get golang.org/x/lint/golint@master
+RUN go get golang.org/x/tools/gopls@latest
+RUN go get github.com/golangci/golangci-lint/cmd/golangci-lint@master
+RUN go get github.com/fatih/gomodifytags@master
+RUN go get golang.org/x/tools/cmd/gorename@master
+RUN go get github.com/jstemmer/gotags@master
+RUN go get golang.org/x/tools/cmd/guru@master
+RUN go get github.com/josharian/impl@master
+RUN go get honnef.co/go/tools/cmd/keyify@master
+RUN go get github.com/fatih/motion@master
+RUN go get github.com/koron/iferr@master
+
 COPY .bump /tmp/.bump
 
 RUN make update && make upgrade && make install && brew upgrade
