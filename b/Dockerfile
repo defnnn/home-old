@@ -91,4 +91,3 @@ RUN sudo chmod 755 /service
 RUN sudo apt-get update && sudo apt-get upgrade -y
 
 RUN sudo mkdir -p /run/sshd /run && sudo chown -R $HOMEUSER:$HOMEUSER /run /etc/ssh
-

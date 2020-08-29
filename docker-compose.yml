@@ -3,8 +3,9 @@ version: '3.7'
 services:
   sshd:
     hostname: kitt
-    image: registry.defn.sh/defn/home
+    image: defn/home:jojomomojo
     restart: always
+    entrypoint: [ "/service", "sshd" ]
     extra_hosts:
       - host.docker.internal:172.18.0.1
     volumes:
