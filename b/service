@@ -1,48 +1,8 @@
 #!/usr/bin/env bash
 
 function main {
-  #make fixroot 1>/dev/null 2>/dev/null || true
-
-  if [[ -S /docker.sock ]]; then
-    sudo mkdir -p /var/run
-    local gid="$(stat -c '%g' /docker.sock)"
-    local gname="$(getent group "$gid" | cut -d: -f1)"
-
-    if [[ -z "${gname}" ]]; then
-      gname="appdocker"
-      sudo /usr/sbin/groupadd -g "${gid}" "${gname}"
-    fi
-
-    sudo /usr/sbin/usermod -a -G "${gname}" app
-
-    sudo ln -nfs /docker.sock /var/run/docker.sock
-  fi
-
-  if [[ -f /run/secrets/kubernetes.io/serviceaccount/token ]]; then
-    kubectl config set-cluster kind --certificate-authority=/run/secrets/kubernetes.io/serviceaccount/ca.crt --server=https://kubernetes.default.svc.cluster.local
-    kubectl config set-credentials kind --token=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
-    kubectl config set-context kind --cluster=kind --user=kind
-    kubectl config use-context kind
-  fi
-
-  case "${1:-}" in
-    sshd)
-      if [[ "$$" == 1 ]]; then
-        exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=22 -e
-      else
-        exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=22 -e
-      fi
-      ;;
-    *)
-      if [[ "$#" == 0 ]]; then
-        set -- bash
-      fi
-      source /app/venv/bin/activate
-      exec "$@"
-      ;;
-  esac
-
-  return $?
+    echo TrustedUserCAKeys /efs/ssh/trusted-user-ca-keys.pem | tee -a /etc/ssh/sshd_config >/dev/null
+    exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
 }
 
 main "$@"

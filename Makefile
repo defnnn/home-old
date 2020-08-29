@@ -23,21 +23,15 @@ recycle: # Recycle home container
 	docker pull registry.defn.sh/defn/home
 	$(MAKE) recreate
 
-access: # ssh into home container via access@cloudflared
-	@cloudflared access ssh-gen --hostname kitt.defn.sh
-	@ssh -A jojomomojo@kitt.defn.sh
-
-attach: # attach to home container via app@cloudflared
-	@tm app@kitt.defn.sh bash -il
-
-ssh-init: # ssh to home container via zerotier
-	ssh-add -L | docker-compose exec -T ssh tee .ssh/authorized_keys
-
-ssh-connect: # connect bridge to home container
-	docker network connect bridge "$(shell docker-compose ps -q ssh)"
+ssh-init:
+	ssh-add -L | docker-compose exec -T sshd mkdir -p .ssh
+	ssh-add -L | docker-compose exec -T sshd tee .ssh/authorized_keys
 
 ssh:
-	@ssh -A -p 2222 app@$(shell docker inspect "$(shell docker-compose ps -q ssh)" | jq -r '.[] | .NetworkSettings.Networks.bridge.GlobalIPv6Address')
+	ssh -v -A -p 2222 jojomomojo@kitt.defn.sh
+
+bash:
+	docker-compose exec sshd bash
 
 bump: # Refresh build
 	date > b/.bump

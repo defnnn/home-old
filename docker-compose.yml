@@ -1,22 +1,21 @@
 version: '3.7'
 
 services:
-  ssh:
+  sshd:
     hostname: kitt
     image: registry.defn.sh/defn/home
     restart: always
-    entrypoint: [ "/etc/kitt-init" ]
-    user: root
     extra_hosts:
       - host.docker.internal:172.18.0.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./etc/ssh:/etc/ssh:ro
-      - ./etc/kitt-init:/etc/kitt-init:ro
-      - ${HOME}/work:/app/src/work
-      - ${HOME}/.password-store:/app/src/.password-store
-      - home:/home
+      - ./efs:/efs
       - ./b/cache:/cache
+      - ./b:/b
+      - ${HOME}/work:/home/jojomomojo/work
+      - ${HOME}/.password-store://home/jojomomojo/.password-store
+    ports:
+      - 169.254.32.1:2222:2222
 
 networks:
   default:

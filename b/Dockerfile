@@ -2,6 +2,7 @@ FROM letfn/python:latest
 
 ARG HOMEDIR
 ARG DOTFILES
+ARG HOMEUSER
 
 USER root
 
@@ -25,14 +26,13 @@ RUN apt-get update \
         build-essential m4 make \
         libssl-dev zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev libncursesw5-dev libffi-dev liblzma-dev libreadline-dev \
         docker.io docker-compose sshfs libusb-1.0-0 \
-    && rm -f /usr/bin/gs \
-    && mkdir -p /run/sshd /var/run/sshd /run && chown -R root:root /var/run/sshd /run /etc/ssh
+    && rm -f /usr/bin/gs
 
-RUN sudo useradd -m -s /bin/bash jojomomojo
+RUN useradd -m -s /bin/bash $HOMEUSER
 
-RUN echo 'jojomomojo ALL=(ALL) NOPASSWD: ALL' | sudo tee -a /etc/sudoers
+RUN echo "$HOMEUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 
-RUN echo TrustedUserCAKeys /efs/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
+RUN echo TrustedUserCAKeys /efs/ssh/trusted-user-ca-keys.pem | tee -a /etc/ssh/sshd_config
 RUN echo GatewayPorts yes >> /etc/ssh/sshd_config
 
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
@@ -40,31 +40,31 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && locale-gen en_US.UTF-8 \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-COPY .linuxbrew /tmp/.linuxbrew
+RUN install -d -o $HOMEUSER -d $HOMEUSER /home/linuxbrew
 
-RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
-    && git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
-    && chown -hR jojomomojo:jojomomojo/home/linuxbrew
+USER $HOMEUSER
+WORKDIR /home/$HOMEUSER
 
-RUN rm -rf main.py requirements.txt tests .cache __pycache__
-
-USER jojomomojo
-
-ENV HOME=/home/jojomomojo
+ENV HOME=/home/$HOMEUSER
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN brew list
+COPY .linuxbrew /tmp/.linuxbrew
 
-RUN brew tap linuxbrew/xorg
+RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
+    && git clone --depth 1 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
 
-RUN brew bundle --help
+RUN brew list && sudo chown -vhR $HOMEUSER:$HOMEUSER /home/linuxbrew | grep -v retained
 
-RUN brew install perl -s
+RUN brew tap linuxbrew/xorg && sudo chown -vhR $HOMEUSER:$HOMEUSER /home/linuxbrew | grep -v retained
 
-ENV PATH=/home/jojomomojo/.asdf/bin:/home/jojomomojo/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+RUN brew bundle --help && sudo chown -vhR $HOMEUSER:$HOMEUSER /home/linuxbrew | grep -v retained
+
+RUN brew install perl -s && sudo chown -vhR $HOMEUSER:$HOMEUSER /home/linuxbrew | grep -v retained
+
+ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 COPY .homedir /tmp/.homedir
 
@@ -75,14 +75,13 @@ RUN git clone $HOMEDIR homedir \
 
 RUN echo "$DOTFILES" > .dotfiles-repo
 
-RUN make update && make upgrade \
-    && sudo chown -hR jojomomojo:jojomomojo/home/linuxbrew \
-    && make install && brew upgrade \
-    && sudo chown -hR jojomomojo:jojomomojo/home/linuxbrew
+RUN sudo chown -vhR $HOMEUSER:$HOMEUSER /home/linuxbrew | grep -v retained
 
-RUN curl -sSL -o jet.zip https://github.com/borkdude/jet/releases/download/v0.0.12/jet-0.0.12-linux-amd64.zip \
-    && unzip jet.zip && rm -f jet.zip \
-    && mkdir -p .config/nvim/plugged/vim-iced/bin && mv jet .config/nvim/plugged/vim-iced/bin/jet
+RUN brew upgrade
+
+RUN make update && make upgrade
+
+RUN $HOME/env make install
 
 RUN sudo apt-get update && sudo apt-get upgrade -y
 
@@ -92,5 +91,7 @@ RUN sudo chmod 755 /service
 COPY .bump /tmp/.bump
 
 RUN sudo apt-get update && sudo apt-get upgrade -y && brew upgrade
+
+RUN sudo mkdir -p /run/sshd /run && sudo chown -R $HOMEUSER:$HOMEUSER /run /etc/ssh
 
 RUN make update && make upgrade && make install
