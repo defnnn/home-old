@@ -9,15 +9,21 @@ DOTFILES ?= https://github.com/amanibhavam/dotfiles
 menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
-build: # Build container with docker build
+build-jojomomojo: # Build jojomomojo container
+	$(MAKE) HOMEUSER=jojomomojo build-docker
+
+build-dgwyn: # Build dgwyn container
+	$(MAKE) HOMEUSER=dgwyn build-docker
+
+build-docker: # Build container with docker build
 	@echo
 	docker system prune -f
 	docker build -t registry.defn.sh/defn/home:latest \
-		--build-arg HOMEUSER=jojomomojo \
+		--build-arg HOMEUSER=$(HOMEUSER) \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
 		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
 		b
-	docker tag registry.defn.sh/defn/home:latest defn/home
+	docker tag registry.defn.sh/defn/home:$(HOMEUSER) defn/home:$(HOMEUSER)
 
 build-kaniko: # Build container with kaniko
 	@echo
