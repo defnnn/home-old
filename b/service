@@ -16,9 +16,10 @@ function main {
     exec ./cloudflared tunnel --no-autoupdate
     ;;
 
-  *)
+  sshd)
+    shift
     env | grep ^AWS_ | sort | sudo tee /etc/aws.env > /dev/null
-    echo TrustedUserCAKeys /efs/ssh/trusted-user-ca-keys.pem | tee -a /etc/ssh/sshd_config >/dev/null
+    echo TrustedUserCAKeys /efs/ssh/trusted-user-ca-keys${1:+-${1}}.pem | tee -a /etc/ssh/sshd_config >/dev/null
     exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
     ;;
 
