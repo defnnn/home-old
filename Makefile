@@ -9,7 +9,7 @@ DOTFILES ?= https://github.com/amanibhavam/dotfiles
 menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
-build-docker: # Build container with docker build
+build: # Build container with docker build
 	@echo
 	docker system prune -f
 	docker build -t registry.defn.sh/defn/home:latest \
@@ -19,7 +19,7 @@ build-docker: # Build container with docker build
 		b
 	docker tag registry.defn.sh/defn/home:latest defn/home
 
-build: # Build container with kaniko
+build-kaniko: # Build container with kaniko
 	@echo
 	docker system prune -f
 	drone exec --pipeline $@
