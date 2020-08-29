@@ -1,8 +1,28 @@
 #!/usr/bin/env bash
 
 function main {
+  case "$1" in
+
+  cloudflared)
+    cd
+    cp /efs/bin/cloudflared .
+    chmod 755 cloudflared
+
+    origin=localhost
+    if grep sshd /etc/hosts; then
+      origin=sshd
+    fi
+    export TUNNEL_LB_POOL="bastion-1" TUNNEL_URL=ssh://${origin}:2222 TUNNEL_HOSTNAME=ssh.defn.sh TUNNEL_ORIGIN_CERT=/efs/cloudflare/cert.pem
+    exec ./cloudflared tunnel --no-autoupdate
+    ;;
+
+  *)
+    env | grep ^AWS_ | sort | sudo tee /etc/aws.env > /dev/null
     echo TrustedUserCAKeys /efs/ssh/trusted-user-ca-keys.pem | tee -a /etc/ssh/sshd_config >/dev/null
-    exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+    exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+    ;;
+
+  esac
 }
 
 main "$@"
