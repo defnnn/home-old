@@ -13,7 +13,7 @@ function main {
     if grep sshd /etc/hosts; then
       origin=sshd
     fi
-    export TUNNEL_LB_POOL="${1}" TUNNEL_URL=ssh://${origin}:2222 TUNNEL_HOSTNAME="${1}" TUNNEL_ORIGIN_CERT="/efs/cloudflare/cert-${1}.pem"
+    export TUNNEL_URL=ssh://${origin}:2222 TUNNEL_HOSTNAME="${1}" TUNNEL_ORIGIN_CERT="/efs/cloudflare/cert-${1}.pem"
     exec ./cloudflared tunnel --no-autoupdate
     ;;
 
