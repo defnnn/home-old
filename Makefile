@@ -19,11 +19,6 @@ build: # Build container
 		b
 	docker tag registry.defn.sh/defn/home:latest defn/home
 
-build-kaniko:
-	@echo
-	docker system prune -f
-	drone exec --pipeline $@
-
 recreate: # Recreate home container
 	docker system prune -f
 	kitt recreate
