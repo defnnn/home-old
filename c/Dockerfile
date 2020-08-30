@@ -1,5 +1,6 @@
 FROM defn/home:boot
 
+ARG HOMEBOOT
 ARG HOMEUSER
 
 USER root
