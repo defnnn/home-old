@@ -14,13 +14,13 @@ build-boot: # Build boot container
 
 build-jojomomojo: # Build jojomomojo container
 	@echo
-	docker build -t defn/home:$(HOMEUSER) \
+	docker build -t defn/home:jojomomojo \
 		--build-arg HOMEUSER=jojomomojo\
 		c
 
 build-lamda: # Build lamda container
 	@echo
-	docker build -t defn/home:$(HOMEUSER) \
+	docker build -t defn/home:lamda \
 		--build-arg HOMEUSER=lamda \
 		c
 
