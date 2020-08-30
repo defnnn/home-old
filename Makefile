@@ -18,6 +18,7 @@ build-lamda: # Build lamda container
 build-docker: # Build container with docker build
 	@echo
 	docker build -t defn/home:$(HOMEUSER) \
+		--build-arg HOMEBOOT=boot \
 		--build-arg HOMEUSER=$(HOMEUSER) \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
 		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
