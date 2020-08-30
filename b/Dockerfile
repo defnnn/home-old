@@ -3,6 +3,7 @@ FROM letfn/python:latest
 ARG HOMEDIR
 ARG DOTFILES
 ARG HOMEUSER
+ARG HOMEBOOT
 
 USER root
 
@@ -28,9 +29,9 @@ RUN apt-get update \
         docker.io docker-compose sshfs libusb-1.0-0 \
     && rm -f /usr/bin/gs
 
-RUN useradd -m -s /bin/bash $HOMEUSER
+RUN useradd -m -s /bin/bash $HOMEBOOT
 
-RUN echo "$HOMEUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
+RUN echo "$HOMEBOOT ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 
 RUN echo TrustedUserCAKeys /efs/ssh/trusted-user-ca-keys.pem | tee -a /etc/ssh/sshd_config
 RUN echo GatewayPorts yes >> /etc/ssh/sshd_config
@@ -40,12 +41,12 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && locale-gen en_US.UTF-8 \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-RUN install -d -o $HOMEUSER -d $HOMEUSER /home/linuxbrew
+RUN install -d -o $HOMEBOOT -d $HOMEBOOT /home/linuxbrew
 
-USER $HOMEUSER
-WORKDIR /home/$HOMEUSER
+USER $HOMEBOOT
+WORKDIR /home/$HOMEBOOT
+ENV HOME=/home/$HOMEBOOT
 
-ENV HOME=/home/$HOMEUSER
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
@@ -66,7 +67,7 @@ RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --help
 
 RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew install perl -s
 
-ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH=/home/$HOMEBOOT/.asdf/bin:/home/$HOMEBOOT/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 RUN git clone $HOMEDIR homedir \
     && mv homedir/.git . \
@@ -114,5 +115,22 @@ COPY service /service
 RUN sudo chmod 755 /service
 
 RUN sudo apt-get update && sudo apt-get upgrade -y
+
+USER root
+
+RUN groupmod -n $HOMEUSER $HOMEBOOT
+RUN usermod -d /home/$HOMEUSER $HOMEBOOT
+RUN usermod -l $HOMEUSER $HOMEBOOT
+RUN ln -nfs $HOMEBOOT /home/$HOMEUSER
+
+USER $HOMEUSER
+
+WORKDIR /home/$HOMEUSER
+
+ENV HOME=/home/$HOMEUSER
+
+ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+RUN echo "$HOMEUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 
 RUN sudo mkdir -p /run/sshd /run && sudo chown -R $HOMEUSER:$HOMEUSER /run /etc/ssh
