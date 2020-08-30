@@ -9,17 +9,25 @@ DOTFILES ?= https://github.com/amanibhavam/dotfiles
 menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
+build-boot: # Build boot container
+	$(MAKE) build-docker
+
 build-jojomomojo: # Build jojomomojo container
-	$(MAKE) HOMEUSER=jojomomojo build-docker
-
-build-lamda: # Build lamda container
-	$(MAKE) HOMEUSER=lamda build-docker
-
-build-docker: # Build container with docker build
 	@echo
 	docker build -t defn/home:$(HOMEUSER) \
+		--build-arg HOMEUSER=jojomomojo\
+		c
+
+build-lamda: # Build lamda container
+	@echo
+	docker build -t defn/home:$(HOMEUSER) \
+		--build-arg HOMEUSER=lamda \
+		c
+
+build-docker: # Build boot container with docker build
+	@echo
+	docker build -t defn/home:boot \
 		--build-arg HOMEBOOT=boot \
-		--build-arg HOMEUSER=$(HOMEUSER) \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
 		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
 		b

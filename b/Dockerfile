@@ -2,7 +2,6 @@ FROM letfn/python:latest
 
 ARG HOMEDIR
 ARG DOTFILES
-ARG HOMEUSER
 ARG HOMEBOOT
 
 USER root
@@ -115,22 +114,3 @@ COPY service /service
 RUN sudo chmod 755 /service
 
 RUN sudo apt-get update && sudo apt-get upgrade -y
-
-USER root
-
-RUN groupmod -n $HOMEUSER $HOMEBOOT
-RUN usermod -d /home/$HOMEUSER $HOMEBOOT
-RUN usermod -l $HOMEUSER $HOMEBOOT
-RUN ln -nfs $HOMEBOOT /home/$HOMEUSER
-
-USER $HOMEUSER
-
-WORKDIR /home/$HOMEUSER
-
-ENV HOME=/home/$HOMEUSER
-
-ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
-RUN echo "$HOMEUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
-
-RUN sudo mkdir -p /run/sshd /run && sudo chown -R $HOMEUSER:$HOMEUSER /run /etc/ssh
