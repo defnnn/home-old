@@ -12,11 +12,20 @@ menu:
 build-boot: # Build boot container
 	$(MAKE) build-docker
 
+build-jojomomojo-ssh: # Build jojomomojo-ssh container
+	@echo
+	docker build -t defn/home:jojomomojo-ssh \
+		--build-arg HOMEBOOT=boot \
+		--build-arg HOMEUSER=jojomomojo \
+		--build-arg HOMEHOST=ssh.defn.sh \
+		c
+
 build-jojomomojo: # Build jojomomojo container
 	@echo
 	docker build -t defn/home:jojomomojo \
-		--build-arg HOMEBOOT=boot\
-		--build-arg HOMEUSER=jojomomojo\
+		--build-arg HOMEBOOT=boot \
+		--build-arg HOMEUSER=jojomomojo \
+		--build-arg HOMEHOST=jojomomojo.defn.sh \
 		c
 
 build-lamda: # Build lamda container
@@ -24,6 +33,7 @@ build-lamda: # Build lamda container
 	docker build -t defn/home:lamda \
 		--build-arg HOMEBOOT=boot\
 		--build-arg HOMEUSER=lamda \
+		--build-arg HOMEHOST=gorillama.defn.sh \
 		c
 
 build-docker: # Build boot container with docker build

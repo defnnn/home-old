@@ -20,8 +20,6 @@ function main {
   sshd)
     shift
     env | grep ^AWS_ | sort | sudo tee /etc/aws.env > /dev/null
-    perl -pe 's{TrustedUserCAKeys}{#TrustedUserCAKeys}' -i /etc/ssh/sshd_config
-    echo TrustedUserCAKeys /efs/ssh/trusted-user-ca-keys${1:+-${1}}.pem | tee -a /etc/ssh/sshd_config >/dev/null
     exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
     ;;
 
