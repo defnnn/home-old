@@ -64,7 +64,7 @@ RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew tap linuxbrew/xorg
 
 RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --help
 
-RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew install perl -s
+RUN sudo ln -nfs locale.h /usr/include/xlocale.h && env HOMEBREW_NO_AUTO_UPDATE=1 brew install perl
 
 ENV PATH=/home/$HOMEBOOT/.asdf/bin:/home/$HOMEBOOT/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
