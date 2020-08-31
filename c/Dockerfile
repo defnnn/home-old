@@ -20,6 +20,11 @@ ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.
 RUN make update && make upgrade && make install && brew upgrade
 RUN sudo apt-get update && sudo apt-get upgrade -y
 
+RUN rm -f /home/linuxbrew/.linuxbrew/bin/gs
+
 COPY etc/ssh/trusted-user-ca-keys-${HOMEHOST}.pem /etc/ssh/trusted-user-ca-keys.pem
 RUN sudo perl -pe 's{TrustedUserCAKeys}{#TrustedUserCAKeys}' -i /etc/ssh/sshd_config
 RUN echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
+
+COPY service /service
+RUN sudo chmod 755 /service

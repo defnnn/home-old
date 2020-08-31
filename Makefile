@@ -19,6 +19,7 @@ build-jojomomojo-ssh: # Build jojomomojo-ssh container
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=ssh.defn.sh \
 		c
+	docker push defn/home:jojomomojo-ssh
 
 build-jojomomojo: # Build jojomomojo container
 	@echo
@@ -27,6 +28,7 @@ build-jojomomojo: # Build jojomomojo container
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
 		c
+	docker push defn/home:jojomomojo
 
 build-lamda: # Build lamda container
 	@echo
@@ -35,6 +37,7 @@ build-lamda: # Build lamda container
 		--build-arg HOMEUSER=lamda \
 		--build-arg HOMEHOST=gorillama.defn.sh \
 		c
+	docker push defn/home:lamda
 
 build-docker: # Build boot container with docker build
 	@echo
