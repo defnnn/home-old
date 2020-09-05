@@ -14,7 +14,7 @@ COPY .reset /tmp/.reset
 
 RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/udevadm
 
-#COPY cache /cache
+COPY cache /cache
 
 RUN if test -f /cache/.pip/pip.conf; then set -x; apt update; apt install -y ca-certificates; sed 's#http://deb.debian.org/debian#https://nexus.defn.sh/repository/debian#; s#http://security.debian.org/debian-security#https://nexus.defn.sh/repository/debian-security#' -i /etc/apt/sources.list; fi
 
@@ -105,3 +105,5 @@ RUN go get github.com/koron/iferr@master
 COPY .bump /tmp/.bump
 RUN make update && make upgrade && make install && brew upgrade
 RUN sudo apt-get update && sudo apt-get upgrade -y
+RUN sudo sed 's#https://nexus.defn.sh/repository/debian#http://deb.debian.org/debian#; s#https://nexus.defn.sh/repository/debian-security#http://security.debian.org/debian-security#' -i /etc/apt/sources.list
+RUN rm -f .npmrc .pip/pip.conf
