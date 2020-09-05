@@ -14,7 +14,7 @@ COPY .reset /tmp/.reset
 
 RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/udevadm
 
-COPY cache /cache
+#COPY cache /cache
 
 RUN if test -f /cache/.pip/pip.conf; then set -x; apt update; apt install -y ca-certificates; sed 's#http://deb.debian.org/debian#https://nexus.defn.sh/repository/debian#; s#http://security.debian.org/debian-security#https://nexus.defn.sh/repository/debian-security#' -i /etc/apt/sources.list; fi
 
@@ -54,9 +54,7 @@ ENV LC_ALL en_US.UTF-8
 COPY .linuxbrew /tmp/.linuxbrew
 
 RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
-    && git clone --depth 100 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
-    && cd /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core \
-    && git reset --hard ff972618ce70bc7b0906913d3ad62b3615172e80
+    && git clone --depth 100 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
 
 RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew list
 
@@ -79,7 +77,7 @@ RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade
 
 RUN make update && make upgrade
 
-RUN sudo apt-get install -y libudev-dev
+RUN sudo apt-get update && sudo apt-get install -y libudev-dev
 
 RUN make install || true
 
