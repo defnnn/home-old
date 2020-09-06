@@ -111,3 +111,6 @@ RUN make update && make upgrade && make install && brew upgrade
 RUN sudo apt-get update && sudo apt-get upgrade -y
 RUN sudo sed 's#https://nexus.defn.sh/repository/debian#http://deb.debian.org/debian#; s#https://nexus.defn.sh/repository/debian-security#http://security.debian.org/debian-security#' -i /etc/apt/sources.list
 RUN rm -f .npmrc .pip/pip.conf
+
+RUN brew unlink awscli && brew install awscli
+RUN aws --version
