@@ -11,6 +11,7 @@ menu:
 
 build-boot: # Build boot container
 	$(MAKE) build-docker
+	docker push defn/home:boot
 
 build-jojomomojo-ssh: # Build jojomomojo-ssh container
 	@echo
