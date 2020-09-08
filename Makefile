@@ -19,7 +19,7 @@ build-boot: # Build boot container
 		--build-arg HOMEBOOT=boot \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
 		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
-		-f Dockerfile.boot \
+		-f b/Dockerfile.boot \
 		b
 	docker push defn/home:boot
 
@@ -29,7 +29,7 @@ build-jojomomojo-ssh: # Build jojomomojo-ssh container
 		--build-arg HOMEBOOT=boot \
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=ssh.defn.sh \
-		-f Dockerfile.user \
+		-f b/Dockerfile.user \
 		b
 	docker push defn/home:jojomomojo-ssh
 
@@ -39,7 +39,7 @@ build-jojomomojo: # Build jojomomojo container
 		--build-arg HOMEBOOT=boot \
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
-		-f Dockerfile.user \
+		-f b/Dockerfile.user \
 		b
 	docker push defn/home:jojomomojo
 
@@ -49,7 +49,7 @@ build-lamda: # Build lamda container
 		--build-arg HOMEBOOT=boot\
 		--build-arg HOMEUSER=lamda \
 		--build-arg HOMEHOST=gorillama.defn.sh \
-		-f Dockerfile.user \
+		-f b/Dockerfile.user \
 		b
 	docker push defn/home:lamda
 
