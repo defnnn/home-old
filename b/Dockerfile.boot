@@ -73,7 +73,7 @@ RUN echo "$DOTFILES" > .dotfiles-repo
 
 RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade
 
-RUN make update && make upgrade
+RUN echo 1 && make update && make upgrade
 
 RUN sudo apt-get update && sudo apt-get install -y libudev-dev
 
