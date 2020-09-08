@@ -10,11 +10,17 @@ menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
 build-boot-clean: # Build boot container without cache
-	$(MAKE) build-docker
-	docker push defn/home:boot
+	docker system prune -f
+	$(MAKE) build-boot
 
 build-boot: # Build boot container
-	$(MAKE) build-docker
+	@echo
+	docker build -t defn/home:boot \
+		--build-arg HOMEBOOT=boot \
+		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
+		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
+		-f Dockerfile.boot \
+		b
 	docker push defn/home:boot
 
 build-jojomomojo-ssh: # Build jojomomojo-ssh container
@@ -23,7 +29,8 @@ build-jojomomojo-ssh: # Build jojomomojo-ssh container
 		--build-arg HOMEBOOT=boot \
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=ssh.defn.sh \
-		c
+		-f Dockerfile.user \
+		b
 	docker push defn/home:jojomomojo-ssh
 
 build-jojomomojo: # Build jojomomojo container
@@ -32,7 +39,8 @@ build-jojomomojo: # Build jojomomojo container
 		--build-arg HOMEBOOT=boot \
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
-		c
+		-f Dockerfile.user \
+		b
 	docker push defn/home:jojomomojo
 
 build-lamda: # Build lamda container
@@ -41,16 +49,9 @@ build-lamda: # Build lamda container
 		--build-arg HOMEBOOT=boot\
 		--build-arg HOMEUSER=lamda \
 		--build-arg HOMEHOST=gorillama.defn.sh \
-		c
-	docker push defn/home:lamda
-
-build-docker: # Build boot container with docker build
-	@echo
-	docker build -t defn/home:boot \
-		--build-arg HOMEBOOT=boot \
-		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
-		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
+		-f Dockerfile.user \
 		b
+	docker push defn/home:lamda
 
 build-kaniko: # Build container with kaniko
 	@echo
