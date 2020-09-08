@@ -73,13 +73,15 @@ RUN echo "$DOTFILES" > .dotfiles-repo
 
 RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade
 
-RUN echo 1 && make update && make upgrade
+RUN make update && make upgrade
 
 RUN sudo apt-get update && sudo apt-get install -y libudev-dev
 
 RUN make install || true
 
 RUN $HOME/env make install
+
+RUN make update && make upgrade
 
 RUN go get github.com/klauspost/asmfmt/cmd/asmfmt@master
 RUN go get github.com/go-delve/delve/cmd/dlv@master
