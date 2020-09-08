@@ -81,7 +81,6 @@ RUN make install || true
 
 RUN $HOME/env make install
 
-RUN go mod init github.com/defn/home
 RUN go get github.com/klauspost/asmfmt/cmd/asmfmt@master
 RUN go get github.com/go-delve/delve/cmd/dlv@master
 RUN go get github.com/kisielk/errcheck@master
