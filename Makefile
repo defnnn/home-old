@@ -9,6 +9,10 @@ DOTFILES ?= https://github.com/amanibhavam/dotfiles
 menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
+build-boot-clean: # Build boot container without cache
+	$(MAKE) build-docker
+	docker push defn/home:boot
+
 build-boot: # Build boot container
 	$(MAKE) build-docker
 	docker push defn/home:boot
@@ -73,11 +77,6 @@ bump: # Rebuild with update
 	date > b/.bump
 	git add b/.bump
 	git commit -m 'bump build'
-
-bump-reset: # Rebuild from scratch
-	date > b/.reset
-	git add b/.reset
-	git commit -m 'bump reset build'
 
 bump-brew: # Rebuild homebrew
 	date > b/.linuxbrew
