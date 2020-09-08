@@ -38,10 +38,6 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && locale-gen en_US.UTF-8 \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-RUN curl -O -sSL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
-    && dpkg -i session-manager-plugin.deb \
-    && rm -f session-manager-plugin.deb
-
 RUN install -d -o $HOMEBOOT -d $HOMEBOOT /home/linuxbrew
 
 USER $HOMEBOOT
@@ -112,3 +108,12 @@ RUN rm -f .npmrc .pip/pip.conf
 
 RUN brew unlink awscli && brew install awscli
 RUN aws --version
+
+RUN curl -O -sSL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
+    && sudo dpkg -i session-manager-plugin.deb \
+    && rm -f session-manager-plugin.deb
+
+RUN curl -O -sSL "https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb" \
+    && sudo dpkg -i cloudflared-stable-linux-amd64.deb \
+    && rm -f cloudflared-stable-linux-amd64.deb
+
