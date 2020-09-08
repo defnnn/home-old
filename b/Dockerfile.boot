@@ -73,15 +73,13 @@ RUN echo "$DOTFILES" > .dotfiles-repo
 
 RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade
 
-RUN make update && make upgrade
+RUN echo 1 && make update && make upgrade
 
 RUN sudo apt-get update && sudo apt-get install -y libudev-dev
 
 RUN make install || true
 
 RUN $HOME/env make install
-
-RUN make update && make upgrade
 
 RUN go get github.com/klauspost/asmfmt/cmd/asmfmt@master
 RUN go get github.com/go-delve/delve/cmd/dlv@master
@@ -107,8 +105,7 @@ RUN sudo apt-get update && sudo apt-get upgrade -y
 RUN sudo sed 's#https://nexus.defn.sh/repository/debian#http://deb.debian.org/debian#; s#https://nexus.defn.sh/repository/debian-security#http://security.debian.org/debian-security#' -i /etc/apt/sources.list
 RUN rm -f .npmrc .pip/pip.conf
 
-RUN brew unlink awscli && brew install awscli
-RUN aws --version
+RUN brew install awscli && brew link awscli && aws --version
 
 RUN curl -O -sSL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
     && sudo dpkg -i session-manager-plugin.deb \
