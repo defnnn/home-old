@@ -74,17 +74,17 @@ ssh-init:
 bash:
 	docker-compose exec sshd bash
 
-bump: # Rebuild with update
+bump: # Rebuild boot with update
 	date > b/.bump
 	git add b/.bump
 	git commit -m 'bump build'
 
-bump-brew: # Rebuild homebrew
+bump-brew: # Rebuild boot with homebrew
 	date > b/.linuxbrew
 	git add b/.linuxbrew
 	git commit -m 'bump brew build'
 
-bump-home: # Rebuild home directory
+bump-home: # Rebuild boot with home directory
 	date > b/.homedir
 	git add b/.homedir
 	git commit -m 'bump home build'
