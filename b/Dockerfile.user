@@ -17,7 +17,7 @@ WORKDIR /home/$HOMEUSER
 ENV HOME=/home/$HOMEUSER
 ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-RUN make update && make upgrade && make install && brew upgrade
+RUN git reset --hard && make update && make upgrade && make install && brew upgrade
 RUN sudo apt-get update && sudo apt-get upgrade -y
 
 RUN rm -f /home/linuxbrew/.linuxbrew/bin/gs

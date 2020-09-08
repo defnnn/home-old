@@ -40,6 +40,7 @@ build-jojomomojo: # Build jojomomojo container
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
 		-f b/Dockerfile.user \
+		--no-cache \
 		b
 	docker push defn/home:jojomomojo
 
