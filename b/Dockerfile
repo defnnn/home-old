@@ -25,7 +25,7 @@ RUN apt-get update \
         sudo git vim less \
         build-essential m4 make \
         libssl-dev zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev libncursesw5-dev libffi-dev liblzma-dev libreadline-dev \
-        docker.io docker-compose sshfs libusb-1.0-0 \
+        docker.io sshfs libusb-1.0-0 \
     && rm -f /usr/bin/gs
 
 RUN useradd -m -s /bin/bash $HOMEBOOT
