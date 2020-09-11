@@ -9,6 +9,14 @@ DOTFILES ?= https://github.com/amanibhavam/dotfiles
 menu:
 	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
+build-sshd: # Build sshd container without cache
+	@echo
+	docker build -t defn/home:sshd \
+		--build-arg HOMEBOOT=boot \
+		-f b/Dockerfile.sshd \
+		b
+	docker push defn/home:sshd
+
 build-boot-clean: # Build boot container without cache
 	docker system prune -f
 	$(MAKE) build-boot
