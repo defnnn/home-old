@@ -76,13 +76,11 @@ RUN go get github.com/josharian/impl@master
 RUN go get honnef.co/go/tools/cmd/keyify@master
 RUN go get github.com/fatih/motion@master
 RUN go get github.com/koron/iferr@master
-RUN go get golang.org/x/tools/gopls@latest
+RUN go get golang.org/x/tools/gopls@latest || true
 
 COPY .bump /tmp/.bump
 RUN make update && make upgrade && make install && brew upgrade
 RUN sudo apt-get update && sudo apt-get upgrade -y
-
-RUN brew install awscli && brew link awscli && aws --version
 
 RUN curl -O -sSL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
     && sudo dpkg -i session-manager-plugin.deb \
