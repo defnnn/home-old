@@ -1,0 +1,19 @@
+FROM defn/home:sshd
+
+ARG HOMEBOOT
+ARG HOMEHOST
+
+USER root
+RUN mkdir -p /run/sshd /run && chown -R $HOMEBOOT:$HOMEBOOT /run /etc/ssh
+RUN apt-get update && apt-get upgrade -y
+
+USER $HOMEBOOT
+WORKDIR /home/$HOMEBOOT
+ENV HOME=/home/$HOMEBOOT
+ENV PATH=/home/$HOMEBOOT/.asdf/bin:/home/$HOMEBOOT/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+COPY etc/ssh/trusted-user-ca-keys-${HOMEHOST}.pem /etc/ssh/trusted-user-ca-keys.pem
+RUN echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
+
+COPY service /service
+RUN sudo chmod 755 /service

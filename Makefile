@@ -53,6 +53,16 @@ build-jojomomojo: # Build jojomomojo container
 		b
 	docker push defn/home:jojomomojo
 
+build-sshu: # Build sshu container
+	@echo
+	docker build -t defn/home:sshu \
+		--build-arg HOMEBOOT=boot \
+		--build-arg HOMEHOST=sshu.defn.sh \
+		-f b/Dockerfile.sshu \
+		--no-cache \
+		b
+	docker push defn/home:sshu
+
 build-lamda: # Build lamda container
 	@echo
 	docker build -t defn/home:lamda \
