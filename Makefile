@@ -30,6 +30,7 @@ build-jojomomojo-ssh: # Build jojomomojo-ssh container
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=ssh.defn.sh \
 		-f b/Dockerfile.user \
+		--no-cache \
 		b
 	docker push defn/home:jojomomojo-ssh
 
@@ -51,6 +52,7 @@ build-lamda: # Build lamda container
 		--build-arg HOMEUSER=lamda \
 		--build-arg HOMEHOST=gorillama.defn.sh \
 		-f b/Dockerfile.user \
+		--no-cache \
 		b
 	docker push defn/home:lamda
 
