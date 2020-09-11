@@ -6,6 +6,9 @@ ARG HOMEHOST
 USER root
 RUN mkdir -p /run/sshd /run && chown -R $HOMEBOOT:$HOMEBOOT /run /etc/ssh
 RUN apt-get update && apt-get upgrade -y
+RUN curl -O -sSL "https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb" \
+    && dpkg -i cloudflared-stable-linux-amd64.deb \
+    && rm -f cloudflared-stable-linux-amd64.deb
 
 USER $HOMEBOOT
 WORKDIR /home/$HOMEBOOT
