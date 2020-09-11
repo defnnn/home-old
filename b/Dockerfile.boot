@@ -12,6 +12,8 @@ ENV container docker
 
 RUN apt-get update \
     && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        docker.io \
     && rm -f /usr/bin/gs
 
 
