@@ -8,11 +8,6 @@ platform:
   arch: amd64
 
 steps:
-- name: chown(1000)
-  image: alpine
-  commands:
-  - chown -hR 1000:1000 .
-
 - name: drone fmt
   image: letfn/drone
   settings:
@@ -22,11 +17,6 @@ steps:
   image: letfn/drone
   settings:
     task: lint
-
-- name: chown(1001)
-  image: alpine
-  commands:
-  - chown -hR 1001:1001 .
 
 ---
 kind: pipeline
