@@ -56,9 +56,9 @@ steps:
     - test -x "$(which gpg)"
     - test -x "$(which cloudflared)"
     - test "jojomomojo" = "$(whoami)"
+    - test "SUDO_USER=jojomomojo" = "$(sudo env | grep jojomomojo)"
     - ls -ld /home/boot
     - ls -ld /home/jojomomojo
-    - sudo env | grep jojomomojo
     - ls -ld /run/sshd
     - ls -ld /etc/ssh
     - ls -ld /etc/ssh/trusted-user-ca-keys.pem
