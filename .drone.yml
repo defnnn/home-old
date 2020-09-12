@@ -35,6 +35,37 @@ steps:
     - test -x "$(which tmux)"
     - test -x "$(which gpg)"
     - test "boot" = "$(whoami)"
+    - ls -ld /home/boot
+
+---
+kind: pipeline
+type: docker
+name: test-ssh
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: local
+  image: defn/home:ssh
+  commands:
+    - grep "GatewayPorts clientspecified" /etc/ssh/sshd_config
+    - grep "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" /etc/ssh/sshd_config
+    - test -x "$(which tmux)"
+    - test -x "$(which gpg)"
+    - test -x "$(which cloudflared)"
+    - test "jojomomojo" = "$(whoami)"
+    - ls -ld /home/boot
+    - ls -ld /home/jojomomojo
+    - sudo env | grep jojomomojo
+    - ls -ld /run/sshd
+    - ls -ld /etc/ssh
+    - ls -ld /etc/ssh/trusted-user-ca-keys.pem
+    - cd ~jojomomojo
+    - ls -ld .gnupg
+    - ls -ld .gnupg/gpg.conf
+    - find .gnupg/ -ls
 
 ---
 kind: pipeline
