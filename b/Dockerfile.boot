@@ -52,7 +52,7 @@ RUN echo "$DOTFILES" > .dotfiles-repo
 
 RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade
 
-RUN echo 1 && make update && make upgrade
+RUN echo 1 && make update
 
 RUN sudo apt-get update && sudo apt-get install -y libudev-dev
 
@@ -79,7 +79,7 @@ RUN go get github.com/koron/iferr@master
 RUN go get golang.org/x/tools/gopls@latest || true
 
 COPY .bump /tmp/.bump
-RUN make update && make upgrade && make install && brew upgrade
+RUN make update && make install && make upgrade
 RUN sudo apt-get update && sudo apt-get upgrade -y
 
 RUN curl -O -sSL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \

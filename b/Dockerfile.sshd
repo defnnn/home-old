@@ -17,14 +17,14 @@ RUN apt-get update \
         sudo git vim less \
         build-essential m4 make \
         libssl-dev zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev libncursesw5-dev libffi-dev liblzma-dev libreadline-dev \
-        libusb-1.0-0 \
+        tmux gnupg libusb-1.0-0 \
     && rm -f /usr/bin/gs
 
 RUN useradd -m -s /bin/bash $HOMEBOOT
 
 RUN echo "$HOMEBOOT ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 
-RUN echo GatewayPorts yes >> /etc/ssh/sshd_config
+RUN echo GatewayPorts clientspecified >> /etc/ssh/sshd_config
 
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \

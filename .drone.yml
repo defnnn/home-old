@@ -1,52 +1,21 @@
 ---
 kind: pipeline
 type: docker
-name: fmt
+name: style
 
 platform:
   os: linux
   arch: amd64
 
 steps:
-- name: everything
+- name: fmt
   image: letfn/drone
   settings:
     task: fmt
-
----
-kind: pipeline
-type: docker
-name: lint
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: everything
+- name: lint
   image: letfn/drone
   settings:
     task: lint
-
----
-kind: pipeline
-type: docker
-name: build
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: kaniko
-  image: letfn/drone-kaniko
-  settings:
-    args: --destination=registry.defn.sh/defn/home:latest --build-arg HOMEUSER=jojomomojo --build-arg HOMEDIR=https://github.com/amanibhavam/homedir --build-arg DOTFILES=https://github.com/amanibhavam/dotfiles --use-new-run --snapshotMode=redo
-    cache: true
-    cache_repo: registry.defn.sh/defn/home/cache
-    context: b
-    repo: registry.defn.sh/defn/home
-    tag: latest
 
 ---
 kind: pipeline
@@ -60,8 +29,5 @@ platform:
 steps:
 - name: local
   image: letfn/drone-hugo
-
-depends_on:
-- build
 
 ...

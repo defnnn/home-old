@@ -14,6 +14,7 @@ build-sshd: # Build sshd container without cache
 	docker build -t defn/home:sshd \
 		--build-arg HOMEBOOT=boot \
 		-f b/Dockerfile.sshd \
+		--no-cache \
 		b
 	docker push defn/home:sshd
 
@@ -48,7 +49,7 @@ build-jojomomojo: # Build jojomomojo container
 		--build-arg HOMEBOOT=boot \
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
-		-f b/Dockerfile.user \
+		-f b/Dockerfile.bootu \
 		--no-cache \
 		b
 	docker push defn/home:jojomomojo
@@ -59,7 +60,7 @@ build-lamda: # Build lamda container
 		--build-arg HOMEBOOT=boot\
 		--build-arg HOMEUSER=lamda \
 		--build-arg HOMEHOST=gorillama.defn.sh \
-		-f b/Dockerfile.user \
+		-f b/Dockerfile.bootu \
 		--no-cache \
 		b
 	docker push defn/home:lamda
