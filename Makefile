@@ -31,6 +31,7 @@ build-boot: # Build boot container
 		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
 		-f b/Dockerfile.boot \
 		b
+	kiki test-boot
 	docker push defn/home:boot
 
 build-ssh: # Build ssh container
@@ -54,6 +55,7 @@ build-jojomomojo: # Build jojomomojo container
 		-f b/Dockerfile.bootu \
 		--no-cache \
 		b
+	kiki test-jojomomojo
 	docker push defn/home:jojomomojo
 
 build-lamda: # Build lamda container

@@ -1,6 +1,7 @@
 FROM letfn/python:latest
 
 ARG HOMEBOOT
+ENV HOMEBOOT=$HOMEBOOT
 
 USER root
 
@@ -20,16 +21,15 @@ RUN apt-get update \
         tmux gnupg libusb-1.0-0 \
     && rm -f /usr/bin/gs
 
-RUN useradd -m -s /bin/bash $HOMEBOOT
-
-RUN echo "$HOMEBOOT ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
-
 RUN echo GatewayPorts clientspecified >> /etc/ssh/sshd_config
 
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
     && locale-gen en_US.UTF-8 \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+
+RUN install -d -o $HOMEBOOT -g $HOMEBOOT /home/$HOMEBOOT
+RUN ls -ld /home/$HOMEBOOT
 
 USER $HOMEBOOT
 WORKDIR /home/$HOMEBOOT

@@ -4,13 +4,19 @@ ARG HOMEBOOT
 ARG HOMEUSER
 ARG HOMEHOST
 
+ENV HOMEBOOT=$HOMEBOOT
+ENV HOMEUSER=$HOMEUSER
+ENV HOMEHOME=$HOMEHOME
+
 USER root
 RUN groupmod -n $HOMEUSER $HOMEBOOT
 RUN usermod -d /home/$HOMEUSER $HOMEBOOT
 RUN usermod -l $HOMEUSER $HOMEBOOT
-RUN ln -nfs $HOMEBOOT /home/$HOMEUSER
 RUN echo "$HOMEUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
-RUN mkdir -p /run/sshd /run && chown -R $HOMEUSER:$HOMEUSER /run /etc/ssh
+RUN mkdir -p /run/sshd /run && chown -hR $HOMEUSER:$HOMEUSER /run /etc/ssh
+RUN ln -nfs $HOMEBOOT /home/$HOMEUSER
+RUN chown -h $HOMEUSER:$HOMEUSER /home/$HOMEUSER /home/$HOMEBOOT
+RUN rm -f /usr/bin/gs
 
 USER $HOMEUSER
 WORKDIR /home/$HOMEUSER

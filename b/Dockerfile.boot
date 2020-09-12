@@ -4,6 +4,8 @@ ARG HOMEDIR
 ARG DOTFILES
 ARG HOMEBOOT
 
+ENV HOMEBOOT=$HOMEBOOT
+
 USER root
 
 ENV HOME=/root
@@ -13,11 +15,11 @@ ENV container docker
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        docker.io \
-    && rm -f /usr/bin/gs
-
+        docker.io
 
 RUN install -d -o $HOMEBOOT -d $HOMEBOOT /home/linuxbrew
+RUN install -d -o $HOMEBOOT -d $HOMEBOOT /home/boot
+RUN usermod -d /home/boot boot
 
 USER $HOMEBOOT
 WORKDIR /home/$HOMEBOOT
@@ -29,7 +31,6 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 COPY .linuxbrew /tmp/.linuxbrew
-
 RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
     && git clone --depth 100 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
 
@@ -89,4 +90,3 @@ RUN curl -O -sSL "https://s3.amazonaws.com/session-manager-downloads/plugin/late
 RUN curl -O -sSL "https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb" \
     && sudo dpkg -i cloudflared-stable-linux-amd64.deb \
     && rm -f cloudflared-stable-linux-amd64.deb
-

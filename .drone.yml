@@ -31,11 +31,14 @@ steps:
 - name: local
   image: defn/home:sshd
   commands:
+    - cd
+    - test "/home/$HOMEBOOT" = "$(pwd)"
     - grep "GatewayPorts clientspecified" /etc/ssh/sshd_config
     - test -x "$(which tmux)"
     - test -x "$(which gpg)"
-    - test "boot" = "$(whoami)"
-    - ls -ld /home/boot
+    - test "$HOMEBOOT" = "boot"
+    - test "$HOMEBOOT" = "$(whoami)"
+    - test "$HOMEBOOT" = "$(stat -c '%U' /home/$HOMEBOOT)"
 
 ---
 kind: pipeline
@@ -50,22 +53,89 @@ steps:
 - name: local
   image: defn/home:ssh
   commands:
+    - cd
+    - test "/home/$HOMEUSER" = "$(pwd)"
     - grep "GatewayPorts clientspecified" /etc/ssh/sshd_config
     - grep "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" /etc/ssh/sshd_config
     - test -x "$(which tmux)"
     - test -x "$(which gpg)"
     - test -x "$(which cloudflared)"
-    - test "jojomomojo" = "$(whoami)"
-    - test "SUDO_USER=jojomomojo" = "$(sudo env | grep jojomomojo)"
-    - ls -ld /home/boot
-    - ls -ld /home/jojomomojo
-    - ls -ld /run/sshd
-    - ls -ld /etc/ssh
-    - ls -ld /etc/ssh/trusted-user-ca-keys.pem
-    - cd ~jojomomojo
-    - ls -ld .gnupg
-    - ls -ld .gnupg/gpg.conf
+    - test "$HOMEUSER" = "$(whoami)"
+    - test "SUDO_USER=$HOMEUSER" = "$(sudo env | grep $HOMEUSER)"
+    - find /home/* -uid 0 -ls || true
+    - find /home/* -gid 0 -ls || true
+    - test "$HOMEUSER" = "$(stat -c '%U' /etc/ssh)"
+    - test "$HOMEUSER" = "$(stat -c '%U' /run/sshd)"
+    - test "$HOMEUSER" = "$(stat -c '%U' /home/$HOMEBOOT)"
+    - test "$HOMEUSER" = "$(stat -c '%U' /home/$HOMEUSER)"
+    - test -f "/etc/ssh/trusted-user-ca-keys.pem"
+    - test "drwx------" = "$(stat -c '%A' .gnupg)"
+    - test -f ".gnupg/gpg.conf"
+    - if test -d boot; then false; fi
     - find .gnupg/ -ls
+    - test "" = "$(find /home/* -uid 0 -ls)"
+
+---
+kind: pipeline
+type: docker
+name: test-boot
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: local
+  image: defn/home:boot
+  commands:
+    - cd
+    - pwd
+    - test "/home/$HOMEBOOT" = "$(pwd)"
+    - test -x "$(which tmux)"
+    - test -x "$(which gpg)"
+    - test -x "$(which cloudflared)"
+    - test "$HOMEBOOT" = "$(whoami)"
+    - find /home/* -uid 0 -ls || true
+    - find /home/* -gid 0 -ls || true
+    - test "$HOMEBOOT" = "$(stat -c '%U' /etc/ssh)"
+    - test "$HOMEBOOT" = "$(stat -c '%U' /run/sshd)"
+    - test "$HOMEBOOT" = "$(stat -c '%U' /home/$HOMEBOOT)"
+    - if test -d boot; then false; fi
+    - test "" = "$(find /home/* -uid 0 -ls)"
+
+---
+kind: pipeline
+type: docker
+name: test-jojomomojo
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: local
+  image: defn/home:jojomomojo
+  commands:
+    - cd
+    - test "/home/$HOMEUSER" = "$(pwd)"
+    - grep "GatewayPorts clientspecified" /etc/ssh/sshd_config
+    - grep "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" /etc/ssh/sshd_config
+    - test -x "$(which tmux)"
+    - test -x "$(which gpg)"
+    - test -x "$(which cloudflared)"
+    - test "$HOMEUSER" = "$(whoami)"
+    - test "SUDO_USER=$HOMEUSER" = "$(sudo env | grep $HOMEUSER)"
+    - find /home/* -uid 0 -ls || true
+    - find /home/* -gid 0 -ls || true
+    - test "$HOMEUSER" = "$(stat -c '%U' /etc/ssh)"
+    - test "$HOMEUSER" = "$(stat -c '%U' /run/sshd)"
+    - test "$HOMEUSER" = "$(stat -c '%U' /home/$HOMEBOOT)"
+    - test "$HOMEUSER" = "$(stat -c '%U' /home/$HOMEUSER)"
+    - test -f "/etc/ssh/trusted-user-ca-keys.pem"
+    - test "drwx------" = "$(stat -c '%A' .gnupg)"
+    - test -f ".gnupg/gpg.conf"
+    - if test -d boot; then false; fi
+    - test "" = "$(find /home/* -uid 0 -ls)"
 
 ---
 kind: pipeline
