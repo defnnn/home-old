@@ -16,8 +16,8 @@ build-sshd: # Build sshd container without cache
 		-f b/Dockerfile.sshd \
 		--no-cache \
 		b
-	docker push defn/home:sshd
 	kiki test-sshd
+	docker push defn/home:sshd
 
 build-boot-clean: # Build boot container without cache
 	docker system prune -f
@@ -42,8 +42,8 @@ build-ssh: # Build ssh container
 		-f b/Dockerfile.sshu \
 		--no-cache \
 		b
-	docker push defn/home:ssh
 	kiki test-ssh
+	docker push defn/home:ssh
 
 build-jojomomojo: # Build jojomomojo container
 	@echo
