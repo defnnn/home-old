@@ -133,6 +133,8 @@ steps:
     - find /home/* -uid 0 -ls || true
     - find /home/* -gid 0 -ls || true
     - test "" = "$(find /home/* -uid 0 -ls)"
+    - echo "$TEST_PY" | base64 -d > test.py
+    - ./env.sh pytest -v test.py
 
 ---
 kind: pipeline

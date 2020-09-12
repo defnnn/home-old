@@ -53,9 +53,9 @@ build-jojomomojo: # Build jojomomojo container
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
 		-f b/Dockerfile.bootu \
-		--no-cache \
 		b
-	kiki test-jojomomojo
+	echo "TEST_PY=$(shell cat test.py | base64 -w 0)" > .drone.env
+	drone exec --env-file=.drone.env --pipeline test-jojomomojo
 	docker push defn/home:jojomomojo
 
 build-lamda: # Build lamda container
