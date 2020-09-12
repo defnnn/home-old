@@ -17,9 +17,10 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         docker.io
 
-RUN install -d -o $HOMEBOOT -d $HOMEBOOT /home/linuxbrew
-RUN install -d -o $HOMEBOOT -d $HOMEBOOT /home/boot
-RUN usermod -d /home/boot boot
+
+RUN install -d -o $HOMEBOOT -g $HOMEBOOT -d /home/linuxbrew
+RUN install -d -o $HOMEBOOT -g $HOMEBOOT -d /home/$HOMEBOOT
+RUN usermod -d /home/$HOMEBOOT $HOMEBOOT
 
 USER $HOMEBOOT
 WORKDIR /home/$HOMEBOOT

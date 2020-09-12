@@ -97,8 +97,6 @@ steps:
     - test "$HOMEBOOT" = "$(whoami)"
     - find /home/* -uid 0 -ls || true
     - find /home/* -gid 0 -ls || true
-    - test "$HOMEBOOT" = "$(stat -c '%U' /etc/ssh)"
-    - test "$HOMEBOOT" = "$(stat -c '%U' /run/sshd)"
     - test "$HOMEBOOT" = "$(stat -c '%U' /home/$HOMEBOOT)"
     - if test -d boot; then false; fi
     - test "" = "$(find /home/* -uid 0 -ls)"
