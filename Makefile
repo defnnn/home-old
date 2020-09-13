@@ -32,7 +32,7 @@ build-ssh: # Build ssh container with sshd
 	$(MAKE) test-ssh
 	docker push defn/home:ssh
 
-build-boot: # Build boot container with letfn/python
+build-boot: # Build boot container with sshd
 	@echo
 	docker build -t defn/home:boot \
 		--build-arg HOMEBOOT=boot \
