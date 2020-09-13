@@ -7,34 +7,20 @@ HOMEDIR ?= https://github.com/amanibhavam/homedir
 DOTFILES ?= https://github.com/amanibhavam/dotfiles
 
 menu:
-	@perl -ne 'printf("%10s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
+	@perl -ne 'printf("\n") if m{^-}; printf("%20s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
-build-sshd: # Build sshd container without cache
+---------------build: # -----------------------------
+build-sshd: # Build sshd container with lefn/python
 	@echo
 	docker build -t defn/home:sshd \
 		--build-arg HOMEBOOT=boot \
 		-f b/Dockerfile.sshd \
 		--no-cache \
 		b
-	kiki test-sshd
+	$(MAKE) test-sshd
 	docker push defn/home:sshd
 
-build-boot-clean: # Build boot container without cache
-	docker system prune -f
-	$(MAKE) build-boot
-
-build-boot: # Build boot container
-	@echo
-	docker build -t defn/home:boot \
-		--build-arg HOMEBOOT=boot \
-		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
-		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
-		-f b/Dockerfile.boot \
-		b
-	kiki test-boot
-	docker push defn/home:boot
-
-build-ssh: # Build ssh container
+build-ssh: # Build ssh container with sshd
 	@echo
 	docker build -t defn/home:ssh \
 		--build-arg HOMEBOOT=boot \
@@ -43,10 +29,21 @@ build-ssh: # Build ssh container
 		-f b/Dockerfile.sshu \
 		--no-cache \
 		b
-	kiki test-ssh
+	$(MAKE) test-ssh
 	docker push defn/home:ssh
 
-build-jojomomojo: # Build jojomomojo container
+build-boot: # Build boot container with letfn/python
+	@echo
+	docker build -t defn/home:boot \
+		--build-arg HOMEBOOT=boot \
+		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
+		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
+		-f b/Dockerfile.boot \
+		b
+	$(MAKE) test-boot
+	docker push defn/home:boot
+
+build-jojomomojo: # Build jojomomojo container with boot
 	@echo
 	docker build -t defn/home:jojomomojo \
 		--build-arg HOMEBOOT=boot \
@@ -55,10 +52,10 @@ build-jojomomojo: # Build jojomomojo container
 		-f b/Dockerfile.bootu \
 		b
 	echo "TEST_PY=$(shell cat test.py | base64 -w 0)" > .drone.env
-	drone exec --env-file=.drone.env --pipeline test-jojomomojo
+	$(MAKE) test-jojomomojo
 	docker push defn/home:jojomomojo
 
-build-lamda: # Build lamda container
+build-lamda: # Build lamda container with boot
 	@echo
 	docker build -t defn/home:lamda \
 		--build-arg HOMEBOOT=boot\
@@ -69,12 +66,41 @@ build-lamda: # Build lamda container
 		b
 	docker push defn/home:lamda
 
-build-kaniko: # Build container with kaniko
-	@echo
-	drone exec --pipeline $@
-	docker pull registry.defn.sh/defn/home:latest
-	docker tag registry.defn.sh/defn/home:latest defn/home
+----------------test: # -----------------------------
 
+test: # test all images
+	$(MAKE) test-sshd
+	$(MAKE) test-ssh
+	$(MAKE) test-boot
+	$(MAKE) test-jojomomojo
+
+test-sshd: # test image sshd
+	drone exec --env-file=.drone.env --pipeline test-sshd
+
+test-ssh: # test image ssh
+	drone exec --env-file=.drone.env --pipeline test-ssh
+
+test-boot: # test image boot
+	drone exec --env-file=.drone.env --pipeline test-boot
+
+test-jojomomojo: # test image jojomomojo
+	drone exec --env-file=.drone.env --pipeline test-jojomomojo
+
+----------------bash: # -----------------------------
+
+bash-sshd: # bash shell with sshd
+	docker run --rm -ti --entrypoint bash defn/home:sshd
+
+bash-ssh: # bash shell with ssh
+	docker run --rm -ti --entrypoint bash defn/home:ssh
+
+bash-boot: # bash shell with boot
+	docker run --rm -ti --entrypoint bash defn/home:boot
+
+bash-jojomomojo: # bash shell with jojomomojo
+	docker run --rm -ti --entrypoint bash defn/home:jojomomojo
+
+------docker-compose: # -----------------------------
 recreate: # Recreate home container
 	kitt recreate
 	$(MAKE) ssh-init
@@ -86,21 +112,3 @@ recycle: # Recycle home container
 ssh-init:
 	ssh-add -L | docker-compose exec -T sshd mkdir -p .ssh
 	ssh-add -L | docker-compose exec -T sshd tee .ssh/authorized_keys
-
-bash:
-	docker-compose exec sshd bash
-
-bump: # Rebuild boot with update
-	date > b/.bump
-	git add b/.bump
-	git commit -m 'bump build'
-
-bump-brew: # Rebuild boot with homebrew
-	date > b/.linuxbrew
-	git add b/.linuxbrew
-	git commit -m 'bump brew build'
-
-bump-home: # Rebuild boot with home directory
-	date > b/.homedir
-	git add b/.homedir
-	git commit -m 'bump home build'

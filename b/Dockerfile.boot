@@ -31,7 +31,6 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-COPY .linuxbrew /tmp/.linuxbrew
 RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
     && git clone --depth 100 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
 
@@ -80,7 +79,6 @@ RUN go get github.com/fatih/motion@master
 RUN go get github.com/koron/iferr@master
 RUN go get golang.org/x/tools/gopls@latest || true
 
-COPY .bump /tmp/.bump
 RUN make update && make install && make upgrade
 RUN sudo apt-get update && sudo apt-get upgrade -y
 
