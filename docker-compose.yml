@@ -8,8 +8,6 @@ services:
     entrypoint: [ "/service", "sshd" ]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./efs:/efs
-      - ./b:/b
       - ${HOME}/work:/home/jojomomojo/work
       - ${HOME}/.password-store://home/jojomomojo/.password-store
   cloudflared:

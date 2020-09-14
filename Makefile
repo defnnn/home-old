@@ -51,7 +51,7 @@ build-jojomomojo: # Build jojomomojo container with boot
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
 		-f b/Dockerfile.bootu \
 		b
-	echo "TEST_PY=$(shell cat test.py | base64 -w 0)" > .drone.env
+	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 || base64) )" > .drone.env
 	$(MAKE) test-jojomomojo
 	docker push defn/home:jojomomojo
 
@@ -63,9 +63,12 @@ build-kitt: # Build kitt container with boot
 		--build-arg HOMEHOST=kitt.defn.sh \
 		-f b/Dockerfile.bootu \
 		b
-	echo "TEST_PY=$(shell cat test.py | base64 -w 0)" > .drone.env
+	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 || base64) )" > .drone.env
 	$(MAKE) test-kitt
 	docker push defn/home:kitt
+	$(MAKE) recreate
+	$(MAKE) ssh-init # figoure out why ssh ca certs aren't working
+	s kitt.defn.sh uname-a
 
 build-lamda: # Build lamda container with boot
 	@echo
@@ -122,7 +125,6 @@ bash-kitt: # bash shell with kitt
 ------docker-compose: # -----------------------------
 recreate: # Recreate home container
 	kitt recreate
-	$(MAKE) ssh-init
 
 recycle: # Recycle home container
 	docker pull registry.defn.sh/defn/home
