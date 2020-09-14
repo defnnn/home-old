@@ -6,22 +6,24 @@ services:
     image: defn/home:jojomomojo
     restart: always
     entrypoint: [ "/service", "sshd" ]
-    extra_hosts:
-      - host.docker.internal:172.18.0.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./efs:/efs
-      - ./b/cache:/cache
       - ./b:/b
       - ${HOME}/work:/home/jojomomojo/work
       - ${HOME}/.password-store://home/jojomomojo/.password-store
-    ports:
-      - 169.254.32.1:2223:2222
+  cloudflared:
+    image: letfn/cloudflared
+    restart: always
+    volumes:
+      - ${HOME}/.cloudflared:/etc/cloudflared
+    environment:
+      - TUNNEL_URL=ssh://sshd:2222
+      - TUNNEL_HOSTNAME
+    links:
+      - sshd
 
 networks:
   default:
     external:
       name: kitt
-
-volumes:
-  home:
