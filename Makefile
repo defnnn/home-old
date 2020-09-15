@@ -32,6 +32,15 @@ build-ssh: # Build ssh container with sshd
 	$(MAKE) test-ssh
 	docker push defn/home:ssh
 
+build-brew: # Build brew container with sshd
+	@echo
+	docker build -t defn/home:brew \
+		--build-arg HOMEBOOT=boot \
+		-f b/Dockerfile.brew \
+		b
+	$(MAKE) test-brew
+	docker push defn/home:brew
+
 build-boot: # Build boot container with sshd
 	@echo
 	docker build -t defn/home:boot \
@@ -71,6 +80,7 @@ build-lamda: # Build lamda container with boot
 test: # test all images
 	$(MAKE) test-sshd
 	$(MAKE) test-ssh
+	$(MAKE) test-brew
 	$(MAKE) test-boot
 	$(MAKE) test-jojomomojo
 
@@ -79,6 +89,9 @@ test-sshd: # test image sshd
 
 test-ssh: # test image ssh
 	drone exec --env-file=.drone.env --pipeline test-ssh
+
+test-brew: # test image brew
+	drone exec --env-file=.drone.env --pipeline test-brew
 
 test-boot: # test image boot
 	drone exec --env-file=.drone.env --pipeline test-boot

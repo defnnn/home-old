@@ -78,6 +78,33 @@ steps:
 ---
 kind: pipeline
 type: docker
+name: test-brew
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: local
+  image: defn/home:brew
+  commands:
+    - cd
+    - test -x "$(which brew)"
+    - test -x "$(which tmux)"
+    - test -x "$(which gpg)"
+    - test "/home/$HOMEBOOT" = "$(pwd)"
+    - test "$HOMEBOOT" = "$(whoami)"
+    - test "$HOMEBOOT" = "$(stat -c '%U' /home/$HOMEBOOT)"
+    - test "$HOMEBOOT" = "$(stat -c '%U' /home/linuxbrew)"
+    - if test -d boot; then false; fi
+    - find /home/* -uid 0 -ls || true
+    - find /home/* -gid 0 -ls || true
+    - test "" = "$(find /home/* -uid 0 -ls)"
+
+----
+
+kind: pipeline
+type: docker
 name: test-boot
 
 platform:

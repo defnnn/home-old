@@ -1,0 +1,43 @@
+FROM defn/home:sshd
+
+ARG HOMEDIR
+ARG DOTFILES
+ARG HOMEBOOT
+
+ENV HOMEBOOT=$HOMEBOOT
+
+USER root
+
+ENV HOME=/root
+ENV DEBIAN_FRONTEND=noninteractive
+ENV container docker
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        docker.io
+
+
+RUN install -d -o $HOMEBOOT -g $HOMEBOOT -d /home/linuxbrew
+RUN install -d -o $HOMEBOOT -g $HOMEBOOT -d /home/$HOMEBOOT
+RUN usermod -d /home/$HOMEBOOT $HOMEBOOT
+
+USER $HOMEBOOT
+WORKDIR /home/$HOMEBOOT
+ENV HOME=/home/$HOMEBOOT
+
+ENV PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
+    && git clone --depth 100 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
+
+RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew list
+
+RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew tap linuxbrew/xorg
+
+RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --help
+
+RUN sudo ln -nfs locale.h /usr/include/xlocale.h && env HOMEBREW_NO_AUTO_UPDATE=1 brew install perl
