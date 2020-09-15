@@ -139,42 +139,6 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: test-kitt
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: local
-  image: defn/home:kitt
-  commands:
-    - cd
-    - test "/home/$HOMEUSER" = "$(pwd)"
-    - grep "GatewayPorts clientspecified" /etc/ssh/sshd_config
-    - grep "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" /etc/ssh/sshd_config
-    - test -f "/etc/ssh/trusted-user-ca-keys.pem"
-    - test -x "$(which tmux)"
-    - test -x "$(which gpg)"
-    - test -x "$(which cloudflared)"
-    - test "$HOMEUSER" = "$(whoami)"
-    - test "SUDO_USER=$HOMEUSER" = "$(sudo env | grep $HOMEUSER)"
-    - test "$HOMEUSER" = "$(stat -c '%U' /etc/ssh)"
-    - test "$HOMEUSER" = "$(stat -c '%U' /run/sshd)"
-    - test "$HOMEUSER" = "$(stat -c '%U' /home/$HOMEBOOT)"
-    - test "$HOMEUSER" = "$(stat -c '%U' /home/$HOMEUSER)"
-    - test "drwx------" = "$(stat -c '%A' .gnupg)"
-    - test -f ".gnupg/gpg.conf"
-    - if test -d boot; then false; fi
-    - find /home/* -uid 0 -ls || true
-    - find /home/* -gid 0 -ls || true
-    - test "" = "$(find /home/* -uid 0 -ls)"
-    - echo "$TEST_PY" | base64 -d > test.py
-    - ./env.sh pytest -v test.py
-
----
-kind: pipeline
-type: docker
 name: docs
 
 platform:
