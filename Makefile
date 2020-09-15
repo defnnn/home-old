@@ -32,21 +32,10 @@ build-ssh: # Build ssh container with sshd
 	$(MAKE) test-ssh
 	docker push defn/home:ssh
 
-build-brew: # Build brew container with sshd
-	@echo
-	docker build -t defn/home:brew \
-		--build-arg HOMEBOOT=boot \
-		-f b/Dockerfile.brew \
-		b
-	$(MAKE) test-brew
-	docker push defn/home:brew
-
 build-boot: # Build boot container with sshd
 	@echo
 	docker build -t defn/home:boot \
 		--build-arg HOMEBOOT=boot \
-		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
-		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
 		-f b/Dockerfile.boot \
 		b
 	$(MAKE) test-boot
@@ -58,6 +47,8 @@ build-jojomomojo: # Build jojomomojo container with boot
 		--build-arg HOMEBOOT=boot \
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
+		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
+		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
 		-f b/Dockerfile.bootu \
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 || base64) )" > .drone.env
@@ -80,7 +71,6 @@ build-lamda: # Build lamda container with boot
 test: # test all images
 	$(MAKE) test-sshd
 	$(MAKE) test-ssh
-	$(MAKE) test-brew
 	$(MAKE) test-boot
 	$(MAKE) test-jojomomojo
 
@@ -89,9 +79,6 @@ test-sshd: # test image sshd
 
 test-ssh: # test image ssh
 	drone exec --env-file=.drone.env --pipeline test-ssh
-
-test-brew: # test image brew
-	drone exec --env-file=.drone.env --pipeline test-brew
 
 test-boot: # test image boot
 	drone exec --env-file=.drone.env --pipeline test-boot

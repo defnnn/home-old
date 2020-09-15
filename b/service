@@ -25,7 +25,7 @@ function main {
     env | grep ^AWS_ | sort | sudo tee /etc/aws.env > /dev/null
 
     if [[ -f /data/home-secret/trusted-user-ca-keys.pem ]]; then
-      install -o root -g root -m 0400 /data/home-secret/trusted-user-ca-keys.pem /etc/ssh/trusted-user-ca-keys.pem
+      cp /data/home-secret/trusted-user-ca-keys.pem /etc/ssh/trusted-user-ca-keys.pem
     fi
 
     exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
