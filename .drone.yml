@@ -67,7 +67,6 @@ steps:
     - test "$HOMEUSER" = "$(stat -c '%U' /run/sshd)"
     - test "$HOMEUSER" = "$(stat -c '%U' /home/$HOMEBOOT)"
     - test "$HOMEUSER" = "$(stat -c '%U' /home/$HOMEUSER)"
-    - test "$HOMEUSER" = "$(stat -c '%U' /home/linuxbrew)"
     - test "drwx------" = "$(stat -c '%A' .gnupg)"
     - test -f ".gnupg/gpg.conf"
     - find .gnupg/ -ls

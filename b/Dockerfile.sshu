@@ -15,7 +15,6 @@ RUN usermod -l $HOMEUSER $HOMEBOOT
 RUN echo "$HOMEUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 RUN mkdir -p /run/sshd /run && chown -R $HOMEUSER:$HOMEUSER /run /etc/ssh
 RUN ln -nfs $HOMEBOOT /home/$HOMEUSER
-RUN install -d -o $HOMEUSER -g $HOMEUSER /home/linuxbrew
 RUN chown -h $HOMEUSER:$HOMEUSER /home/$HOMEBOOT /home/$HOMEUSER
 
 RUN apt-get update && apt-get upgrade -y
