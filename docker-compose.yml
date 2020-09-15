@@ -5,6 +5,8 @@ services:
     hostname: kitt
     image: defn/home:jojomomojo
     entrypoint: [ "/service", "sshd" ]
+    environment:
+      - HOME_TRUSTED_USER_CA_KEYS
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   cloudflared:

@@ -103,7 +103,6 @@ bash-jojomomojo: # bash shell with jojomomojo
 ------docker-compose: # -----------------------------
 recreate: # Recreate home container
 	kitt recreate
-	$(MAKE) ssh-init
 
 recycle: # Recycle home container
 	docker pull registry.defn.sh/defn/home
