@@ -38,5 +38,15 @@ RUN echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/
 
 RUN git clone $HOMEDIR homedir && mv homedir/.git . && rm -rf homedir && git reset --hard && echo "$DOTFILES" > .dotfiles-repo && make update
 
+RUN ./env.sh brew bundle && rm -rf $(shell brew --cache)
+
+RUN ./env.sh asdf install
+
+RUN ./env.sh npm install && npm install -g npm
+
+RUN make install
+
+RUN make upgrade
+
 COPY service /service
 RUN sudo chmod 755 /service
