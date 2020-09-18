@@ -3,6 +3,8 @@ FROM defn/home:boot
 ARG HOMEBOOT
 ARG HOMEUSER
 ARG HOMEHOST
+ARG HOMEDIR
+ARG DOTFILES
 
 ENV HOMEBOOT=$HOMEBOOT
 ENV HOMEUSER=$HOMEUSER
@@ -25,14 +27,26 @@ WORKDIR /home/$HOMEUSER
 ENV HOME=/home/$HOMEUSER
 ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-RUN git reset --hard && make update && make install && make upgrade
 RUN sudo apt-get update && sudo apt-get upgrade -y
+RUN brew upgrade
 
 RUN rm -f /home/linuxbrew/.linuxbrew/bin/gs
 RUN sudo ln -nfs /home/linuxbrew/.linuxbrew/bin/gpg* /home/linuxbrew/.linuxbrew/bin/tmux /usr/local/bin/
 
-COPY etc/ssh/trusted-user-ca-keys-${HOMEHOST}.pem /etc/ssh/trusted-user-ca-keys.pem
+COPY --chown=$HOMEUSER:$HOMEUSER etc/ssh/trusted-user-ca-keys-${HOMEHOST}.pem /etc/ssh/trusted-user-ca-keys.pem
 RUN echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
+
+RUN git clone $HOMEDIR homedir && mv homedir/.git . && rm -rf homedir && git reset --hard && echo "$DOTFILES" > .dotfiles-repo && make update
+
+RUN ./env.sh brew bundle && rm -rf $(brew --cache)
+
+RUN ./env.sh asdf install || ./env.sh asdf install
+
+RUN ./env.sh npm install && npm install -g npm
+
+RUN make install
+
+RUN make upgrade
 
 COPY service /service
 RUN sudo chmod 755 /service

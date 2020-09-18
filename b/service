@@ -21,7 +21,15 @@ function main {
 
   sshd)
     shift
+
     env | grep ^AWS_ | sort | sudo tee /etc/aws.env > /dev/null
+
+    if [[ -f /data/home-secret/trusted-user-ca-keys.pem ]]; then
+      cp /data/home-secret/trusted-user-ca-keys.pem /etc/ssh/trusted-user-ca-keys.pem
+    elif [[ -n "${HOME_TRUSTED_USER_CA_KEYS:-}" ]]; then
+      echo "${HOME_TRUSTED_USER_CA_KEYS}" | base64 -d > /etc/ssh/trusted-user-ca-keys.pem
+    fi
+
     exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
     ;;
 
