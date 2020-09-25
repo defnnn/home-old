@@ -10,6 +10,11 @@ menu:
 	@perl -ne 'printf("\n") if m{^-}; printf("%20s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
 ---------------build: # -----------------------------
+thing: # Build all the things
+	$(MAKE) build-sshd
+	$(MAKE) build-boot
+	$(MAKE) build-jojomomojo
+
 build-sshd: # Build sshd container with lefn/python
 	@echo
 	docker build -t defn/home:sshd \
