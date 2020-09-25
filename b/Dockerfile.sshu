@@ -28,9 +28,6 @@ WORKDIR /home/$HOMEUSER
 ENV HOME=/home/$HOMEUSER
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-COPY etc/ssh/trusted-user-ca-keys-${HOMEHOST}.pem /etc/ssh/trusted-user-ca-keys.pem
-RUN echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
-
 COPY --chown=$HOMEUSER:$HOMEUSER gnupg/* .gnupg/
 RUN install -m 0700 -d $HOME/.gnupg
 

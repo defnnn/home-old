@@ -33,9 +33,6 @@ RUN brew upgrade
 RUN rm -f /home/linuxbrew/.linuxbrew/bin/gs
 RUN sudo ln -nfs /home/linuxbrew/.linuxbrew/bin/gpg* /home/linuxbrew/.linuxbrew/bin/tmux /usr/local/bin/
 
-COPY --chown=$HOMEUSER:$HOMEUSER etc/ssh/trusted-user-ca-keys-${HOMEHOST}.pem /etc/ssh/trusted-user-ca-keys.pem
-RUN echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
-
 RUN git clone $HOMEDIR homedir && mv homedir/.git . && rm -rf homedir && git reset --hard && echo "$DOTFILES" > .dotfiles-repo && make update
 
 RUN ./env.sh brew bundle && rm -rf $(brew --cache)
