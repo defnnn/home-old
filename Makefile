@@ -55,17 +55,6 @@ build-jojomomojo: # Build jojomomojo container with boot
 	$(MAKE) test-jojomomojo
 	docker push defn/home:jojomomojo
 
-build-lamda: # Build lamda container with boot
-	@echo
-	docker build -t defn/home:lamda \
-		--build-arg HOMEBOOT=boot\
-		--build-arg HOMEUSER=lamda \
-		--build-arg HOMEHOST=gorillama.defn.sh \
-		-f b/Dockerfile.bootu \
-		--no-cache \
-		b
-	docker push defn/home:lamda
-
 ----------------test: # -----------------------------
 
 test: # test all images
