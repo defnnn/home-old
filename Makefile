@@ -104,8 +104,10 @@ recycle: # Recycle home container
 	$(MAKE) recreate
 
 ssh-init:
-	ssh-add -L | docker-compose exec -T sshd mkdir -p .ssh
-	ssh-add -L | docker-compose exec -T sshd tee .ssh/authorized_keys
+	echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | docker-compose exec -T sshd tee -a /etc/ssh/sshd_config
+
+ssh-bash:
+	docker-compose exec sshd bash -il
 
 env:
 	perl -pe 's{^CONFIG=.*}{}' -i .env
