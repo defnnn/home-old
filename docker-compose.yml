@@ -37,8 +37,3 @@ services:
       - $HOME/.cloudflared:/etc/cloudflared
     depends_on:
       - pause
-
-networks:
-  default:
-    external:
-      name: kitt
