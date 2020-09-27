@@ -1,23 +1,42 @@
 version: '3.7'
 
 services:
-  sshd:
+  pause:
     hostname: kitt
+    image: gcr.io/google_containers/pause-amd64:3.0
+  zerotier:
+    image: letfn/zerotier
+    network_mode: service:pause
+    env_file: .env
+    volumes:
+      - ./etc/zerotier/zerotier-one:/var/lib/zerotier-one
+      - ./etc/zerotier/hooks:/service.d
+    cap_drop:
+      - NET_RAW
+      - NET_ADMIN
+      - SYS_ADMIN
+    devices:
+      - /dev/net/tun
+    privileged: true
+    depends_on:
+      - pause
+  sshd:
     image: defn/home:jojomomojo
+    network_mode: service:pause
     entrypoint: [ "/service", "sshd" ]
-    environment:
-      - HOME_TRUSTED_USER_CA_KEYS
+    env_file: .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - pause
   cloudflared:
     image: letfn/cloudflared
+    network_mode: service:pause
+    env_file: .env
     volumes:
-      - /host/.cloudflared:/etc/cloudflared
-    environment:
-      - TUNNEL_URL
-      - TUNNEL_HOSTNAME
-    links:
-      - sshd
+      - $HOME/.cloudflared:/etc/cloudflared
+    depends_on:
+      - pause
 
 networks:
   default:
