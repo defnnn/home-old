@@ -95,18 +95,21 @@ bash-jojomomojo: # bash shell with jojomomojo
 	docker run --rm -ti --entrypoint bash defn/home:jojomomojo
 
 ------docker-compose: # -----------------------------
-recreate: # Recreate home container
-	docker-compose down --remove-orphans
+up: # Bring up fargate
 	docker-compose up -d --remove-orphans
+
+down: # Bring down fargate
+	docker-compose down --remove-orphans
+
+recreate: # Recreate home container
+	$(MAKE) down
+	$(MAKE) up
 
 recycle: # Recycle home container
 	docker-compose pull
 	$(MAKE) recreate
 
-ssh-init:
-	echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | docker-compose exec -T sshd tee -a /etc/ssh/sshd_config
-
-ssh-bash:
+bash:
 	docker-compose exec sshd bash -il
 
 env:
