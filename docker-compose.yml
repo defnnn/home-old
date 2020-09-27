@@ -19,7 +19,7 @@ services:
       - config:/config
     healthcheck:
       test: ["CMD", "bash", "-c", "test -f /tmp/done.txt"]
-      interval: 1s
+      interval: 10s
       timeout: 15s
       retries: 100
 
