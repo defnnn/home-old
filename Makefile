@@ -109,4 +109,11 @@ ssh-init:
 
 env:
 	perl -pe 's{^CONFIG=.*}{}' -i .env
-	echo CONFIG=$$(cd config; tar cvfz - . | base64) >> .env
+	echo CONFIG=$$(cd config && tar cvfz - . | (base64 -w 0 || base64) ) >> .env
+
+env-save:
+	(cd config && tar cvfz - . | (base64 -w 0 || base64) ) | pass insert -e home/env
+
+env-restore:
+	mkdir -p config
+	pass home/env | base64 -d | (cd config && tar xvfz -)

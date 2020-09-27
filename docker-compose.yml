@@ -11,6 +11,8 @@ services:
         cd /config
         echo "$CONFIG" | base64 -d | tar xvfz -
         chown 1000 cert.pem
+        cp trusted-user-ca-keys.pem /etc/ssh/trusted-user-ca-keys.pem
+        chown 1001:1001 /etc/ssh/trusted-user-ca-keys.pem
         find . -type f -ls
         touch /tmp/done.txt
         sleep 86400000
