@@ -149,3 +149,5 @@ data/
 efs/
 
 */etc/ssh
+
+/config

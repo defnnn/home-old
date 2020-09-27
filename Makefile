@@ -96,12 +96,17 @@ bash-jojomomojo: # bash shell with jojomomojo
 
 ------docker-compose: # -----------------------------
 recreate: # Recreate home container
-	kitt recreate
+	docker-compose down --remove-orphans
+	docker-compose up -d --remove-orphans
 
 recycle: # Recycle home container
-	docker pull registry.defn.sh/defn/home
+	docker-compose pull
 	$(MAKE) recreate
 
 ssh-init:
 	ssh-add -L | docker-compose exec -T sshd mkdir -p .ssh
 	ssh-add -L | docker-compose exec -T sshd tee .ssh/authorized_keys
+
+env:
+	perl -pe 's{^CONFIG=.*}{}' -i .env
+	echo CONFIG=$$(cd config; tar cvfz - . | base64) >> .env

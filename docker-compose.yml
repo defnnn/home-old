@@ -4,13 +4,33 @@ services:
   pause:
     hostname: kitt
     image: gcr.io/google_containers/pause-amd64:3.0
+  config:
+    image: ubuntu
+    command:
+      - bash
+      - -c
+      - |
+        cd /config
+        echo "$CONFIG" | base64 -d | tar xvfz -
+        chown 1000 cert.pem
+        find . -type f -ls
+        touch /tmp/done.txt
+        sleep 86400000
+    volumes:
+      - config:/config
+    healthcheck:
+      test: ["CMD", "bash", "-c", "test -f /tmp/done.txt"]
+      interval: 1s
+      timeout: 15s
+      retries: 100
+
   zerotier:
     image: letfn/zerotier
     network_mode: service:pause
     env_file: .env
     volumes:
-      - ./etc/zerotier/zerotier-one:/var/lib/zerotier-one
-      - ./etc/zerotier/hooks:/service.d
+      - config:/var/lib/zerotier-one
+      - config:/service.d
     cap_drop:
       - NET_RAW
       - NET_ADMIN
@@ -19,7 +39,8 @@ services:
       - /dev/net/tun
     privileged: true
     depends_on:
-      - pause
+      config:
+        condition: service_healthy
   sshd:
     image: defn/home:jojomomojo
     network_mode: service:pause
@@ -28,12 +49,17 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
-      - pause
+      config:
+        condition: service_healthy
   cloudflared:
     image: letfn/cloudflared
     network_mode: service:pause
     env_file: .env
     volumes:
-      - $HOME/.cloudflared:/etc/cloudflared
+      - config:/usr/local/etc/cloudflared
     depends_on:
-      - pause
+      config:
+        condition: service_healthy
+
+volumes:
+  config:
