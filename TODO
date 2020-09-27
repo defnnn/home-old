@@ -1,8 +1,0 @@
-/etc/exports
-/System/Volumes/Data -alldirs -mapall=501:20 192.168.64.6
-sudo nfsd restart
-
-when in eks:
-https://github.com/GoogleContainerTools/kaniko/issues/889
-  AWS_SDK_LOAD_CONFIG=true
-
