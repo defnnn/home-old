@@ -1,0 +1,4 @@
+type: Zone
+name: fargate
+ingress:
+  address: 192.168.195.57:10001

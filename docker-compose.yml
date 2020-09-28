@@ -23,6 +23,18 @@ services:
       timeout: 15s
       retries: 100
 
+  sshd:
+    image: defn/home:jojomomojo
+    network_mode: service:init
+    entrypoint: [ "/service", "sshd" ]
+    env_file: .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - config:/data/home-secret
+    depends_on:
+      init:
+        condition: service_healthy
+
   zerotier:
     image: letfn/zerotier
     network_mode: service:init
@@ -40,23 +52,64 @@ services:
     depends_on:
       init:
         condition: service_healthy
-  sshd:
-    image: defn/home:jojomomojo
-    network_mode: service:init
-    entrypoint: [ "/service", "sshd" ]
-    env_file: .env
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - config:/data/home-secret
-    depends_on:
-      init:
-        condition: service_healthy
+
   cloudflared:
     image: letfn/cloudflared
     network_mode: service:init
     env_file: .env
     volumes:
       - config:/usr/local/etc/cloudflared
+    depends_on:
+      init:
+        condition: service_healthy
+
+  kuma-global:
+    build: b/kuma
+    entrypoint:
+      - kuma-cp
+      - run
+    env_file: .env
+    environment:
+      - KUMA_MODE=global
+    ports:
+      - 169.254.32.1:5685:5685
+      - 169.254.32.1:5684:5684
+      - 169.254.32.1:5683:5683
+      - 169.254.32.1:5682:5682
+      - 169.254.32.1:5681:5681
+    depends_on:
+      init:
+        condition: service_healthy
+
+  kuma-cp:
+    build: b/kuma
+    network_mode: service:init
+    entrypoint:
+      - kuma-cp
+      - run
+    env_file: .env
+    environment:
+      - KUMA_MODE=remote
+      - KUMA_MULTICLUSTER_REMOTE_ZONE=fargate
+      - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://169.254.32.1:5685
+    volumes:
+      - config:/config
+    depends_on:
+      init:
+        condition: service_healthy
+
+  kuma-ingress:
+    build: b/kuma
+    network_mode: service:init
+    entrypoint:
+      - kuma-dp
+      - run
+      - --name=kuma-ingress
+      - --cp-address=http://192.168.195.57:5681
+      - --dataplane-token-file=/config/fargate-ingress-token
+      - --log-level=debug
+    volumes:
+      - config:/config
     depends_on:
       init:
         condition: service_healthy
