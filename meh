@@ -7,9 +7,4 @@ docker-compose stop kuma-ingress
 docker-compose rm -f kuma-ingress
 docker-compose exec kuma-cp kumactl generate dataplane-token --dataplane=kuma-ingress | docker-compose exec -T kuma-cp tee /config/farcast-ingress-token
 
-cat farcast-app.yaml | docker-compose exec -T kuma-cp kumactl apply -f -
-docker-compose stop kuma-app
-docker-compose rm -f kuma-app
-docker-compose exec kuma-cp kumactl generate dataplane-token --dataplane=kuma-app | docker-compose exec -T kuma-cp tee /config/farcast-app-token
-
-docker-compose up -d
+make up

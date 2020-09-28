@@ -2,7 +2,6 @@ version: '3.7'
 
 services:
   init:
-    hostname: kitt
     image: ubuntu
     command:
       - bash
@@ -11,7 +10,6 @@ services:
         cd /config
         echo "$CONFIG" | base64 -d | tar xvfz -
         chown 1000 cert.pem
-        chown 1001:1001 /etc/ssh/trusted-user-ca-keys.pem
         find . -type f -ls
         touch /tmp/done.txt
         sleep 86400000
@@ -31,24 +29,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - config:/data/home-secret
-    depends_on:
-      init:
-        condition: service_healthy
-
-  zerotier:
-    image: letfn/zerotier
-    network_mode: service:init
-    env_file: .env
-    volumes:
-      - config:/var/lib/zerotier-one
-      - config:/service.d
-    cap_drop:
-      - NET_RAW
-      - NET_ADMIN
-      - SYS_ADMIN
-    devices:
-      - /dev/net/tun
-    privileged: true
     depends_on:
       init:
         condition: service_healthy
@@ -80,7 +60,6 @@ services:
 
   kuma-cp:
     build: b/kuma
-    network_mode: service:init
     entrypoint:
       - kuma-cp
       - run
@@ -89,6 +68,13 @@ services:
       - KUMA_MODE=remote
       - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast
       - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://169.254.32.1:5685
+      - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp
+      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
+      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
+      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
+      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
+      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
+      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
     volumes:
       - config:/config
     depends_on:
@@ -99,11 +85,11 @@ services:
 
   kuma-ingress:
     build: b/kuma
-    network_mode: service:init
     entrypoint:
       - kuma-dp
       - run
       - --name=kuma-ingress
+      - --cp-address=http://kuma-cp:5681
       - --dataplane-token-file=/config/farcast-ingress-token
       - --log-level=debug
     volumes:
@@ -114,22 +100,24 @@ services:
       init:
         condition: service_healthy
 
-  kuma-app:
-    build: b/kuma
-    network_mode: service:init
-    entrypoint:
-      - kuma-dp
-      - run
-      - --name=app
-      - --dataplane-token-file=/config/farcast-app-token
-      - --log-level=debug
+  zerotier:
+    image: letfn/zerotier
+    network_mode: service:kuma-ingress
+    env_file: .env
     volumes:
-      - config:/config
+      - config:/var/lib/zerotier-one
+      - config:/service.d
+    cap_drop:
+      - NET_RAW
+      - NET_ADMIN
+      - SYS_ADMIN
+    devices:
+      - /dev/net/tun
+    privileged: true
     depends_on:
-      kuma-cp:
-        condition: service_started
       init:
         condition: service_healthy
+
 
 volumes:
   config:
