@@ -56,7 +56,7 @@ build-jojomomojo: # Build jojomomojo container with boot
 		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
 		-f b/Dockerfile.bootu \
 		b
-	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 || base64) )" > .drone.env
+	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
 	$(MAKE) test-jojomomojo
 	docker push defn/home:jojomomojo
 
@@ -114,10 +114,10 @@ bash:
 
 env:
 	perl -pe 's{^CONFIG=.*}{}' -i .env
-	echo CONFIG=$$(cd config && tar cvfz - . | (base64 -w 0 || base64) ) >> .env
+	echo CONFIG=$$(cd config && tar cvfz - . | (base64 -w 0 2>/dev/null || base64) ) >> .env
 
 env-save:
-	(cd config && tar cvfz - . | (base64 -w 0 || base64) ) | pass insert -e home/env
+	(cd config && tar cvfz - . | (base64 -w 0 2>/dev/null || base64) ) | pass insert -e home/env
 
 env-restore:
 	mkdir -p config

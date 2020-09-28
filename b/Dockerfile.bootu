@@ -45,5 +45,7 @@ RUN make install
 
 RUN make upgrade
 
+RUN echo 1; make update; make install; make upgrade
+
 COPY service /service
 RUN sudo chmod 755 /service
