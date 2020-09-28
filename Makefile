@@ -95,10 +95,10 @@ bash-jojomomojo: # bash shell with jojomomojo
 	docker run --rm -ti --entrypoint bash defn/home:jojomomojo
 
 ------docker-compose: # -----------------------------
-up: # Bring up fargate
+up: # Bring up farcast
 	docker-compose up -d --remove-orphans
 
-down: # Bring down fargate
+down: # Bring down farcast
 	docker-compose down --remove-orphans
 
 recreate: # Recreate home container

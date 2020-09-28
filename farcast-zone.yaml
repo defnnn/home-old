@@ -1,4 +1,4 @@
 type: Zone
-name: fargate
+name: farcast
 ingress:
   address: 192.168.195.57:10001

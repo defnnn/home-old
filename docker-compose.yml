@@ -90,7 +90,7 @@ services:
     env_file: .env
     environment:
       - KUMA_MODE=remote
-      - KUMA_MULTICLUSTER_REMOTE_ZONE=fargate
+      - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast
       - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://169.254.32.1:5685
     volumes:
       - config:/config
@@ -105,8 +105,8 @@ services:
       - kuma-dp
       - run
       - --name=kuma-ingress
-      - --cp-address=http://192.168.195.57:5681
-      - --dataplane-token-file=/config/fargate-ingress-token
+      - --cp-address=http://127.0.0.1:5681
+      - --dataplane-token-file=/config/farcast-ingress-token
       - --log-level=debug
     volumes:
       - config:/config
