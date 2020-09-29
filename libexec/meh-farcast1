@@ -1,0 +1,6 @@
+cat farcast1-ingress.yaml | docker-compose exec -T kuma-cp1 kumactl apply -f -
+docker-compose exec -T kuma-cp1 kumactl generate dataplane-token --dataplane=kuma-ingress | docker-compose exec -T kuma-cp1 tee /config/farcast1-ingress-token > /dev/null
+
+docker-compose stop kuma-ingress1
+docker-compose rm -f kuma-ingress1
+docker-compose up -d kuma-ingress1

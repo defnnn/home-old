@@ -1,0 +1,7 @@
+cat farcast1-app.yaml | docker-compose exec -T kuma-cp1 kumactl apply -f -
+docker-compose exec -T kuma-cp1 kumactl generate dataplane-token --dataplane=app | docker-compose exec -T kuma-cp1 tee /config/farcast1-app-token > /dev/null
+
+docker-compose stop kuma-app1-dp kuma-app1
+docker-compose rm -f kuma-app1-dp kuma-app1
+docker-compose up -d kuma-app1-dp
+docker-compose up -d kuma-app1

@@ -151,3 +151,4 @@ efs/
 */etc/ssh
 
 /config
+config.tgz
