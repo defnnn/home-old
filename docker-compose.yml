@@ -84,7 +84,7 @@
                 "--dataplane-token-file=/config/farcast1-app-token",
                 "--log-level=debug"
             ],
-            "network_mode": "service:kuma-app1-pause",
+            "network_mode": "service:kuma-app-pause-1",
             "depends_on": {
                 "kuma-cp-1": {
                     "condition": "service_started"
@@ -99,7 +99,7 @@
         },
         "kuma-app-1": {
             "image": "nginx",
-            "network_mode": "service:kuma-app1-pause",
+            "network_mode": "service:kuma-app-pause-1",
             "volumes": [
                 "config:/config"
             ]
@@ -162,7 +162,7 @@
                 "--dataplane-token-file=/config/farcast2-app-token",
                 "--log-level=debug"
             ],
-            "network_mode": "service:kuma-app2-pause",
+            "network_mode": "service:kuma-app-pause-2",
             "depends_on": {
                 "kuma-cp-2": {
                     "condition": "service_started"
@@ -177,7 +177,7 @@
         },
         "kuma-app-2": {
             "image": "nginx",
-            "network_mode": "service:kuma-app2-pause",
+            "network_mode": "service:kuma-app-pause-2",
             "volumes": [
                 "config:/config"
             ]

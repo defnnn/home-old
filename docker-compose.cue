@@ -178,13 +178,13 @@ services: {
 			"kuma-ingress-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
 
 			"kuma-app-dp-\(n)": (_kuma_app_dp & {"\(n)": {}})[n]
-			"kuma-app-dp-\(n)": network_mode: "service:kuma-app\(n)-pause"
+			"kuma-app-dp-\(n)": network_mode: "service:kuma-app-pause-\(n)"
 			"kuma-app-dp-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
 
 			"kuma-app-pause-\(n)": _kuma_app_pause
 
 			"kuma-app-\(n)": (_kuma_app & {"\(n)": {}})[n]
-			"kuma-app-\(n)": network_mode: "service:kuma-app\(n)-pause"
+			"kuma-app-\(n)": network_mode: "service:kuma-app-pause-\(n)"
 		}
 	}
 
