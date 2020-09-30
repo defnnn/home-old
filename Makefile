@@ -17,7 +17,7 @@ thing: # Build all the things
 
 build-sshd: # Build sshd container with lefn/python
 	@echo
-	docker build -t defn/home:sshd \
+	docker build $(build) -t defn/home:sshd \
 		--build-arg HOMEBOOT=boot \
 		-f b/Dockerfile.sshd \
 		--no-cache \
@@ -27,7 +27,7 @@ build-sshd: # Build sshd container with lefn/python
 
 build-ssh: # Build ssh container with sshd
 	@echo
-	docker build -t defn/home:ssh \
+	docker build $(build) -t defn/home:ssh \
 		--build-arg HOMEBOOT=boot \
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=ssh.defn.sh \
@@ -39,7 +39,7 @@ build-ssh: # Build ssh container with sshd
 
 build-boot: # Build boot container with sshd
 	@echo
-	docker build -t defn/home:boot \
+	docker build $(build) -t defn/home:boot \
 		--build-arg HOMEBOOT=boot \
 		-f b/Dockerfile.boot \
 		b
@@ -48,7 +48,7 @@ build-boot: # Build boot container with sshd
 
 build-jojomomojo: # Build jojomomojo container with boot
 	@echo
-	docker build -t defn/home:jojomomojo \
+	docker build $(build) -t defn/home:jojomomojo \
 		--build-arg HOMEBOOT=boot \
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
