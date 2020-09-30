@@ -42,6 +42,40 @@ app: {
 	}
 }
 
+mesh: {
+	type: "Mesh"
+	name: "default"
+	mtls: {
+		enabledBackend: "ca-1"
+		backends: [
+			{
+				name: "ca-1"
+				type: "builtin"
+			},
+		]
+	}
+}
+
+traffic_permission: {
+	type: "TrafficPermission"
+	name: "allow-all-traffic"
+	mesh: "default"
+	sources: [
+		{
+			match: {
+				"kuma.io/service": '*'
+			}
+		},
+	]
+	destinations: [
+		{
+			match: {
+				"kuma.io/service": '*'
+			}
+		},
+	]
+}
+
 zone: name: zone_this
 zone: ingress: address: "\(ip_zerotier):10001"
 
