@@ -1,10 +1,14 @@
 version: "3.7"
 
-_zerotiers: [ "zerotier0", "zerotier1", "zerotier2"]
+_ip_global: "192.168.195.156"
 
 _zones: [ "1", "2"]
 
-_ip_global: "192.168.195.156"
+_zerotier_global: "zerotier0"
+
+_zerotiers: 
+  [ _zerotier_global ] + 
+  [ for n in _zones { "zerotier\(n)" } ]
 
 _zerotier: {
 	image:    "letfn/zerotier"
@@ -158,7 +162,7 @@ services: {
 	cloudflared: depends_on: init: condition: "service_healthy"
 
 	"kuma-global": _kuma_global
-	"kuma-global": network_mode: "service:zerotier0"
+	"kuma-global": network_mode: "service:\(_zerotier_global)"
 	"kuma-global": depends_on: {
 		init: condition: "service_healthy"
 		{
