@@ -14,6 +14,7 @@
                 "zerotier1:/zerotier1",
                 "zerotier2:/zerotier2"
             ],
+            "env_file": ".env",
             "healthcheck": {
                 "test": [
                     "CMD",
@@ -32,7 +33,6 @@
                 "kuma-cp",
                 "run"
             ],
-            "env_file": ".env",
             "environment": [
                 "KUMA_MODE=remote",
                 "KUMA_MULTICLUSTER_REMOTE_ZONE=farcast1",
@@ -45,6 +45,7 @@
                 "KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem",
                 "KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client"
             ],
+            "env_file": ".env",
             "depends_on": {
                 "kuma-global": {
                     "condition": "service_started"
@@ -64,6 +65,7 @@
                 "--dataplane-token-file=/config/farcast1-ingress-token",
                 "--log-level=debug"
             ],
+            "env_file": ".env",
             "network_mode": "service:zerotier1",
             "depends_on": {
                 "kuma-cp-1": {
@@ -84,6 +86,7 @@
                 "--dataplane-token-file=/config/farcast1-app-token",
                 "--log-level=debug"
             ],
+            "env_file": ".env",
             "network_mode": "service:kuma-app-pause-1",
             "depends_on": {
                 "kuma-cp-1": {
@@ -95,10 +98,12 @@
             ]
         },
         "kuma-app-pause-1": {
-            "image": "gcr.io/google_containers/pause-amd64:3.2"
+            "image": "gcr.io/google_containers/pause-amd64:3.2",
+            "env_file": ".env"
         },
         "kuma-app-1": {
             "image": "nginx",
+            "env_file": ".env",
             "network_mode": "service:kuma-app-pause-1",
             "volumes": [
                 "config:/config"
@@ -110,7 +115,6 @@
                 "kuma-cp",
                 "run"
             ],
-            "env_file": ".env",
             "environment": [
                 "KUMA_MODE=remote",
                 "KUMA_MULTICLUSTER_REMOTE_ZONE=farcast2",
@@ -123,6 +127,7 @@
                 "KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem",
                 "KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client"
             ],
+            "env_file": ".env",
             "depends_on": {
                 "kuma-global": {
                     "condition": "service_started"
@@ -142,6 +147,7 @@
                 "--dataplane-token-file=/config/farcast2-ingress-token",
                 "--log-level=debug"
             ],
+            "env_file": ".env",
             "network_mode": "service:zerotier2",
             "depends_on": {
                 "kuma-cp-2": {
@@ -162,6 +168,7 @@
                 "--dataplane-token-file=/config/farcast2-app-token",
                 "--log-level=debug"
             ],
+            "env_file": ".env",
             "network_mode": "service:kuma-app-pause-2",
             "depends_on": {
                 "kuma-cp-2": {
@@ -173,10 +180,12 @@
             ]
         },
         "kuma-app-pause-2": {
-            "image": "gcr.io/google_containers/pause-amd64:3.2"
+            "image": "gcr.io/google_containers/pause-amd64:3.2",
+            "env_file": ".env"
         },
         "kuma-app-2": {
             "image": "nginx",
+            "env_file": ".env",
             "network_mode": "service:kuma-app-pause-2",
             "volumes": [
                 "config:/config"
@@ -188,12 +197,8 @@
                     "condition": "service_healthy"
                 }
             },
-            "image": "letfn/zerotier",
             "env_file": ".env",
-            "volumes": [
-                "zerotier0:/var/lib/zerotier-one",
-                "config:/service.d"
-            ],
+            "image": "letfn/zerotier",
             "cap_drop": [
                 "NET_RAW",
                 "NET_ADMIN",
@@ -201,6 +206,10 @@
             ],
             "devices": [
                 "/dev/net/tun"
+            ],
+            "volumes": [
+                "zerotier0:/var/lib/zerotier-one",
+                "config:/service.d"
             ],
             "privileged": true
         },
@@ -210,12 +219,8 @@
                     "condition": "service_healthy"
                 }
             },
-            "image": "letfn/zerotier",
             "env_file": ".env",
-            "volumes": [
-                "zerotier1:/var/lib/zerotier-one",
-                "config:/service.d"
-            ],
+            "image": "letfn/zerotier",
             "cap_drop": [
                 "NET_RAW",
                 "NET_ADMIN",
@@ -223,6 +228,10 @@
             ],
             "devices": [
                 "/dev/net/tun"
+            ],
+            "volumes": [
+                "zerotier1:/var/lib/zerotier-one",
+                "config:/service.d"
             ],
             "privileged": true
         },
@@ -267,10 +276,10 @@
                 "kuma-cp",
                 "run"
             ],
-            "env_file": ".env",
             "environment": [
                 "KUMA_MODE=global"
             ],
+            "env_file": ".env",
             "network_mode": "service:zerotier0",
             "depends_on": {
                 "init": {
@@ -296,12 +305,8 @@
                     "condition": "service_healthy"
                 }
             },
-            "image": "letfn/zerotier",
             "env_file": ".env",
-            "volumes": [
-                "zerotier2:/var/lib/zerotier-one",
-                "config:/service.d"
-            ],
+            "image": "letfn/zerotier",
             "cap_drop": [
                 "NET_RAW",
                 "NET_ADMIN",
@@ -309,6 +314,10 @@
             ],
             "devices": [
                 "/dev/net/tun"
+            ],
+            "volumes": [
+                "zerotier2:/var/lib/zerotier-one",
+                "config:/service.d"
             ],
             "privileged": true
         }

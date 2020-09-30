@@ -12,8 +12,6 @@ _zerotier_svcs:
 
 _zerotier: {
 	image:    "letfn/zerotier"
-	env_file: ".env"
-	volumes: [...]
 	cap_drop: [
 		"NET_RAW",
 		"NET_ADMIN",
@@ -31,7 +29,6 @@ _kuma_global: {
 		"kuma-cp",
 		"run",
 	]
-	env_file: ".env"
 	environment: [
 		"KUMA_MODE=global",
 	]
@@ -46,7 +43,6 @@ _kuma_cp: [N=_]: {
 		"kuma-cp",
 		"run",
 	]
-	env_file: ".env"
 	environment: [
 		"KUMA_MODE=remote",
 		"KUMA_MULTICLUSTER_REMOTE_ZONE=farcast\(N)",
@@ -132,7 +128,6 @@ _init: {
 _sshd: {
 	image: "defn/home:jojomomojo"
 	entrypoint: ["/service", "sshd"]
-	env_file: ".env"
 	volumes:
 		[
 			"/var/run/docker.sock:/var/run/docker.sock",
@@ -144,11 +139,12 @@ _sshd: {
 
 _cloudflared: {
 	image:    "letfn/cloudflared"
-	env_file: ".env"
 	volumes: [
 		"config:/app/src/.cloudflared",
 	]
 }
+
+services: [string]: env_file: ".env"
 
 services: {
 	init: _init
