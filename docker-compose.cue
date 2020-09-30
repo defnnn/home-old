@@ -6,8 +6,8 @@ _zones: [ "1", "2"]
 
 _zerotier_global: "zerotier0"
 
-_zerotiers: 
-  [ _zerotier_global ] + 
+_zerotier_svcs:
+  [ _zerotier_global ] +
   [ for n in _zones { "zerotier\(n)" } ]
 
 _zerotier: {
@@ -119,7 +119,7 @@ _init: {
 
 	volumes:
 		[ "config:/config"] +
-		[ for n in _zerotiers {"\(n):/\(n)"}]
+		[ for n in _zerotier_svcs {"\(n):/\(n)"}]
 
 	healthcheck: {
 		test: ["CMD", "test", "-f", "/tmp/done.txt"]
@@ -139,7 +139,7 @@ _sshd: {
 			"config:/data/home-secret",
 			"config:/config",
 		] +
-		[ for n in _zerotiers {"\(n):/\(n)"}]
+		[ for n in _zerotier_svcs {"\(n):/\(n)"}]
 }
 
 _cloudflared: {
@@ -166,7 +166,7 @@ services: {
 	"kuma-global": depends_on: {
 		init: condition: "service_healthy"
 		{
-			for n in _zerotiers {
+			for n in _zerotier_svcs {
 				"\(n)": condition: "service_started"
 			}
 		}
@@ -193,7 +193,7 @@ services: {
 	}
 
 	{
-		for n in _zerotiers {
+		for n in _zerotier_svcs {
 			"\(n)": depends_on: init: condition: "service_healthy"
 			"\(n)": _zerotier & {
 				volumes: [
@@ -209,7 +209,7 @@ services: {
 volumes: {
 	config: {}
 	{
-		for n in _zerotiers {
+		for n in _zerotier_svcs {
 			"\(n)": {}
 		}
 	}
