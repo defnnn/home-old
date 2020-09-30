@@ -60,6 +60,12 @@ services:
     depends_on:
       init:
         condition: service_healthy
+      zerotier0:
+        condition: service_started
+      zerotier1:
+        condition: service_started
+      zerotier2:
+        condition: service_started
 
   kuma-cp1:
     image: letfn/kuma

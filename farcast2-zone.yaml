@@ -1,4 +1,0 @@
-type: Zone
-name: farcast2
-ingress:
-  address: 192.168.195.202:10001

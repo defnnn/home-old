@@ -5,3 +5,5 @@ docker-compose stop kuma-app2-dp kuma-app2
 docker-compose rm -f kuma-app2-dp kuma-app2
 docker-compose up -d kuma-app2-dp
 docker-compose up -d kuma-app2
+
+echo app2 | docker-compose exec -T kuma-app2 tee /usr/share/nginx/html/index.html

@@ -1,0 +1,2 @@
+docker-compose exec -T kuma-app1 curl -s http://localhost:1000
+docker-compose exec -T kuma-app2 curl -s http://localhost:1000
