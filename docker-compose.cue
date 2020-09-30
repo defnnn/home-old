@@ -22,7 +22,7 @@ ip_global: "192.168.195.156"
 	depends_on: init: condition: "service_healthy"
 }
 
-serviceo: {
+services: {
 	init: {
 		image: "ubuntu"
 		command: [
