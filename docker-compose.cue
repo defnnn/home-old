@@ -6,6 +6,18 @@ zones: [ "1", "2"]
 
 ip_global: "192.168.195.156"
 
+z: {
+	for n in zones {
+		"\(n)": {
+			"kuma-cp":        _kuma_cp & {"\(n)": {}}
+			"kuma-ingress":   _kuma_ingress & {"\(n)": {}}
+			"kuma-app-pause": _kuma_app_pause
+			"kuma-app":       _kuma_app & {"\(n)": {}}
+			"kuma-app-dp":    _kuma_app_dp & {"\(n)": {}}
+		}
+	}
+}
+
 _zerotier: {
 	image:    "letfn/zerotier"
 	env_file: ".env"
@@ -174,16 +186,12 @@ services: {
 
 	{
 		for n in zones {
-			"kuma-cp\(n)": _kuma_cp & {"\(n)": {}}
-
-			"kuma-ingress\(n)": _kuma_ingress & {"\(n)": {}}
-
-			"kuma-app\(n)-pause": _kuma_app_pause
-
-			"kuma-app\(n)": _kuma_app & {"\(n)": {}}
-
-			"kuma-app\(n)-dp": _kuma_app_dp & {"\(n)": {}}
-		}
+      "kuma-cp-\(n)": z["\(n)"]["kuma-cp"]["\(n)"]
+      "kuma-ingress-\(n)": z["\(n)"]["kuma-ingress"]["\(n)"]
+      "kuma-app-\(n)": z["\(n)"]["kuma-app"]["\(n)"]
+      "kuma-app-dp-\(n)": z["\(n)"]["kuma-app-dp"]["\(n)"]
+      "kuma-app-pause-\(n)": z["\(n)"]["kuma-app-pause"]
+			}
 	}
 
 	{
