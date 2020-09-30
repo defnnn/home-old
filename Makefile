@@ -95,6 +95,7 @@ bash-jojomomojo: # bash shell with jojomomojo
 	docker run --rm -ti --entrypoint bash defn/home:jojomomojo
 
 ------docker-compose: # -----------------------------
+
 up: # Bring up farcast
 	docker-compose up -d --remove-orphans
 
@@ -111,3 +112,9 @@ recycle: # Recycle home container
 
 bash:
 	docker-compose exec sshd bash -il
+
+-------------cuelang: # -----------------------------
+
+docker-compose.yml: docker-compose.cue
+	cue export docker-compose.cue > docker-compose.yml.1
+	mv docker-compose.yml.1 docker-compose.yml

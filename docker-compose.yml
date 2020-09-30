@@ -183,6 +183,11 @@
             ]
         },
         "zerotier0": {
+            "depends_on": {
+                "init": {
+                    "condition": "service_healthy"
+                }
+            },
             "image": "letfn/zerotier",
             "env_file": ".env",
             "volumes": [
@@ -197,14 +202,14 @@
             "devices": [
                 "/dev/net/tun"
             ],
-            "privileged": true,
+            "privileged": true
+        },
+        "zerotier1": {
             "depends_on": {
                 "init": {
                     "condition": "service_healthy"
                 }
-            }
-        },
-        "zerotier1": {
+            },
             "image": "letfn/zerotier",
             "env_file": ".env",
             "volumes": [
@@ -219,12 +224,7 @@
             "devices": [
                 "/dev/net/tun"
             ],
-            "privileged": true,
-            "depends_on": {
-                "init": {
-                    "condition": "service_healthy"
-                }
-            }
+            "privileged": true
         },
         "sshd": {
             "image": "defn/home:jojomomojo",
@@ -291,6 +291,11 @@
             ]
         },
         "zerotier2": {
+            "depends_on": {
+                "init": {
+                    "condition": "service_healthy"
+                }
+            },
             "image": "letfn/zerotier",
             "env_file": ".env",
             "volumes": [
@@ -305,12 +310,7 @@
             "devices": [
                 "/dev/net/tun"
             ],
-            "privileged": true,
-            "depends_on": {
-                "init": {
-                    "condition": "service_healthy"
-                }
-            }
+            "privileged": true
         }
     },
     "volumes": {

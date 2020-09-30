@@ -190,13 +190,12 @@ services: {
 
 	{
 		for n in _zerotiers {
+			"\(n)": depends_on: init: condition: "service_healthy"
 			"\(n)": _zerotier & {
 				volumes: [
 					"\(n):/var/lib/zerotier-one",
 					"config:/service.d",
 				]
-
-				depends_on: init: condition: "service_healthy"
 			}
 		}
 	}
