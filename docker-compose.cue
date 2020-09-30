@@ -19,7 +19,6 @@ _zerotier: {
 		"/dev/net/tun",
 	]
 	privileged: true
-	depends_on: init: condition: "service_healthy"
 }
 
 _kuma_global: {
@@ -36,14 +35,6 @@ _kuma_global: {
 	volumes: [
 		"config:/config",
 	]
-	depends_on: {
-		init: condition: "service_healthy"
-		{
-			for n in _zerotiers {
-				"\(n)": condition: "service_started"
-			}
-		}
-	}
 }
 
 _kuma_cp: [N=_]: {
@@ -68,7 +59,6 @@ _kuma_cp: [N=_]: {
 	volumes: [
 		"config:/config",
 	]
-	depends_on: "kuma-global": condition: "service_started"
 }
 
 _kuma_ingress: [N=_]: {
@@ -85,7 +75,6 @@ _kuma_ingress: [N=_]: {
 	volumes: [
 		"config:/config",
 	]
-	depends_on: "kuma-cp-\(N)": condition: "service_started"
 }
 
 _kuma_app_pause: {
@@ -114,7 +103,6 @@ _kuma_app_dp: [N=_]: {
 	volumes: [
 		"config:/config",
 	]
-	depends_on: "kuma-cp-\(N)": condition: "service_started"
 }
 
 _init: {
@@ -156,7 +144,6 @@ _sshd: {
 		"zerotier1:/zerotier1",
 		"zerotier2:/zerotier2",
 	]
-	depends_on: init: condition: "service_healthy"
 }
 
 _cloudflared: {
@@ -166,25 +153,41 @@ _cloudflared: {
 	volumes: [
 		"config:/app/src/.cloudflared",
 	]
-	depends_on: init: condition: "service_healthy"
 }
 
 services: {
 	init: _init
 
 	sshd: _sshd
+	sshd: depends_on: init: condition: "service_healthy"
 
 	cloudflared: _cloudflared
+	cloudflared: depends_on: init: condition: "service_healthy"
 
 	"kuma-global": _kuma_global
+	"kuma-global": depends_on: {
+		init: condition: "service_healthy"
+		{
+			for n in _zerotiers {
+				"\(n)": condition: "service_started"
+			}
+		}
+	}
 
 	{
 		for n in _zones {
-			"kuma-cp-\(n)":        (_kuma_cp & {"\(n)": {}})[n]
-			"kuma-ingress-\(n)":   (_kuma_ingress & {"\(n)": {}})[n]
-			"kuma-app-\(n)":       (_kuma_app & {"\(n)": {}})[n]
-			"kuma-app-dp-\(n)":    (_kuma_app_dp & {"\(n)": {}})[n]
+			"kuma-cp-\(n)": (_kuma_cp & {"\(n)": {}})[n]
+			"kuma-cp-\(n)": depends_on: "kuma-global": condition: "service_started"
+
+			"kuma-ingress-\(n)": (_kuma_ingress & {"\(n)": {}})[n]
+			"kuma-ingress-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
+
+			"kuma-app-dp-\(n)": (_kuma_app_dp & {"\(n)": {}})[n]
+			"kuma-app-dp-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
+
 			"kuma-app-pause-\(n)": _kuma_app_pause
+
+			"kuma-app-\(n)": (_kuma_app & {"\(n)": {}})[n]
 		}
 	}
 
@@ -195,6 +198,8 @@ services: {
 					"\(n):/var/lib/zerotier-one",
 					"config:/service.d",
 				]
+
+				depends_on: init: condition: "service_healthy"
 			}
 		}
 	}
