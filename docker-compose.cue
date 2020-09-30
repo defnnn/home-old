@@ -22,8 +22,7 @@ _zerotier: {
 }
 
 _kuma_global: {
-	image:        "letfn/kuma"
-	network_mode: "service:zerotier0"
+	image: "letfn/kuma"
 	entrypoint: [
 		"kuma-cp",
 		"run",
@@ -62,8 +61,7 @@ _kuma_cp: [N=_]: {
 }
 
 _kuma_ingress: [N=_]: {
-	image:        "letfn/kuma"
-	network_mode: "service:zerotier\(N)"
+	image: "letfn/kuma"
 	entrypoint: [
 		"kuma-dp",
 		"run",
@@ -82,16 +80,14 @@ _kuma_app_pause: {
 }
 
 _kuma_app: [N=_]: {
-	image:        "nginx"
-	network_mode: "service:kuma-app\(N)-pause"
+	image: "nginx"
 	volumes: [
 		"config:/config",
 	]
 }
 
 _kuma_app_dp: [N=_]: {
-	image:        "letfn/kuma"
-	network_mode: "service:kuma-app\(N)-pause"
+	image: "letfn/kuma"
 	entrypoint: [
 		"kuma-dp",
 		"run",
@@ -117,12 +113,10 @@ _init: {
 		""",
 	]
 
-	volumes: [
-		"config:/config",
-		"zerotier0:/zerotier0",
-		"zerotier1:/zerotier1",
-		"zerotier2:/zerotier2",
-	]
+	volumes:
+		[ "config:/config"] +
+		[ for n in _zerotiers {"\(n):/\(n)"}]
+
 	healthcheck: {
 		test: ["CMD", "test", "-f", "/tmp/done.txt"]
 		interval: "10s"
@@ -132,24 +126,21 @@ _init: {
 }
 
 _sshd: {
-	image:        "defn/home:jojomomojo"
-	network_mode: "service:init"
+	image: "defn/home:jojomomojo"
 	entrypoint: ["/service", "sshd"]
 	env_file: ".env"
-	volumes: [
-		"/var/run/docker.sock:/var/run/docker.sock",
-		"config:/data/home-secret",
-		"config:/config",
-		"zerotier0:/zerotier0",
-		"zerotier1:/zerotier1",
-		"zerotier2:/zerotier2",
-	]
+	volumes:
+		[
+			"/var/run/docker.sock:/var/run/docker.sock",
+			"config:/data/home-secret",
+			"config:/config",
+		] +
+		[ for n in _zerotiers {"\(n):/\(n)"}]
 }
 
 _cloudflared: {
-	image:        "letfn/cloudflared"
-	network_mode: "service:init"
-	env_file:     ".env"
+	image:    "letfn/cloudflared"
+	env_file: ".env"
 	volumes: [
 		"config:/app/src/.cloudflared",
 	]
@@ -159,12 +150,15 @@ services: {
 	init: _init
 
 	sshd: _sshd
+	sshd: network_mode: "service:init"
 	sshd: depends_on: init: condition: "service_healthy"
 
 	cloudflared: _cloudflared
+	cloudflared: network_mode: "service:init"
 	cloudflared: depends_on: init: condition: "service_healthy"
 
 	"kuma-global": _kuma_global
+	"kuma-global": network_mode: "service:zerotier0"
 	"kuma-global": depends_on: {
 		init: condition: "service_healthy"
 		{
@@ -180,14 +174,17 @@ services: {
 			"kuma-cp-\(n)": depends_on: "kuma-global": condition: "service_started"
 
 			"kuma-ingress-\(n)": (_kuma_ingress & {"\(n)": {}})[n]
+			"kuma-ingress-\(n)": network_mode: "service:zerotier\(n)"
 			"kuma-ingress-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
 
 			"kuma-app-dp-\(n)": (_kuma_app_dp & {"\(n)": {}})[n]
+			"kuma-app-dp-\(n)": network_mode: "service:kuma-app\(n)-pause"
 			"kuma-app-dp-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
 
 			"kuma-app-pause-\(n)": _kuma_app_pause
 
 			"kuma-app-\(n)": (_kuma_app & {"\(n)": {}})[n]
+			"kuma-app-\(n)": network_mode: "service:kuma-app\(n)-pause"
 		}
 	}
 
