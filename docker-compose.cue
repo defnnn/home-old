@@ -88,7 +88,7 @@ _kuma_ingress: [N=_]: {
 	depends_on: "kuma-cp-\(N)": condition: "service_started"
 }
 
-_kuma_app_pause: [N=_]: {
+_kuma_app_pause: {
 	image: "gcr.io/google_containers/pause-amd64:3.2"
 }
 
@@ -178,7 +178,7 @@ services: {
 
 			"kuma-ingress\(n)": _kuma_ingress & {"\(n)": {}}
 
-			"kuma-app\(n)-pause": _kuma_app_pause & {"\(n)": {}}
+			"kuma-app\(n)-pause": _kuma_app_pause
 
 			"kuma-app\(n)": _kuma_app & {"\(n)": {}}
 
