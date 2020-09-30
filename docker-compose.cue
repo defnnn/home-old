@@ -1,5 +1,11 @@
 version: "3.7"
 
+zerotiers: [ "zerotier0", "zerotier1", "zerotier2"]
+
+zones: [ "1", "2"]
+
+ip_global: "192.168.195.156"
+
 #zerotier: {
 	image:    "letfn/zerotier"
 	env_file: ".env"
@@ -178,12 +184,6 @@ serviceo: {
 	}
 
 }
-
-zerotiers: [ "zerotier0", "zerotier1", "zerotier2"]
-
-zones: [ "1", "2"]
-
-ip_global: "192.168.195.156"
 
 volumes: {
 	config: {}
