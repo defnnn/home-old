@@ -1,22 +1,10 @@
 version: "3.7"
 
-zerotiers: [ "zerotier0", "zerotier1", "zerotier2"]
+_zerotiers: [ "zerotier0", "zerotier1", "zerotier2"]
 
-zones: [ "1", "2"]
+_zones: [ "1", "2"]
 
-ip_global: "192.168.195.156"
-
-z: {
-	for n in zones {
-		"\(n)": {
-			"kuma-cp":        _kuma_cp & {"\(n)": {}}
-			"kuma-ingress":   _kuma_ingress & {"\(n)": {}}
-			"kuma-app-pause": _kuma_app_pause
-			"kuma-app":       _kuma_app & {"\(n)": {}}
-			"kuma-app-dp":    _kuma_app_dp & {"\(n)": {}}
-		}
-	}
-}
+_ip_global: "192.168.195.156"
 
 _zerotier: {
 	image:    "letfn/zerotier"
@@ -51,7 +39,7 @@ _kuma_global: {
 	depends_on: {
 		init: condition: "service_healthy"
 		{
-			for n in zerotiers {
+			for n in _zerotiers {
 				"\(n)": condition: "service_started"
 			}
 		}
@@ -68,7 +56,7 @@ _kuma_cp: [N=_]: {
 	environment: [
 		"KUMA_MODE=remote",
 		"KUMA_MULTICLUSTER_REMOTE_ZONE=farcast\(N)",
-		"KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://\(ip_global):5685",
+		"KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://\(_ip_global):5685",
 		"KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp\(N)",
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true",
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0",
@@ -129,73 +117,79 @@ _kuma_app_dp: [N=_]: {
 	depends_on: "kuma-cp-\(N)": condition: "service_started"
 }
 
-services: {
-	init: {
-		image: "ubuntu"
-		command: [
-			"bash",
-			"-c",
-			"""
+_init: {
+	image: "ubuntu"
+	command: [
+		"bash",
+		"-c",
+		"""
 		set -x
 		exec sleep 86400000
 
 		""",
-		]
+	]
 
-		volumes: [
-			"config:/config",
-			"zerotier0:/zerotier0",
-			"zerotier1:/zerotier1",
-			"zerotier2:/zerotier2",
-		]
-		healthcheck: {
-			test: ["CMD", "test", "-f", "/tmp/done.txt"]
-			interval: "10s"
-			timeout:  "15s"
-			retries:  100
-		}
+	volumes: [
+		"config:/config",
+		"zerotier0:/zerotier0",
+		"zerotier1:/zerotier1",
+		"zerotier2:/zerotier2",
+	]
+	healthcheck: {
+		test: ["CMD", "test", "-f", "/tmp/done.txt"]
+		interval: "10s"
+		timeout:  "15s"
+		retries:  100
 	}
+}
 
-	sshd: {
-		image:        "defn/home:jojomomojo"
-		network_mode: "service:init"
-		entrypoint: ["/service", "sshd"]
-		env_file: ".env"
-		volumes: [
-			"/var/run/docker.sock:/var/run/docker.sock",
-			"config:/data/home-secret",
-			"config:/config",
-			"zerotier0:/zerotier0",
-			"zerotier1:/zerotier1",
-			"zerotier2:/zerotier2",
-		]
-		depends_on: init: condition: "service_healthy"
-	}
+_sshd: {
+	image:        "defn/home:jojomomojo"
+	network_mode: "service:init"
+	entrypoint: ["/service", "sshd"]
+	env_file: ".env"
+	volumes: [
+		"/var/run/docker.sock:/var/run/docker.sock",
+		"config:/data/home-secret",
+		"config:/config",
+		"zerotier0:/zerotier0",
+		"zerotier1:/zerotier1",
+		"zerotier2:/zerotier2",
+	]
+	depends_on: init: condition: "service_healthy"
+}
 
-	cloudflared: {
-		image:        "letfn/cloudflared"
-		network_mode: "service:init"
-		env_file:     ".env"
-		volumes: [
-			"config:/app/src/.cloudflared",
-		]
-		depends_on: init: condition: "service_healthy"
-	}
+_cloudflared: {
+	image:        "letfn/cloudflared"
+	network_mode: "service:init"
+	env_file:     ".env"
+	volumes: [
+		"config:/app/src/.cloudflared",
+	]
+	depends_on: init: condition: "service_healthy"
+}
+
+services: {
+	init: _init
+
+	sshd: _sshd
+
+	cloudflared: _cloudflared
 
 	"kuma-global": _kuma_global
 
 	{
-		for n in zones {
-			"kuma-cp-\(n)":        z["\(n)"]["kuma-cp"]["\(n)"]
-			"kuma-ingress-\(n)":   z["\(n)"]["kuma-ingress"]["\(n)"]
-			"kuma-app-\(n)":       z["\(n)"]["kuma-app"]["\(n)"]
-			"kuma-app-dp-\(n)":    z["\(n)"]["kuma-app-dp"]["\(n)"]
-			"kuma-app-pause-\(n)": z["\(n)"]["kuma-app-pause"]
+		for n in _zones {
+			"kuma-cp-\(n)":        (_kuma_cp & {"\(n)": {}})[n]
+			"kuma-ingress-\(n)":   (_kuma_ingress & {"\(n)": {}})[n]
+			"kuma-app-\(n)":       (_kuma_app & {"\(n)": {}})[n]
+			"kuma-app-dp-\(n)":    (_kuma_app_dp & {"\(n)": {}})[n]
+			"kuma-app-pause-\(n)": _kuma_app_pause
 		}
 	}
 
 	{
-		for n in zerotiers {
+		for n in _zerotiers {
 			"\(n)": _zerotier & {
 				volumes: [
 					"\(n):/var/lib/zerotier-one",
@@ -210,7 +204,7 @@ services: {
 volumes: {
 	config: {}
 	{
-		for n in zerotiers {
+		for n in _zerotiers {
 			"\(n)": {}
 		}
 	}
