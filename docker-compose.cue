@@ -186,12 +186,12 @@ services: {
 
 	{
 		for n in zones {
-      "kuma-cp-\(n)": z["\(n)"]["kuma-cp"]["\(n)"]
-      "kuma-ingress-\(n)": z["\(n)"]["kuma-ingress"]["\(n)"]
-      "kuma-app-\(n)": z["\(n)"]["kuma-app"]["\(n)"]
-      "kuma-app-dp-\(n)": z["\(n)"]["kuma-app-dp"]["\(n)"]
-      "kuma-app-pause-\(n)": z["\(n)"]["kuma-app-pause"]
-			}
+			"kuma-cp-\(n)":        z["\(n)"]["kuma-cp"]["\(n)"]
+			"kuma-ingress-\(n)":   z["\(n)"]["kuma-ingress"]["\(n)"]
+			"kuma-app-\(n)":       z["\(n)"]["kuma-app"]["\(n)"]
+			"kuma-app-dp-\(n)":    z["\(n)"]["kuma-app-dp"]["\(n)"]
+			"kuma-app-pause-\(n)": z["\(n)"]["kuma-app-pause"]
+		}
 	}
 
 	{
