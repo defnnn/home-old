@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-for n in "$@"; do 
+for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do 
   cue export farcast.cue farcastx.cue farcast${n}.cue farcast${n}.json | yq -r .ingress | docker-compose exec -T kuma-cp-${n} kumactl apply -f -
 
   docker-compose exec -T kuma-cp-${n} kumactl generate dataplane-token --dataplane=kuma-ingress | docker-compose exec -T kuma-cp-${n} tee /config/farcast${n}-ingress-token > /dev/null
