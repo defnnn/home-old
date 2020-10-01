@@ -14,16 +14,8 @@ local_resource('global-cp',
   cmd='bash -x libexec/global-cp',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
-local_resource('farcast1',
-  cmd='bash -x libexec/remote-cp 1; bash -x libexec/app 1',
-  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
-
-local_resource('farcast2',
-  cmd='bash -x libexec/remote-cp 2; bash -x libexec/app 2',
-  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
-
-local_resource('farcast3',
-  cmd='bash -x libexec/remote-cp 3; bash -x libexec/app 3',
+local_resource('farcast-cp',
+  cmd='bash -x libexec/remote-cp; bash -x libexec/app',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
 local_resource('-- tests ------',

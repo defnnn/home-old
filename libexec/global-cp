@@ -3,9 +3,12 @@
 function main {
   cue export farcast.cue | yq -y '.traffic_permission' | docker-compose exec -T kuma-global kumactl apply -f -
   cue export farcast.cue | yq -y '.mesh' | docker-compose exec -T kuma-global kumactl apply -f -
-  cue export farcast.cue farcastx.cue farcast1.cue farcast1.json | yq -y '.zone' | docker-compose exec -T kuma-global kumactl apply -f -
-  cue export farcast.cue farcastx.cue farcast2.cue farcast2.json | yq -y '.zone' | docker-compose exec -T kuma-global kumactl apply -f -
-  cue export farcast.cue farcastx.cue farcast3.cue farcast3.json | yq -y '.zone' | docker-compose exec -T kuma-global kumactl apply -f -
+
+  for n in $(cue export docker-compose.cue  | jq -r '.zones[]'); do
+    cue export farcast.cue farcastx.cue farcast${n}.cue farcast${n}.json \
+      | yq -y '.zone' \
+      | docker-compose exec -T kuma-global kumactl apply -f -
+  done
 }
 
 main "$@"
