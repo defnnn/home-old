@@ -5,8 +5,10 @@ _ip_global: "192.168.195.156"
 _zones: [ "1", "2"]
 
 _zerotier_global: "zerotier0"
+_zerotier_sshd: "zerotier"
 
 _zerotier_svcs:
+  [ _zerotier_sshd] +
   [ _zerotier_global ] +
   [ for n in _zones { "zerotier\(n)" } ]
 
@@ -47,7 +49,7 @@ _kuma_cp: [N=_]: {
 		"KUMA_MODE=remote",
 		"KUMA_MULTICLUSTER_REMOTE_ZONE=farcast\(N)",
 		"KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://\(_ip_global):5685",
-		"KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp\(N)",
+		"KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-\(N)",
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true",
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0",
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684",
@@ -66,7 +68,7 @@ _kuma_ingress: [N=_]: {
 		"kuma-dp",
 		"run",
 		"--name=kuma-ingress",
-		"--cp-address=http://kuma-cp\(N):5681",
+		"--cp-address=http://kuma-cp-\(N):5681",
 		"--dataplane-token-file=/config/farcast\(N)-ingress-token",
 		"--log-level=debug",
 	]
@@ -92,7 +94,7 @@ _kuma_app_dp: [N=_]: {
 		"kuma-dp",
 		"run",
 		"--name=app",
-		"--cp-address=http://kuma-cp\(N):5681",
+		"--cp-address=http://kuma-cp-\(N):5681",
 		"--dataplane-token-file=/config/farcast\(N)-app-token",
 		"--log-level=debug",
 	]
@@ -102,7 +104,7 @@ _kuma_app_dp: [N=_]: {
 }
 
 _init: {
-	image: "ubuntu"
+	image: "letfn/init"
 	command: [
 		"bash",
 		"-c",
@@ -150,12 +152,18 @@ services: {
 	init: _init
 
 	sshd: _sshd
-	sshd: network_mode: "service:init"
-	sshd: depends_on: init: condition: "service_healthy"
+	sshd: network_mode: "service:\(_zerotier_sshd)"
+  sshd: depends_on: init: condition: "service_healthy"
+  for n in _zerotier_svcs {
+    sshd: depends_on: "\(n)": condition: "service_healthy"
+  }
 
 	cloudflared: _cloudflared
-	cloudflared: network_mode: "service:init"
+	cloudflared: network_mode: "service:\(_zerotier_sshd)"
 	cloudflared: depends_on: init: condition: "service_healthy"
+  for n in _zerotier_svcs {
+    cloudflared: depends_on: "\(n)": condition: "service_healthy"
+  }
 
 	"kuma-global": _kuma_global
 	"kuma-global": network_mode: "service:\(_zerotier_global)"
@@ -190,11 +198,10 @@ services: {
 
 	{
 		for n in _zerotier_svcs {
-			"\(n)": depends_on: init: condition: "service_healthy"
+      "\(n)": depends_on: init: condition: "service_healthy"
 			"\(n)": _zerotier & {
 				volumes: [
-					"\(n):/var/lib/zerotier-one",
-					"config:/service.d",
+					"\(n):/var/lib/zerotier-one"
 				]
 			}
 		}

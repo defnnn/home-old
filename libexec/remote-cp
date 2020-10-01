@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+n=$1; shift
+
+cue export farcast.cue farcastx.cue farcast${n}.cue farcast${n}.json | yq -r .ingress | docker-compose exec -T kuma-cp-${n} kumactl apply -f -
+
+docker-compose exec -T kuma-cp-${n} kumactl generate dataplane-token --dataplane=kuma-ingress | docker-compose exec -T kuma-cp-${n} tee /config/farcast${n}-ingress-token > /dev/null
+
+docker-compose stop kuma-ingress-${n}
+docker-compose rm -f kuma-ingress-${n}
+docker-compose up -d kuma-ingress-${n}

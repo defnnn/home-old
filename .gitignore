@@ -152,3 +152,7 @@ efs/
 
 /config
 config.tgz
+
+b/index
+
+farcast*tmp.json

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 function main {
-  cat traffic-permission-allow-all-traffic.yaml | docker-compose exec -T kuma-global kumactl apply -f -
-  cat mesh-default.yaml | docker-compose exec -T kuma-global kumactl apply -f -
-  cat farcast1-zone.yaml | docker-compose exec -T kuma-global kumactl apply -f -
-  cat farcast2-zone.yaml | docker-compose exec -T kuma-global kumactl apply -f -
+  cue export farcast.cue | yq -y '.traffic_permission' | docker-compose exec -T kuma-global kumactl apply -f -
+  cue export farcast.cue | yq -y '.mesh' | docker-compose exec -T kuma-global kumactl apply -f -
+  cue export farcast.cue farcastx.cue farcast1.cue farcast1.json | yq -y '.zone' | docker-compose exec -T kuma-global kumactl apply -f -
+  cue export farcast.cue farcastx.cue farcast2.cue farcast2.json | yq -y '.zone' | docker-compose exec -T kuma-global kumactl apply -f -
 }
 
 main "$@"

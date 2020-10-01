@@ -9,6 +9,9 @@ DOTFILES ?= https://github.com/amanibhavam/dotfiles
 menu:
 	@perl -ne 'printf("\n") if m{^-}; printf("%20s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
+config: docker-compose.yml
+	@true
+
 ---------------build: # -----------------------------
 thing: # Build all the things
 	$(MAKE) build-sshd
@@ -46,7 +49,11 @@ build-boot: # Build boot container with sshd
 	$(MAKE) test-boot
 	docker push defn/home:boot
 
-build-jojomomojo: # Build jojomomojo container with boot
+b/index: .git/index
+	cp -f .git/index b/index.1
+	mv -f b/index.1 b/index
+
+build-jojomomojo: b/index # Build jojomomojo container with boot
 	@echo
 	docker build $(build) -t defn/home:jojomomojo \
 		--build-arg HOMEBOOT=boot \
