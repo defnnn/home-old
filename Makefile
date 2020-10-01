@@ -123,5 +123,5 @@ bash:
 -------------cuelang: # -----------------------------
 
 docker-compose.yml: docker-compose.cue
-	cue export docker-compose.cue > docker-compose.yml.1
+	cue export --out yaml docker-compose.cue > docker-compose.yml.1
 	mv docker-compose.yml.1 docker-compose.yml
