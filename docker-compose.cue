@@ -5,15 +5,15 @@ _ip_global: "192.168.195.156"
 _zones: [ "1", "2", "3"]
 
 _zerotier_global: "zerotier0"
-_zerotier_sshd: "zerotier"
+_zerotier_sshd:   "zerotier"
 
 _zerotier_svcs:
-  [ _zerotier_sshd] +
-  [ _zerotier_global ] +
-  [ for n in _zones { "zerotier\(n)" } ]
+	[ _zerotier_sshd] +
+	[ _zerotier_global] +
+	[ for n in _zones {"zerotier\(n)"}]
 
 _zerotier: {
-	image:    "letfn/zerotier"
+	image: "letfn/zerotier"
 	cap_drop: [
 		"NET_RAW",
 		"NET_ADMIN",
@@ -110,7 +110,7 @@ _init: {
 		"-c",
 		"""
 		set -x
-    touch /tmp/done.txt
+		touch /tmp/done.txt
 		exec sleep 86400000
 
 		""",
@@ -141,7 +141,7 @@ _sshd: {
 }
 
 _cloudflared: {
-	image:    "letfn/cloudflared"
+	image: "letfn/cloudflared"
 	volumes: [
 		"config:/app/src/.cloudflared",
 	]
@@ -154,17 +154,17 @@ services: {
 
 	sshd: _sshd
 	sshd: network_mode: "service:\(_zerotier_sshd)"
-  sshd: depends_on: init: condition: "service_healthy"
-  for n in _zerotier_svcs {
-    sshd: depends_on: "\(n)": condition: "service_healthy"
-  }
+	sshd: depends_on: init: condition: "service_healthy"
+	for n in _zerotier_svcs {
+		sshd: depends_on: "\(n)": condition: "service_healthy"
+	}
 
 	cloudflared: _cloudflared
 	cloudflared: network_mode: "service:\(_zerotier_sshd)"
 	cloudflared: depends_on: init: condition: "service_healthy"
-  for n in _zerotier_svcs {
-    cloudflared: depends_on: "\(n)": condition: "service_healthy"
-  }
+	for n in _zerotier_svcs {
+		cloudflared: depends_on: "\(n)": condition: "service_healthy"
+	}
 
 	"kuma-global": _kuma_global
 	"kuma-global": network_mode: "service:\(_zerotier_global)"
@@ -199,10 +199,10 @@ services: {
 
 	{
 		for n in _zerotier_svcs {
-      "\(n)": depends_on: init: condition: "service_healthy"
+			"\(n)": depends_on: init: condition: "service_healthy"
 			"\(n)": _zerotier & {
 				volumes: [
-					"\(n):/var/lib/zerotier-one"
+					"\(n):/var/lib/zerotier-one",
 				]
 			}
 		}
