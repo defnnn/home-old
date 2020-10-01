@@ -14,6 +14,7 @@ services:
     - zerotier0:/zerotier0
     - zerotier1:/zerotier1
     - zerotier2:/zerotier2
+    - zerotier3:/zerotier3
     env_file: .env
     healthcheck:
       test:
@@ -150,6 +151,69 @@ services:
     network_mode: service:kuma-app-pause-2
     volumes:
     - config:/config
+  kuma-cp-3:
+    image: letfn/kuma
+    entrypoint:
+    - kuma-cp
+    - run
+    environment:
+    - KUMA_MODE=remote
+    - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast3
+    - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
+    - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-3
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
+    env_file: .env
+    depends_on:
+      kuma-global:
+        condition: service_started
+    volumes:
+    - config:/config
+  kuma-ingress-3:
+    image: letfn/kuma
+    entrypoint:
+    - kuma-dp
+    - run
+    - --name=kuma-ingress
+    - --cp-address=http://kuma-cp-3:5681
+    - --dataplane-token-file=/config/farcast3-ingress-token
+    - --log-level=debug
+    env_file: .env
+    network_mode: service:zerotier3
+    depends_on:
+      kuma-cp-3:
+        condition: service_started
+    volumes:
+    - config:/config
+  kuma-app-dp-3:
+    image: letfn/kuma
+    entrypoint:
+    - kuma-dp
+    - run
+    - --name=app
+    - --cp-address=http://kuma-cp-3:5681
+    - --dataplane-token-file=/config/farcast3-app-token
+    - --log-level=debug
+    env_file: .env
+    network_mode: service:kuma-app-pause-3
+    depends_on:
+      kuma-cp-3:
+        condition: service_started
+    volumes:
+    - config:/config
+  kuma-app-pause-3:
+    image: gcr.io/google_containers/pause-amd64:3.2
+    env_file: .env
+  kuma-app-3:
+    image: nginx
+    env_file: .env
+    network_mode: service:kuma-app-pause-3
+    volumes:
+    - config:/config
   zerotier:
     depends_on:
       init:
@@ -195,6 +259,21 @@ services:
     volumes:
     - zerotier1:/var/lib/zerotier-one
     privileged: true
+  zerotier2:
+    depends_on:
+      init:
+        condition: service_healthy
+    env_file: .env
+    image: letfn/zerotier
+    cap_drop:
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
+    devices:
+    - /dev/net/tun
+    volumes:
+    - zerotier2:/var/lib/zerotier-one
+    privileged: true
   sshd:
     image: defn/home:jojomomojo
     entrypoint:
@@ -213,6 +292,8 @@ services:
         condition: service_healthy
       zerotier2:
         condition: service_healthy
+      zerotier3:
+        condition: service_healthy
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     - config:/data/home-secret
@@ -221,6 +302,7 @@ services:
     - zerotier0:/zerotier0
     - zerotier1:/zerotier1
     - zerotier2:/zerotier2
+    - zerotier3:/zerotier3
   cloudflared:
     image: letfn/cloudflared
     env_file: .env
@@ -235,6 +317,8 @@ services:
       zerotier1:
         condition: service_healthy
       zerotier2:
+        condition: service_healthy
+      zerotier3:
         condition: service_healthy
     volumes:
     - config:/app/src/.cloudflared
@@ -258,9 +342,11 @@ services:
         condition: service_started
       zerotier2:
         condition: service_started
+      zerotier3:
+        condition: service_started
     volumes:
     - config:/config
-  zerotier2:
+  zerotier3:
     depends_on:
       init:
         condition: service_healthy
@@ -273,7 +359,7 @@ services:
     devices:
     - /dev/net/tun
     volumes:
-    - zerotier2:/var/lib/zerotier-one
+    - zerotier3:/var/lib/zerotier-one
     privileged: true
 volumes:
   config: {}
@@ -281,3 +367,4 @@ volumes:
   zerotier0: {}
   zerotier1: {}
   zerotier2: {}
+  zerotier3: {}

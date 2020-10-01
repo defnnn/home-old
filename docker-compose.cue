@@ -2,7 +2,7 @@ version: "3.7"
 
 _ip_global: "192.168.195.156"
 
-_zones: [ "1", "2"]
+_zones: [ "1", "2", "3"]
 
 _zerotier_global: "zerotier0"
 _zerotier_sshd: "zerotier"
@@ -110,6 +110,7 @@ _init: {
 		"-c",
 		"""
 		set -x
+    touch /tmp/done.txt
 		exec sleep 86400000
 
 		""",

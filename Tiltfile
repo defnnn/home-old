@@ -7,7 +7,7 @@ local_resource('-- config -----',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
 local_resource('apply-config',
-  cmd='cat config.tgz | docker-compose run --rm  -T init tar xvfz -; docker-compose exec -T init touch /tmp/done.txt',
+  cmd='cat config.tgz | docker-compose run --rm  -T init tar xvfz -',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
 local_resource('global-cp',
@@ -20,6 +20,10 @@ local_resource('farcast1',
 
 local_resource('farcast2',
   cmd='bash -x libexec/remote-cp 2; bash -x libexec/app 2',
+  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
+
+local_resource('farcast3',
+  cmd='bash -x libexec/remote-cp 3; bash -x libexec/app 3',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
 local_resource('-- tests ------',
