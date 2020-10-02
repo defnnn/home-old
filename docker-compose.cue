@@ -155,28 +155,15 @@ services: {
 	sshd: _sshd
 	sshd: network_mode: "service:\(_zerotier_sshd)"
 	sshd: depends_on: init: condition: "service_healthy"
-	for n in _zerotier_svcs {
-		sshd: depends_on: "\(n)": condition: "service_healthy"
-	}
 
 	cloudflared: _cloudflared
 	cloudflared: network_mode: "service:\(_zerotier_sshd)"
 	cloudflared: depends_on: init: condition: "service_healthy"
-	for n in _zerotier_svcs {
-		cloudflared: depends_on: "\(n)": condition: "service_healthy"
-	}
 
 	"\(_zerotier_global)": {}
 	"kuma-global": _kuma_global
 	"kuma-global": network_mode: "service:\(_zerotier_global)"
-	"kuma-global": depends_on: {
-		init: condition: "service_healthy"
-		{
-			for n in _zerotier_svcs {
-				"\(n)": condition: "service_started"
-			}
-		}
-	}
+	"kuma-global": depends_on: init: condition: "service_healthy"
 
 	{
 		for n in _zones {
@@ -215,6 +202,14 @@ services: [Zerotier=string]: {
 		volumes: [
 			"\(Zerotier):/var/lib/zerotier-one",
 		]
+	}
+}
+
+services: [Service=string]: {
+	if Service =~ "^(sshd|cloudflared|kuma-global)$" {
+		for n in _zerotier_svcs {
+			depends_on: "\(n)": condition: "service_started"
+		}
 	}
 }
 
