@@ -4,8 +4,9 @@ _ip_global: "192.168.195.156"
 
 _zones: [ "1", "2", "3"]
 
-_zerotier_global: "zerotier0"
 _zerotier_sshd:   "zerotier"
+
+_zerotier_global: "zerotier0"
 
 _zerotier_svcs:
 	[ _zerotier_sshd] +
@@ -158,6 +159,12 @@ services: {
 	for n in _zerotier_svcs {
 		sshd: depends_on: "\(n)": condition: "service_healthy"
 	}
+  "\(_zerotier_sshd)": depends_on: init: condition: "service_healthy"
+  "\(_zerotier_sshd)": _zerotier & {
+    volumes: [
+      "\(_zerotier_sshd):/var/lib/zerotier-one",
+    ]
+  }
 
 	cloudflared: _cloudflared
 	cloudflared: network_mode: "service:\(_zerotier_sshd)"
@@ -176,6 +183,12 @@ services: {
 			}
 		}
 	}
+  "\(_zerotier_global)": depends_on: init: condition: "service_healthy"
+  "\(_zerotier_global)": _zerotier & {
+    volumes: [
+      "\(_zerotier_global):/var/lib/zerotier-one",
+    ]
+  }
 
 	{
 		for n in _zones {
@@ -194,15 +207,11 @@ services: {
 
 			"kuma-app-\(n)": (_kuma_app & {"\(n)": {}})[n]
 			"kuma-app-\(n)": network_mode: "service:kuma-app-pause-\(n)"
-		}
-	}
 
-	{
-		for n in _zerotier_svcs {
-			"\(n)": depends_on: init: condition: "service_healthy"
-			"\(n)": _zerotier & {
+			"zerotier\(n)": depends_on: init: condition: "service_healthy"
+			"zerotier\(n)": _zerotier & {
 				volumes: [
-					"\(n):/var/lib/zerotier-one",
+					"zerotier\(n):/var/lib/zerotier-one",
 				]
 			}
 		}
