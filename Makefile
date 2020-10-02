@@ -49,11 +49,19 @@ build-boot: # Build boot container with sshd
 	$(MAKE) test-boot
 	docker push defn/home:boot
 
+b/index-homedir: $(HOME)/.git/index
+	cp -f $(HOME)/.git/index b/index-homedir.1
+	mv -f b/index-homedir.1 b/index-homedir
+
+b/index-dotfiles: $(HOME)/.dotfiles/.git/index
+	cp -f $(HOME)/.dotfiles/.git/index b/index-dotfiles.1
+	mv -f b/index-dotfiles.1 b/index-dotfiles
+
 b/index: .git/index
 	cp -f .git/index b/index.1
 	mv -f b/index.1 b/index
 
-build-jojomomojo: b/index # Build jojomomojo container with boot
+build-jojomomojo: b/index b/index-homedir b/index-dotfiles # Build jojomomojo container with boot
 	@echo
 	docker build $(build) -t defn/home:jojomomojo \
 		--build-arg HOMEBOOT=boot \

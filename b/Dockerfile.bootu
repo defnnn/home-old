@@ -46,6 +46,8 @@ RUN make install
 RUN make upgrade
 
 COPY index /tmp/index
+COPY index-homedir /tmp/index-homedir
+COPY index-dotfiles /tmp/index-dotfiles
 
 RUN make update; make install; make upgrade
 

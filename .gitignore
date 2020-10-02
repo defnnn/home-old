@@ -153,6 +153,6 @@ efs/
 /config
 config.tgz
 
-b/index
+b/index*
 
 farcast*tmp.json
