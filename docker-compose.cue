@@ -4,26 +4,48 @@ _ip_global: "192.168.195.156"
 
 _zones: [ "1", "2", "3"]
 
-_zerotier_sshd: "zerotier"
+services: init: {
+	image: "letfn/init"
+	command: [
+		"bash",
+		"-c",
+		"""
+		set -x
+		touch /tmp/done.txt
+		exec sleep 86400000
 
-_zerotier_global: "zerotier0"
-
-_zerotier_svcs:
-	[ _zerotier_sshd] +
-	[ _zerotier_global] +
-	[ for n in _zones {"zerotier\(n)"}]
-
-_zerotier: {
-	image: "letfn/zerotier"
-	cap_drop: [
-		"NET_RAW",
-		"NET_ADMIN",
-		"SYS_ADMIN",
+		""",
 	]
-	devices: [
-		"/dev/net/tun",
+
+	volumes:
+		[ "config:/config"] +
+		[ for n in _zerotier_svcs {"\(n):/\(n)"}]
+
+	healthcheck: {
+		test: ["CMD", "test", "-f", "/tmp/done.txt"]
+		interval: "10s"
+		timeout:  "15s"
+		retries:  100
+	}
+}
+
+services: sshd: {
+	image: "defn/home:jojomomojo"
+	entrypoint: ["/service", "sshd"]
+	volumes:
+		[
+			"/var/run/docker.sock:/var/run/docker.sock",
+			"config:/data/home-secret",
+			"config:/config",
+		] +
+		[ for n in _zerotier_svcs {"\(n):/\(n)"}]
+}
+
+services: cloudflared: {
+	image: "letfn/cloudflared"
+	volumes: [
+		"config:/app/src/.cloudflared",
 	]
-	privileged: true
 }
 
 _kuma_global: {
@@ -104,56 +126,6 @@ _kuma_app_dp: [N=_]: {
 	]
 }
 
-_init: {
-	image: "letfn/init"
-	command: [
-		"bash",
-		"-c",
-		"""
-		set -x
-		touch /tmp/done.txt
-		exec sleep 86400000
-
-		""",
-	]
-
-	volumes:
-		[ "config:/config"] +
-		[ for n in _zerotier_svcs {"\(n):/\(n)"}]
-
-	healthcheck: {
-		test: ["CMD", "test", "-f", "/tmp/done.txt"]
-		interval: "10s"
-		timeout:  "15s"
-		retries:  100
-	}
-}
-
-_sshd: {
-	image: "defn/home:jojomomojo"
-	entrypoint: ["/service", "sshd"]
-	volumes:
-		[
-			"/var/run/docker.sock:/var/run/docker.sock",
-			"config:/data/home-secret",
-			"config:/config",
-		] +
-		[ for n in _zerotier_svcs {"\(n):/\(n)"}]
-}
-
-_cloudflared: {
-	image: "letfn/cloudflared"
-	volumes: [
-		"config:/app/src/.cloudflared",
-	]
-}
-
-services: init: _init
-
-services: sshd: _sshd
-
-services: cloudflared: _cloudflared
-
 services: {
 	"kuma-global": _kuma_global
 	"kuma-global": network_mode: "service:\(_zerotier_global)"
@@ -202,6 +174,28 @@ services: [Service=string]: {
 			depends_on: "\(n)": condition: "service_started"
 		}
 	}
+}
+
+_zerotier_sshd: "zerotier"
+
+_zerotier_global: "zerotier0"
+
+_zerotier_svcs:
+	[ _zerotier_sshd] +
+	[ _zerotier_global] +
+	[ for n in _zones {"zerotier\(n)"}]
+
+_zerotier: {
+	image: "letfn/zerotier"
+	cap_drop: [
+		"NET_RAW",
+		"NET_ADMIN",
+		"SYS_ADMIN",
+	]
+	devices: [
+		"/dev/net/tun",
+	]
+	privileged: true
 }
 
 services: "\(_zerotier_sshd)": {}
