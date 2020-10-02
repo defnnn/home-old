@@ -152,6 +152,7 @@ services: {
 	init: _init
 
 	"\(_zerotier_sshd)": {}
+
 	sshd: _sshd
 	sshd: network_mode: "service:\(_zerotier_sshd)"
 	sshd: depends_on: init: condition: "service_healthy"
@@ -161,6 +162,7 @@ services: {
 	cloudflared: depends_on: init: condition: "service_healthy"
 
 	"\(_zerotier_global)": {}
+
 	"kuma-global": _kuma_global
 	"kuma-global": network_mode: "service:\(_zerotier_global)"
 	"kuma-global": depends_on: init: condition: "service_healthy"
