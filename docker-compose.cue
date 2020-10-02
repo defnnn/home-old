@@ -148,8 +148,6 @@ _cloudflared: {
 	]
 }
 
-services: [string]: env_file: ".env"
-
 services: {
 	init: _init
 
@@ -159,12 +157,7 @@ services: {
 	for n in _zerotier_svcs {
 		sshd: depends_on: "\(n)": condition: "service_healthy"
 	}
-	"\(_zerotier_sshd)": depends_on: init: condition: "service_healthy"
-	"\(_zerotier_sshd)": _zerotier & {
-		volumes: [
-			"\(_zerotier_sshd):/var/lib/zerotier-one",
-		]
-	}
+	"\(_zerotier_sshd)": {}
 
 	cloudflared: _cloudflared
 	cloudflared: network_mode: "service:\(_zerotier_sshd)"
@@ -183,12 +176,7 @@ services: {
 			}
 		}
 	}
-	"\(_zerotier_global)": depends_on: init: condition: "service_healthy"
-	"\(_zerotier_global)": _zerotier & {
-		volumes: [
-			"\(_zerotier_global):/var/lib/zerotier-one",
-		]
-	}
+	"\(_zerotier_global)": {}
 
 	{
 		for n in _zones {
@@ -208,15 +196,26 @@ services: {
 			"kuma-app-\(n)": (_kuma_app & {"\(n)": {}})[n]
 			"kuma-app-\(n)": network_mode: "service:kuma-app-pause-\(n)"
 
-			"zerotier\(n)": depends_on: init: condition: "service_healthy"
-			"zerotier\(n)": _zerotier & {
-				volumes: [
-					"zerotier\(n):/var/lib/zerotier-one",
-				]
-			}
+			"zerotier\(n)": {}
 		}
 	}
 
+}
+
+services: [Service=string]: {
+	if Service != "zt" {
+		env_file: ".env"
+	}
+}
+
+services: [Zerotier=string]: {
+	if Zerotier =~ "^zerotier" {
+		_zerotier
+		depends_on: init: condition: "service_healthy"
+		volumes: [
+			"\(Zerotier):/var/lib/zerotier-one",
+		]
+	}
 }
 
 volumes: {

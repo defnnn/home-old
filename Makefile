@@ -9,8 +9,9 @@ DOTFILES ?= https://github.com/amanibhavam/dotfiles
 menu:
 	@perl -ne 'printf("\n") if m{^-}; printf("%20s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
-config: docker-compose.yml
-	@true
+config:
+	rm -f docker-compose.yml
+	$(MAKE) docker-compose.yml
 
 ---------------build: # -----------------------------
 thing: # Build all the things
@@ -129,6 +130,9 @@ bash:
 	docker-compose exec sshd bash -il
 
 -------------cuelang: # -----------------------------
+
+fmt:
+	cue fmt *.cue
 
 docker-compose.yml: docker-compose.cue
 	cue export --out json docker-compose.cue | yq -y -S '.'  > docker-compose.yml.1
