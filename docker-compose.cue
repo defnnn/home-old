@@ -151,13 +151,13 @@ _cloudflared: {
 services: {
 	init: _init
 
+	"\(_zerotier_sshd)": {}
 	sshd: _sshd
 	sshd: network_mode: "service:\(_zerotier_sshd)"
 	sshd: depends_on: init: condition: "service_healthy"
 	for n in _zerotier_svcs {
 		sshd: depends_on: "\(n)": condition: "service_healthy"
 	}
-	"\(_zerotier_sshd)": {}
 
 	cloudflared: _cloudflared
 	cloudflared: network_mode: "service:\(_zerotier_sshd)"
@@ -166,6 +166,7 @@ services: {
 		cloudflared: depends_on: "\(n)": condition: "service_healthy"
 	}
 
+	"\(_zerotier_global)": {}
 	"kuma-global": _kuma_global
 	"kuma-global": network_mode: "service:\(_zerotier_global)"
 	"kuma-global": depends_on: {
@@ -176,10 +177,11 @@ services: {
 			}
 		}
 	}
-	"\(_zerotier_global)": {}
 
 	{
 		for n in _zones {
+			"zerotier\(n)": {}
+
 			"kuma-cp-\(n)": (_kuma_cp & {"\(n)": {}})[n]
 			"kuma-cp-\(n)": depends_on: "kuma-global": condition: "service_started"
 
@@ -195,8 +197,6 @@ services: {
 
 			"kuma-app-\(n)": (_kuma_app & {"\(n)": {}})[n]
 			"kuma-app-\(n)": network_mode: "service:kuma-app-pause-\(n)"
-
-			"zerotier\(n)": {}
 		}
 	}
 
