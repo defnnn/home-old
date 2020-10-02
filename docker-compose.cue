@@ -148,38 +148,35 @@ _cloudflared: {
 	]
 }
 
+services: init: _init
+
+services: sshd: _sshd
+
+services: cloudflared: _cloudflared
+
 services: {
-	init: _init
-
-	sshd: _sshd
-	sshd: network_mode: "service:\(_zerotier_sshd)"
-
-	cloudflared: _cloudflared
-	cloudflared: network_mode: "service:\(_zerotier_sshd)"
-
 	"kuma-global": _kuma_global
 	"kuma-global": network_mode: "service:\(_zerotier_global)"
+}
 
-	{
-		for n in _zones {
-			"kuma-cp-\(n)": (_kuma_cp & {"\(n)": {}})[n]
-			"kuma-cp-\(n)": depends_on: "kuma-global": condition: "service_started"
+services: {
+	for n in _zones {
+		"kuma-cp-\(n)": (_kuma_cp & {"\(n)": {}})[n]
+		"kuma-cp-\(n)": depends_on: "kuma-global": condition: "service_started"
 
-			"kuma-ingress-\(n)": (_kuma_ingress & {"\(n)": {}})[n]
-			"kuma-ingress-\(n)": network_mode: "service:zerotier\(n)"
-			"kuma-ingress-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
+		"kuma-ingress-\(n)": (_kuma_ingress & {"\(n)": {}})[n]
+		"kuma-ingress-\(n)": network_mode: "service:zerotier\(n)"
+		"kuma-ingress-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
 
-			"kuma-app-dp-\(n)": (_kuma_app_dp & {"\(n)": {}})[n]
-			"kuma-app-dp-\(n)": network_mode: "service:kuma-app-pause-\(n)"
-			"kuma-app-dp-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
+		"kuma-app-dp-\(n)": (_kuma_app_dp & {"\(n)": {}})[n]
+		"kuma-app-dp-\(n)": network_mode: "service:kuma-app-pause-\(n)"
+		"kuma-app-dp-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
 
-			"kuma-app-pause-\(n)": _kuma_app_pause
+		"kuma-app-pause-\(n)": _kuma_app_pause
 
-			"kuma-app-\(n)": (_kuma_app & {"\(n)": {}})[n]
-			"kuma-app-\(n)": network_mode: "service:kuma-app-pause-\(n)"
-		}
+		"kuma-app-\(n)": (_kuma_app & {"\(n)": {}})[n]
+		"kuma-app-\(n)": network_mode: "service:kuma-app-pause-\(n)"
 	}
-
 }
 
 services: [Service=string]: {
@@ -208,6 +205,9 @@ services: [Service=string]: {
 }
 
 services: "\(_zerotier_sshd)": {}
+services: sshd: network_mode:        "service:\(_zerotier_sshd)"
+services: cloudflared: network_mode: "service:\(_zerotier_sshd)"
+
 services: "\(_zerotier_global)": {}
 services: {
 	for n in _zones {
@@ -215,11 +215,9 @@ services: {
 	}
 }
 
+volumes: config: {}
 volumes: {
-	config: {}
-	{
-		for n in _zerotier_svcs {
-			"\(n)": {}
-		}
+	for n in _zerotier_svcs {
+		"\(n)": {}
 	}
 }
