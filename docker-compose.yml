@@ -117,7 +117,7 @@ services:
       zerotier2:
         condition: service_started
     entrypoint:
-    - kuma-remote
+    - kuma-cp
     - run
     env_file: .env
     environment:
@@ -169,7 +169,7 @@ services:
       kuma-global:
         condition: service_started
     entrypoint:
-    - kuma-remote
+    - kuma-cp
     - run
     env_file: .env
     environment:
@@ -200,7 +200,7 @@ services:
       kuma-global:
         condition: service_started
     entrypoint:
-    - kuma-remote
+    - kuma-cp
     - run
     env_file: .env
     environment:

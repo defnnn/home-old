@@ -58,7 +58,7 @@ services: cloudflared: {
 _kuma_global: {
 	image: "letfn/kuma"
 	entrypoint: [
-		"kuma-remote",
+		"kuma-cp",
 		"run",
 	]
 	environment: [
@@ -78,7 +78,7 @@ _kuma_global: {
 _kuma_cp: [N=_]: {
 	image: "letfn/kuma"
 	entrypoint: [
-		"kuma-remote",
+		"kuma-cp",
 		"run",
 	]
 	environment: [
