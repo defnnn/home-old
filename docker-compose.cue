@@ -58,7 +58,7 @@ services: cloudflared: {
 _kuma_global: {
 	image: "letfn/kuma"
 	entrypoint: [
-		"kuma-cp",
+		"kuma-remote",
 		"run",
 	]
 	environment: [
@@ -78,14 +78,14 @@ _kuma_global: {
 _kuma_cp: [N=_]: {
 	image: "letfn/kuma"
 	entrypoint: [
-		"kuma-cp",
+		"kuma-remote",
 		"run",
 	]
 	environment: [
 		"KUMA_MODE=remote",
 		"KUMA_MULTICLUSTER_REMOTE_ZONE=farcast\(N)",
 		"KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://\(_ip_global):5685",
-		"KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-\(N)",
+		"KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-remote-\(N)",
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true",
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0",
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684",
@@ -97,7 +97,7 @@ _kuma_cp: [N=_]: {
 		"KUMA_STORE_POSTGRES_PORT=5432",
 		"KUMA_STORE_POSTGRES_USER=kuma-user",
 		"KUMA_STORE_POSTGRES_PASSWORD=kuma-password",
-		"KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-\(N)",
+		"KUMA_STORE_POSTGRES_DB_NAME=kuma-remote-\(N)",
 	]
 	volumes: [
 		"config:/config",
@@ -110,7 +110,7 @@ _kuma_ingress: [N=_]: {
 		"kuma-dp",
 		"run",
 		"--name=kuma-ingress",
-		"--cp-address=http://kuma-cp-\(N):5681",
+		"--cp-address=http://kuma-remote-\(N):5681",
 		"--dataplane-token-file=/config/farcast\(N)-ingress-token",
 		"--log-level=debug",
 	]
@@ -137,7 +137,7 @@ _kuma_app_dp: [N=_]: {
 		"kuma-dp",
 		"run",
 		"--name=app",
-		"--cp-address=http://kuma-cp-\(N):5681",
+		"--cp-address=http://kuma-remote-\(N):5681",
 		"--dataplane-token-file=/config/farcast\(N)-app-token",
 		"--log-level=debug",
 	]
@@ -158,7 +158,7 @@ services: done: depends_on: [
 
 services: {
 	for n in _zones {
-		"kuma-cp-\(n)": {
+		"kuma-remote-\(n)": {
 			(_kuma_cp & {"\(n)": {}})[n]
 			depends_on: "kuma-global": condition: "service_started"
 			networks: default: ipv4_address:      "\(_network_16).88.2\(n)"
@@ -167,7 +167,7 @@ services: {
 		"kuma-ingress-\(n)": {
 			(_kuma_ingress & {"\(n)": {}})[n]
 			network_mode: "service:zerotier\(n)"
-			depends_on: "kuma-cp-\(n)": condition: "service_started"
+			depends_on: "kuma-remote-\(n)": condition: "service_started"
 		}
 
 		"app-dp-\(n)": {
@@ -190,7 +190,7 @@ services: {
 			image: "postgres"
 			volumes: [ "postgres\(n):/var/lib/postgresql/data"]
 			environment: [
-				"POSTGRES_DB=kuma-cp-\(n)",
+				"POSTGRES_DB=kuma-remote-\(n)",
 			]
 		}
 

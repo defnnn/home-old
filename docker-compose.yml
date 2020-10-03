@@ -24,7 +24,7 @@ services:
     - kuma-dp
     - run
     - --name=app
-    - --cp-address=http://kuma-cp-1:5681
+    - --cp-address=http://kuma-remote-1:5681
     - --dataplane-token-file=/config/farcast1-app-token
     - --log-level=debug
     depends_on:
@@ -40,7 +40,7 @@ services:
     - kuma-dp
     - run
     - --name=app
-    - --cp-address=http://kuma-cp-2:5681
+    - --cp-address=http://kuma-remote-2:5681
     - --dataplane-token-file=/config/farcast2-app-token
     - --log-level=debug
     depends_on:
@@ -104,68 +104,6 @@ services:
     - zerotier2:/zerotier2
     - nginx1:/nginx1
     - nginx2:/nginx2
-  kuma-cp-1:
-    depends_on:
-      kuma-global:
-        condition: service_started
-    entrypoint:
-    - kuma-cp
-    - run
-    env_file: .env
-    environment:
-    - KUMA_MODE=remote
-    - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast1
-    - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
-    - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-1
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
-    - KUMA_STORE_TYPE=postgres
-    - KUMA_STORE_POSTGRES_HOST=postgres1
-    - KUMA_STORE_POSTGRES_PORT=5432
-    - KUMA_STORE_POSTGRES_USER=kuma-user
-    - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
-    - KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-1
-    image: letfn/kuma
-    networks:
-      default:
-        ipv4_address: 172.29.88.21
-    volumes:
-    - config:/config
-  kuma-cp-2:
-    depends_on:
-      kuma-global:
-        condition: service_started
-    entrypoint:
-    - kuma-cp
-    - run
-    env_file: .env
-    environment:
-    - KUMA_MODE=remote
-    - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast2
-    - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
-    - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-2
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
-    - KUMA_STORE_TYPE=postgres
-    - KUMA_STORE_POSTGRES_HOST=postgres2
-    - KUMA_STORE_POSTGRES_PORT=5432
-    - KUMA_STORE_POSTGRES_USER=kuma-user
-    - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
-    - KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-2
-    image: letfn/kuma
-    networks:
-      default:
-        ipv4_address: 172.29.88.22
-    volumes:
-    - config:/config
   kuma-global:
     depends_on:
       init:
@@ -179,7 +117,7 @@ services:
       zerotier2:
         condition: service_started
     entrypoint:
-    - kuma-cp
+    - kuma-remote
     - run
     env_file: .env
     environment:
@@ -199,11 +137,11 @@ services:
     - kuma-dp
     - run
     - --name=kuma-ingress
-    - --cp-address=http://kuma-cp-1:5681
+    - --cp-address=http://kuma-remote-1:5681
     - --dataplane-token-file=/config/farcast1-ingress-token
     - --log-level=debug
     depends_on:
-      kuma-cp-1:
+      kuma-remote-1:
         condition: service_started
     env_file: .env
     image: letfn/kuma
@@ -215,15 +153,77 @@ services:
     - kuma-dp
     - run
     - --name=kuma-ingress
-    - --cp-address=http://kuma-cp-2:5681
+    - --cp-address=http://kuma-remote-2:5681
     - --dataplane-token-file=/config/farcast2-ingress-token
     - --log-level=debug
     depends_on:
-      kuma-cp-2:
+      kuma-remote-2:
         condition: service_started
     env_file: .env
     image: letfn/kuma
     network_mode: service:zerotier2
+    volumes:
+    - config:/config
+  kuma-remote-1:
+    depends_on:
+      kuma-global:
+        condition: service_started
+    entrypoint:
+    - kuma-remote
+    - run
+    env_file: .env
+    environment:
+    - KUMA_MODE=remote
+    - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast1
+    - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
+    - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-remote-1
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
+    - KUMA_STORE_TYPE=postgres
+    - KUMA_STORE_POSTGRES_HOST=postgres1
+    - KUMA_STORE_POSTGRES_PORT=5432
+    - KUMA_STORE_POSTGRES_USER=kuma-user
+    - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
+    - KUMA_STORE_POSTGRES_DB_NAME=kuma-remote-1
+    image: letfn/kuma
+    networks:
+      default:
+        ipv4_address: 172.29.88.21
+    volumes:
+    - config:/config
+  kuma-remote-2:
+    depends_on:
+      kuma-global:
+        condition: service_started
+    entrypoint:
+    - kuma-remote
+    - run
+    env_file: .env
+    environment:
+    - KUMA_MODE=remote
+    - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast2
+    - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
+    - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-remote-2
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
+    - KUMA_STORE_TYPE=postgres
+    - KUMA_STORE_POSTGRES_HOST=postgres2
+    - KUMA_STORE_POSTGRES_PORT=5432
+    - KUMA_STORE_POSTGRES_USER=kuma-user
+    - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
+    - KUMA_STORE_POSTGRES_DB_NAME=kuma-remote-2
+    image: letfn/kuma
+    networks:
+      default:
+        ipv4_address: 172.29.88.22
     volumes:
     - config:/config
   postgres0:
@@ -236,14 +236,14 @@ services:
   postgres1:
     env_file: .env
     environment:
-    - POSTGRES_DB=kuma-cp-1
+    - POSTGRES_DB=kuma-remote-1
     image: postgres
     volumes:
     - postgres1:/var/lib/postgresql/data
   postgres2:
     env_file: .env
     environment:
-    - POSTGRES_DB=kuma-cp-2
+    - POSTGRES_DB=kuma-remote-2
     image: postgres
     volumes:
     - postgres2:/var/lib/postgresql/data

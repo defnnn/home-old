@@ -9,7 +9,7 @@ for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
   # meh
   cue export farcast.cue farcastx.cue farcast${n}.cue farcast${n}tmp.json \
     | yq -y "${selector}" \
-    | docker-compose exec -T kuma-cp-${n} \
+    | docker-compose exec -T kuma-remote-${n} \
         kumactl apply -f -
 done
 
