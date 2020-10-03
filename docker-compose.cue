@@ -154,10 +154,12 @@ services: {
 		"kuma-ingress-\(n)": (_kuma_ingress & {"\(n)": {}})[n]
 		"kuma-ingress-\(n)": network_mode: "service:zerotier\(n)"
 		"kuma-ingress-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
+		"kuma-ingress-\(n)": restart: "always"
 
 		"kuma-app-dp-\(n)": (_kuma_app_dp & {"\(n)": {}})[n]
 		"kuma-app-dp-\(n)": network_mode: "service:kuma-app-pause-\(n)"
 		"kuma-app-dp-\(n)": depends_on: "kuma-ingress-\(n)": condition: "service_started"
+		"kuma-app-dp-\(n)": restart: "always"
 
 		"kuma-app-pause-\(n)": _kuma_app_pause
 

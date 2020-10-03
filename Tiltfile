@@ -4,18 +4,18 @@ docker_build('letfn/init', 'b/init')
 
 local_resource('cfg init',
   cmd='cat config.tgz | docker-compose run --rm  -T init tar xvfz -',
-  deps=['init-done'])
+  resource_deps=['init-done'])
 
 local_resource('cfg kuma-global',
-  cmd='sleep 60; bash -x libexec/cfg-global',
-  deps=['kuma-global-done'])
+  cmd='bash -x libexec/cfg-global',
+  resource_deps=['kuma-global-done'])
 
 local_resource('cfg kuma-remote',
-  cmd='sleep 60; bash -x libexec/cfg-remote; bash -x libexec/cfg-app',
-  deps=['kuma-done'])
+  cmd='bash -x libexec/cfg-remote; bash -x libexec/cfg-app',
+  resource_deps=['kuma-done'])
 
 local_resource('test app',
-  cmd='sleep 60; bash -x libexec/test-app',
+  cmd='bash -x libexec/test-app',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
 local_resource('save-config',

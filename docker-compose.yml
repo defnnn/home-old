@@ -81,6 +81,7 @@ services:
     env_file: .env
     image: letfn/kuma
     network_mode: service:kuma-app-pause-1
+    restart: always
     volumes:
     - config:/config
   kuma-app-dp-2:
@@ -97,6 +98,7 @@ services:
     env_file: .env
     image: letfn/kuma
     network_mode: service:kuma-app-pause-2
+    restart: always
     volumes:
     - config:/config
   kuma-app-dp-3:
@@ -113,6 +115,7 @@ services:
     env_file: .env
     image: letfn/kuma
     network_mode: service:kuma-app-pause-3
+    restart: always
     volumes:
     - config:/config
   kuma-app-pause-1:
@@ -241,6 +244,7 @@ services:
     env_file: .env
     image: letfn/kuma
     network_mode: service:zerotier1
+    restart: always
     volumes:
     - config:/config
   kuma-ingress-2:
@@ -257,6 +261,7 @@ services:
     env_file: .env
     image: letfn/kuma
     network_mode: service:zerotier2
+    restart: always
     volumes:
     - config:/config
   kuma-ingress-3:
@@ -273,6 +278,7 @@ services:
     env_file: .env
     image: letfn/kuma
     network_mode: service:zerotier3
+    restart: always
     volumes:
     - config:/config
   sshd:
