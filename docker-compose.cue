@@ -189,7 +189,6 @@ services: postgres0: {
 	]
 }
 
-
 services: [Service=string]: {
 	if Service != "zt" {
 		env_file: ".env"
@@ -213,7 +212,7 @@ services: [Zerotier=string]: {
 }
 
 services: [Service=string]: {
-	if Service =~ "^(cloudflared|kuma-global)$" {
+	if Service =~ "^(kuma-global)$" {
 		depends_on: init: condition: "service_healthy"
 		for n in _zerotier_svcs {
 			depends_on: "\(n)": condition: "service_started"
@@ -244,8 +243,11 @@ _zerotier: {
 }
 
 services: "\(_zerotier_sshd)": {}
+
 services: sshd: depends_on: "\(_zerotier_sshd)": condition: "service_started"
-services: sshd: network_mode:        "service:\(_zerotier_sshd)"
+services: sshd: network_mode: "service:\(_zerotier_sshd)"
+
+services: cloudflared: depends_on: "\(_zerotier_sshd)": condition: "service_started"
 services: cloudflared: network_mode: "service:\(_zerotier_sshd)"
 
 services: "\(_zerotier_global)": {}

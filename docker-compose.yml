@@ -1,15 +1,7 @@
 services:
   cloudflared:
     depends_on:
-      init:
-        condition: service_healthy
       zerotier:
-        condition: service_started
-      zerotier0:
-        condition: service_started
-      zerotier1:
-        condition: service_started
-      zerotier2:
         condition: service_started
     env_file: .env
     image: letfn/cloudflared
