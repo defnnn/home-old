@@ -4,7 +4,7 @@ dataplane=app
 token=app
 
 for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
-  echo app${n} | docker-compose exec -T kuma-app-${n} tee /usr/share/nginx/html/index.html
+  echo app${n} | docker-compose exec -T app-${n} tee /usr/share/nginx/html/index.html
 
   docker-compose exec -T kuma-cp-${n} \
     kumactl generate dataplane-token --dataplane=$dataplane \

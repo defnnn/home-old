@@ -4,5 +4,5 @@ zerotier:
 
 container:
 
-    docker inspect "$(docker-compose ps -q kuma-app-pause-${n})" | jq -r '.[] | .NetworkSettings.Networks[].IPAddress'
+    docker inspect "$(docker-compose ps -q app-pause-${n})" | jq -r '.[] | .NetworkSettings.Networks[].IPAddress'
 

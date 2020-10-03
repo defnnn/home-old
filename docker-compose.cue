@@ -153,7 +153,7 @@ services: "kuma-global": {
 
 services: done: image: "gcr.io/google_containers/pause-amd64:3.2"
 services: done: depends_on: [
-	for n in _zones {"kuma-app-dp-\(n)"},
+	for n in _zones {"app-dp-\(n)"},
 ]
 
 services: {
@@ -170,20 +170,20 @@ services: {
 			depends_on: "kuma-cp-\(n)": condition: "service_started"
 		}
 
-		"kuma-app-dp-\(n)": {
+		"app-dp-\(n)": {
 			(_kuma_app_dp & {"\(n)": {}})[n]
-			network_mode: "service:kuma-app-pause-\(n)"
+			network_mode: "service:app-pause-\(n)"
 			depends_on: "kuma-ingress-\(n)": condition: "service_started"
 		}
 
-		"kuma-app-pause-\(n)": {
+		"app-pause-\(n)": {
 			_kuma_app_pause
 			networks: default: ipv4_address: "\(_network_16).88.3\(n)"
 		}
 
-		"kuma-app-\(n)": {
+		"app-\(n)": {
 			(_kuma_app & {"\(n)": {}})[n]
-			network_mode: "service:kuma-app-pause-\(n)"
+			network_mode: "service:app-pause-\(n)"
 		}
 
 		"postgres\(n)": {

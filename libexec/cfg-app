@@ -3,10 +3,10 @@
 selector=.app
 
 for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
-  echo app${n} | docker-compose exec -T kuma-app-${n} tee /usr/share/nginx/html/index.html
+  echo app${n} | docker-compose exec -T app-${n} tee /usr/share/nginx/html/index.html
 
   cat farcast${n}.json \
-    | jq --arg ip "$(docker inspect "$(docker-compose ps -q kuma-app-pause-${n})" | jq -r '.[] | .NetworkSettings.Networks[].IPAddress')" \
+    | jq --arg ip "$(docker inspect "$(docker-compose ps -q app-pause-${n})" | jq -r '.[] | .NetworkSettings.Networks[].IPAddress')" \
         '. + {ip_container: $ip}' \
     > farcast${n}tmp.json
 
