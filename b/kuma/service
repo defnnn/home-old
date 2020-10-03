@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-set -x 
+set -x
 
 function main {
-  while true; do 
+  while true; do
     "$@"
     sleep 10
   done

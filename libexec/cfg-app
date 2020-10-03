@@ -9,10 +9,6 @@ for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
 
   docker-compose exec -T kuma-cp-${n} kumactl generate dataplane-token --dataplane=app | docker-compose exec -T kuma-cp-${n} tee /config/farcast${n}-app-token > /dev/null
 
-  docker-compose stop kuma-app-dp-${n} kuma-app-${n}
-  docker-compose rm -f kuma-app-dp-${n} kuma-app-${n}
-  docker-compose up -d kuma-app-dp-${n}
-  docker-compose up -d kuma-app-${n}
-
   echo app${n} | docker-compose exec -T kuma-app-${n} tee /usr/share/nginx/html/index.html
+
 done
