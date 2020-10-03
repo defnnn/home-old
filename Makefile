@@ -149,5 +149,4 @@ docker-compose.yml: docker-compose.cue
 
 tilt:
 	-tilt down
-	$(MAKE) down
 	tilt up

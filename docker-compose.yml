@@ -115,6 +115,12 @@ services:
     - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
     - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
     - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
+    - KUMA_STORE_TYPE=postgres
+    - KUMA_STORE_POSTGRES_HOST=postgres1
+    - KUMA_STORE_POSTGRES_PORT=5432
+    - KUMA_STORE_POSTGRES_USER=kuma-user
+    - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
+    - KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-1
     image: letfn/kuma
     volumes:
     - config:/config
@@ -137,6 +143,12 @@ services:
     - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
     - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
     - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
+    - KUMA_STORE_TYPE=postgres
+    - KUMA_STORE_POSTGRES_HOST=postgres2
+    - KUMA_STORE_POSTGRES_PORT=5432
+    - KUMA_STORE_POSTGRES_USER=kuma-user
+    - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
+    - KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-2
     image: letfn/kuma
     volumes:
     - config:/config
@@ -158,6 +170,12 @@ services:
     env_file: .env
     environment:
     - KUMA_MODE=global
+    - KUMA_STORE_TYPE=postgres
+    - KUMA_STORE_POSTGRES_HOST=postgres0
+    - KUMA_STORE_POSTGRES_PORT=5432
+    - KUMA_STORE_POSTGRES_USER=kuma-user
+    - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
+    - KUMA_STORE_POSTGRES_DB_NAME=kuma-global
     image: letfn/kuma
     network_mode: service:zerotier0
     volumes:
@@ -194,6 +212,27 @@ services:
     network_mode: service:zerotier2
     volumes:
     - config:/config
+  postgres0:
+    env_file: .env
+    environment:
+    - POSTGRES_DB=kuma-global
+    image: postgres
+    volumes:
+    - postgres0:/var/lib/postgresql/data
+  postgres1:
+    env_file: .env
+    environment:
+    - POSTGRES_DB=kuma-cp-1
+    image: postgres
+    volumes:
+    - postgres1:/var/lib/postgresql/data
+  postgres2:
+    env_file: .env
+    environment:
+    - POSTGRES_DB=kuma-cp-2
+    image: postgres
+    volumes:
+    - postgres2:/var/lib/postgresql/data
   sshd:
     depends_on:
       zerotier:
@@ -224,6 +263,10 @@ services:
     - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
+    links:
+    - postgres0
+    - postgres1
+    - postgres2
     privileged: true
     volumes:
     - zerotier:/var/lib/zerotier-one
@@ -239,6 +282,10 @@ services:
     - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
+    links:
+    - postgres0
+    - postgres1
+    - postgres2
     privileged: true
     volumes:
     - zerotier0:/var/lib/zerotier-one
@@ -254,6 +301,10 @@ services:
     - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
+    links:
+    - postgres0
+    - postgres1
+    - postgres2
     privileged: true
     volumes:
     - zerotier1:/var/lib/zerotier-one
@@ -269,12 +320,19 @@ services:
     - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
+    links:
+    - postgres0
+    - postgres1
+    - postgres2
     privileged: true
     volumes:
     - zerotier2:/var/lib/zerotier-one
 version: '3.7'
 volumes:
   config: {}
+  postgres0: {}
+  postgres1: {}
+  postgres2: {}
   zerotier: {}
   zerotier0: {}
   zerotier1: {}

@@ -60,6 +60,12 @@ _kuma_global: {
 	]
 	environment: [
 		"KUMA_MODE=global",
+		"KUMA_STORE_TYPE=postgres",
+		"KUMA_STORE_POSTGRES_HOST=postgres0",
+		"KUMA_STORE_POSTGRES_PORT=5432",
+		"KUMA_STORE_POSTGRES_USER=kuma-user",
+		"KUMA_STORE_POSTGRES_PASSWORD=kuma-password",
+		"KUMA_STORE_POSTGRES_DB_NAME=kuma-global",
 	]
 	volumes: [
 		"config:/config",
@@ -83,6 +89,12 @@ _kuma_cp: [N=_]: {
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem",
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem",
 		"KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client",
+		"KUMA_STORE_TYPE=postgres",
+		"KUMA_STORE_POSTGRES_HOST=postgres\(N)",
+		"KUMA_STORE_POSTGRES_PORT=5432",
+		"KUMA_STORE_POSTGRES_USER=kuma-user",
+		"KUMA_STORE_POSTGRES_PASSWORD=kuma-password",
+		"KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-\(N)",
 	]
 	volumes: [
 		"config:/config",
@@ -137,7 +149,7 @@ services: {
 
 services: done: image: "gcr.io/google_containers/pause-amd64:3.2"
 services: done: depends_on: [
-  for n in _zones { "kuma-app-dp-\(n)" }
+	for n in _zones {"kuma-app-dp-\(n)"},
 ]
 
 services: {
@@ -157,8 +169,26 @@ services: {
 
 		"kuma-app-\(n)": (_kuma_app & {"\(n)": {}})[n]
 		"kuma-app-\(n)": network_mode: "service:kuma-app-pause-\(n)"
+
+		"postgres\(n)": {
+			image: "postgres"
+			volumes: [ "postgres\(n):/var/lib/postgresql/data"]
+			environment: [
+				"POSTGRES_DB=kuma-cp-\(n)",
+			]
+		}
+
 	}
 }
+
+services: postgres0: {
+	image: "postgres"
+	volumes: [ "postgres0:/var/lib/postgresql/data"]
+	environment: [
+		"POSTGRES_DB=kuma-global",
+	]
+}
+
 
 services: [Service=string]: {
 	if Service != "zt" {
@@ -169,10 +199,16 @@ services: [Service=string]: {
 services: [Zerotier=string]: {
 	if Zerotier =~ "^zerotier" {
 		_zerotier
+
 		depends_on: init: condition: "service_healthy"
+
 		volumes: [
 			"\(Zerotier):/var/lib/zerotier-one",
 		]
+
+		links:
+			[ "postgres0"] +
+			[ for n in _zones {"postgres\(n)"}]
 	}
 }
 
@@ -219,7 +255,14 @@ services: {
 	}
 }
 
+volumes: {
+	for n in _zones {
+		"postgres\(n)": {}
+	}
+}
+
 volumes: config: {}
+volumes: postgres0: {}
 volumes: {
 	for n in _zerotier_svcs {
 		"\(n)": {}
