@@ -18,6 +18,13 @@ services:
     network_mode: service:zerotier
     volumes:
     - config:/app/src/.cloudflared
+  done:
+    depends_on:
+    - kuma-app-dp-1
+    - kuma-app-dp-2
+    - kuma-app-dp-3
+    env_file: .env
+    image: gcr.io/google_containers/pause-amd64:3.2
   init:
     command:
     - bash
@@ -43,12 +50,6 @@ services:
     - zerotier1:/zerotier1
     - zerotier2:/zerotier2
     - zerotier3:/zerotier3
-  init-done:
-    depends_on:
-      init:
-        condition: service_healthy
-    env_file: .env
-    image: gcr.io/google_containers/pause-amd64:3.2
   kuma-app-1:
     env_file: .env
     image: nginx
@@ -190,13 +191,6 @@ services:
     image: letfn/kuma
     volumes:
     - config:/config
-  kuma-done:
-    depends_on:
-    - kuma-app-dp-1
-    - kuma-app-dp-2
-    - kuma-app-dp-3
-    env_file: .env
-    image: gcr.io/google_containers/pause-amd64:3.2
   kuma-global:
     depends_on:
       init:
@@ -221,12 +215,6 @@ services:
     network_mode: service:zerotier0
     volumes:
     - config:/config
-  kuma-global-done:
-    depends_on:
-      kuma-global:
-        condition: service_healthy
-    env_file: .env
-    image: gcr.io/google_containers/pause-amd64:3.2
   kuma-ingress-1:
     command:
     - kuma-dp
