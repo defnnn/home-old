@@ -132,8 +132,8 @@ rebash:
 	$(MAKE) bash
 
 bash:
-	#docker-compose run --rm --entrypoint bash sshd -il
-	docker-compose exec sshd bash -il
+	docker-compose run --rm --entrypoint bash sshd -il
+	#docker-compose exec sshd bash -il
 
 -------------cuelang: # -----------------------------
 
