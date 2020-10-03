@@ -23,9 +23,9 @@ app: {
 }
 
 zone: name: zone_this
-zone: ingress: address: "\(ip_zerotier):10001"
+zone: ingress: address: "\(ip_container):10001"
 
-ingress: networking: address: ip_zerotier
+ingress: networking: address: ip_container
 ingress: name: "kuma-ingress"
 
 app: networking: address: ip_container

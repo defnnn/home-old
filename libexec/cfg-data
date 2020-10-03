@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 dataplane=app
-token=app
 
 for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
   echo app${n} | docker-compose exec -T app-${n} tee /usr/share/nginx/html/index.html
@@ -9,15 +8,14 @@ for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
   docker-compose exec -T kuma-remote-${n} \
     kumactl generate dataplane-token --dataplane=$dataplane \
       | docker-compose exec -T kuma-remote-${n} \
-          tee /config/farcast${n}-${token}-token > /dev/null
+          tee /config/farcast${n}-${dataplane}-token > /dev/null
 done
 
 dataplane=kuma-ingress
-token=ingress
 
 for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
   docker-compose exec -T kuma-remote-${n} \
     kumactl generate dataplane-token --dataplane=$dataplane \
       | docker-compose exec -T kuma-remote-${n} \
-          tee /config/farcast${n}-${token}-token > /dev/null
+          tee /config/farcast${n}-${dataplane}-token > /dev/null
 done

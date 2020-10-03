@@ -138,7 +138,7 @@ services:
     - run
     - --name=kuma-ingress
     - --cp-address=http://kuma-remote-1:5681
-    - --dataplane-token-file=/config/farcast1-ingress-token
+    - --dataplane-token-file=/config/farcast1-kuma-ingress-token
     - --log-level=debug
     depends_on:
       kuma-remote-1:
@@ -154,7 +154,7 @@ services:
     - run
     - --name=kuma-ingress
     - --cp-address=http://kuma-remote-2:5681
-    - --dataplane-token-file=/config/farcast2-ingress-token
+    - --dataplane-token-file=/config/farcast2-kuma-ingress-token
     - --log-level=debug
     depends_on:
       kuma-remote-2:
@@ -188,7 +188,7 @@ services:
     - KUMA_STORE_POSTGRES_PORT=5432
     - KUMA_STORE_POSTGRES_USER=kuma-user
     - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
-    - KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-1
+    - KUMA_STORE_POSTGRES_DB_NAME=kuma-remote-1
     image: letfn/kuma
     networks:
       default:
@@ -219,7 +219,7 @@ services:
     - KUMA_STORE_POSTGRES_PORT=5432
     - KUMA_STORE_POSTGRES_USER=kuma-user
     - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
-    - KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-2
+    - KUMA_STORE_POSTGRES_DB_NAME=kuma-remote-2
     image: letfn/kuma
     networks:
       default:
@@ -236,14 +236,14 @@ services:
   postgres1:
     env_file: .env
     environment:
-    - POSTGRES_DB=kuma-cp-1
+    - POSTGRES_DB=kuma-remote-1
     image: postgres
     volumes:
     - postgres1:/var/lib/postgresql/data
   postgres2:
     env_file: .env
     environment:
-    - POSTGRES_DB=kuma-cp-2
+    - POSTGRES_DB=kuma-remote-2
     image: postgres
     volumes:
     - postgres2:/var/lib/postgresql/data

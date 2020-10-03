@@ -3,10 +3,10 @@
 selector=.ingress
 
 for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
-  cat farcast${n}.json \
-    > farcast${n}tmp.json
+  ip_container="$(docker inspect "$(docker-compose ps -q zerotier${n})" | jq -r '.[] | .NetworkSettings.Networks[].IPAddress')"
 
-  # meh
+  jq -n --arg ip "$ip_container" '{ip_container: $ip}' > farcast${n}tmp.json
+
   cue export farcast.cue farcastx.cue farcast${n}.cue farcast${n}tmp.json \
     | yq -y "${selector}" \
     | docker-compose exec -T kuma-remote-${n} \

@@ -97,7 +97,7 @@ _kuma_cp: [N=_]: {
 		"KUMA_STORE_POSTGRES_PORT=5432",
 		"KUMA_STORE_POSTGRES_USER=kuma-user",
 		"KUMA_STORE_POSTGRES_PASSWORD=kuma-password",
-		"KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-\(N)",
+		"KUMA_STORE_POSTGRES_DB_NAME=kuma-remote-\(N)",
 	]
 	volumes: [
 		"config:/config",
@@ -111,7 +111,7 @@ _kuma_ingress: [N=_]: {
 		"run",
 		"--name=kuma-ingress",
 		"--cp-address=http://kuma-remote-\(N):5681",
-		"--dataplane-token-file=/config/farcast\(N)-ingress-token",
+		"--dataplane-token-file=/config/farcast\(N)-kuma-ingress-token",
 		"--log-level=debug",
 	]
 	volumes: [
@@ -190,7 +190,7 @@ services: {
 			image: "postgres"
 			volumes: [ "postgres\(n):/var/lib/postgresql/data"]
 			environment: [
-				"POSTGRES_DB=kuma-cp-\(n)",
+				"POSTGRES_DB=kuma-remote-\(n)",
 			]
 		}
 
