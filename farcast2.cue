@@ -1,2 +1,2 @@
 zone_this: "farcast2"
-zone_that: "farcast3"
+zone_that: "farcast1"
