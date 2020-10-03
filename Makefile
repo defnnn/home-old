@@ -75,7 +75,7 @@ build-jojomomojo: b/index b/index-homedir b/index-dotfiles # Build jojomomojo co
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
 	$(MAKE) test-jojomomojo
-	docker push defn/home:jojomomojo
+	if [[ -n "$(EXPECTED_REF)" ]]; then docker tag defn/home:jojomomojo "$(EXPECTED_REF)"; fi
 
 ----------------test: # -----------------------------
 
@@ -148,5 +148,6 @@ docker-compose.yml: docker-compose.cue
 ----------------tilt: # -----------------------------
 
 tilt:
+	-tilt down
 	$(MAKE) down
 	tilt up

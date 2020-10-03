@@ -1,6 +1,9 @@
 docker_compose("./docker-compose.yml")
+
 docker_build('letfn/kuma', 'b/kuma')
 docker_build('letfn/init', 'b/init')
+
+custom_build('defn/home:jojomomojo', 'make build-jojomomojo', ['b'])
 
 local_resource('cfg init',
   cmd='cat config.tgz | docker-compose run --rm  -T init tar xvfz -',
