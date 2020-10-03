@@ -4,6 +4,7 @@ _ip_global: "192.168.195.156"
 
 _zones: [ "1", "2", "3"]
 
+services: "init-done": depends_on: init: condition: "service_healthy"
 services: init: {
 	image: "letfn/init"
 	command: [
@@ -131,6 +132,7 @@ _kuma_app_dp: [N=_]: {
 }
 
 services: {
+  "kuma-global-done": depends_on: "kuma-global": condition: "service_healthy"
 	"kuma-global": _kuma_global
 	"kuma-global": network_mode: "service:\(_zerotier_global)"
 }

@@ -43,6 +43,11 @@ services:
     - zerotier1:/zerotier1
     - zerotier2:/zerotier2
     - zerotier3:/zerotier3
+  init-done:
+    depends_on:
+      init:
+        condition: service_healthy
+    env_file: .env
   kuma-app-1:
     env_file: .env
     image: nginx
@@ -215,6 +220,11 @@ services:
     network_mode: service:zerotier0
     volumes:
     - config:/config
+  kuma-global-done:
+    depends_on:
+      kuma-global:
+        condition: service_healthy
+    env_file: .env
   kuma-ingress-1:
     depends_on:
       kuma-cp-1:
