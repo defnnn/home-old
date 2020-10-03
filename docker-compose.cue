@@ -97,7 +97,7 @@ _kuma_cp: [N=_]: {
 		"KUMA_STORE_POSTGRES_PORT=5432",
 		"KUMA_STORE_POSTGRES_USER=kuma-user",
 		"KUMA_STORE_POSTGRES_PASSWORD=kuma-password",
-		"KUMA_STORE_POSTGRES_DB_NAME=kuma-remote-\(N)",
+		"KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-\(N)",
 	]
 	volumes: [
 		"config:/config",
@@ -190,7 +190,7 @@ services: {
 			image: "postgres"
 			volumes: [ "postgres\(n):/var/lib/postgresql/data"]
 			environment: [
-				"POSTGRES_DB=kuma-remote-\(n)",
+				"POSTGRES_DB=kuma-cp-\(n)",
 			]
 		}
 
