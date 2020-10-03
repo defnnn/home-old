@@ -68,54 +68,51 @@ services:
     volumes:
     - config:/config
   kuma-app-dp-1:
-    depends_on:
-      kuma-ingress-1:
-        condition: service_started
-    entrypoint:
+    command:
     - kuma-dp
     - run
     - --name=app
     - --cp-address=http://kuma-cp-1:5681
     - --dataplane-token-file=/config/farcast1-app-token
     - --log-level=debug
+    depends_on:
+      kuma-ingress-1:
+        condition: service_started
     env_file: .env
     image: letfn/kuma
     network_mode: service:kuma-app-pause-1
-    restart: always
     volumes:
     - config:/config
   kuma-app-dp-2:
-    depends_on:
-      kuma-ingress-2:
-        condition: service_started
-    entrypoint:
+    command:
     - kuma-dp
     - run
     - --name=app
     - --cp-address=http://kuma-cp-2:5681
     - --dataplane-token-file=/config/farcast2-app-token
     - --log-level=debug
+    depends_on:
+      kuma-ingress-2:
+        condition: service_started
     env_file: .env
     image: letfn/kuma
     network_mode: service:kuma-app-pause-2
-    restart: always
     volumes:
     - config:/config
   kuma-app-dp-3:
-    depends_on:
-      kuma-ingress-3:
-        condition: service_started
-    entrypoint:
+    command:
     - kuma-dp
     - run
     - --name=app
     - --cp-address=http://kuma-cp-3:5681
     - --dataplane-token-file=/config/farcast3-app-token
     - --log-level=debug
+    depends_on:
+      kuma-ingress-3:
+        condition: service_started
     env_file: .env
     image: letfn/kuma
     network_mode: service:kuma-app-pause-3
-    restart: always
     volumes:
     - config:/config
   kuma-app-pause-1:
@@ -231,54 +228,51 @@ services:
     env_file: .env
     image: gcr.io/google_containers/pause-amd64:3.2
   kuma-ingress-1:
-    depends_on:
-      kuma-cp-1:
-        condition: service_started
-    entrypoint:
+    command:
     - kuma-dp
     - run
     - --name=kuma-ingress
     - --cp-address=http://kuma-cp-1:5681
     - --dataplane-token-file=/config/farcast1-ingress-token
     - --log-level=debug
+    depends_on:
+      kuma-cp-1:
+        condition: service_started
     env_file: .env
     image: letfn/kuma
     network_mode: service:zerotier1
-    restart: always
     volumes:
     - config:/config
   kuma-ingress-2:
-    depends_on:
-      kuma-cp-2:
-        condition: service_started
-    entrypoint:
+    command:
     - kuma-dp
     - run
     - --name=kuma-ingress
     - --cp-address=http://kuma-cp-2:5681
     - --dataplane-token-file=/config/farcast2-ingress-token
     - --log-level=debug
+    depends_on:
+      kuma-cp-2:
+        condition: service_started
     env_file: .env
     image: letfn/kuma
     network_mode: service:zerotier2
-    restart: always
     volumes:
     - config:/config
   kuma-ingress-3:
-    depends_on:
-      kuma-cp-3:
-        condition: service_started
-    entrypoint:
+    command:
     - kuma-dp
     - run
     - --name=kuma-ingress
     - --cp-address=http://kuma-cp-3:5681
     - --dataplane-token-file=/config/farcast3-ingress-token
     - --log-level=debug
+    depends_on:
+      kuma-cp-3:
+        condition: service_started
     env_file: .env
     image: letfn/kuma
     network_mode: service:zerotier3
-    restart: always
     volumes:
     - config:/config
   sshd:
