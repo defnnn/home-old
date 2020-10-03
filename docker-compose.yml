@@ -1,3 +1,9 @@
+networks:
+  default:
+    ipam:
+      config:
+      - subnet: 172.29.0.0/16
+      driver: default
 services:
   cloudflared:
     depends_on:
@@ -38,18 +44,22 @@ services:
     - zerotier0:/zerotier0
     - zerotier1:/zerotier1
     - zerotier2:/zerotier2
+    - nginx1:/nginx1
+    - nginx2:/nginx2
   kuma-app-1:
     env_file: .env
     image: nginx
     network_mode: service:kuma-app-pause-1
     volumes:
     - config:/config
+    - nginx1:/usr/share/nginx/html
   kuma-app-2:
     env_file: .env
     image: nginx
     network_mode: service:kuma-app-pause-2
     volumes:
     - config:/config
+    - nginx2:/usr/share/nginx/html
   kuma-app-dp-1:
     command:
     - kuma-dp
@@ -85,9 +95,15 @@ services:
   kuma-app-pause-1:
     env_file: .env
     image: gcr.io/google_containers/pause-amd64:3.2
+    networks:
+      default:
+        ipv4_address: 172.29.88.31
   kuma-app-pause-2:
     env_file: .env
     image: gcr.io/google_containers/pause-amd64:3.2
+    networks:
+      default:
+        ipv4_address: 172.29.88.32
   kuma-cp-1:
     depends_on:
       kuma-global:
@@ -114,6 +130,9 @@ services:
     - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
     - KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-1
     image: letfn/kuma
+    networks:
+      default:
+        ipv4_address: 172.29.88.21
     volumes:
     - config:/config
   kuma-cp-2:
@@ -142,6 +161,9 @@ services:
     - KUMA_STORE_POSTGRES_PASSWORD=kuma-password
     - KUMA_STORE_POSTGRES_DB_NAME=kuma-cp-2
     image: letfn/kuma
+    networks:
+      default:
+        ipv4_address: 172.29.88.22
     volumes:
     - config:/config
   kuma-global:
@@ -255,10 +277,6 @@ services:
     - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
-    links:
-    - postgres0
-    - postgres1
-    - postgres2
     privileged: true
     volumes:
     - zerotier:/var/lib/zerotier-one
@@ -274,10 +292,9 @@ services:
     - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
-    links:
-    - postgres0
-    - postgres1
-    - postgres2
+    networks:
+      default:
+        ipv4_address: 172.29.88.10
     privileged: true
     volumes:
     - zerotier0:/var/lib/zerotier-one
@@ -293,10 +310,9 @@ services:
     - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
-    links:
-    - postgres0
-    - postgres1
-    - postgres2
+    networks:
+      default:
+        ipv4_address: 172.29.88.11
     privileged: true
     volumes:
     - zerotier1:/var/lib/zerotier-one
@@ -312,16 +328,17 @@ services:
     - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
-    links:
-    - postgres0
-    - postgres1
-    - postgres2
+    networks:
+      default:
+        ipv4_address: 172.29.88.12
     privileged: true
     volumes:
     - zerotier2:/var/lib/zerotier-one
 version: '3.7'
 volumes:
   config: {}
+  nginx1: {}
+  nginx2: {}
   postgres0: {}
   postgres1: {}
   postgres2: {}

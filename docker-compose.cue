@@ -2,6 +2,8 @@ version: "3.7"
 
 _ip_global: "192.168.195.156"
 
+_network_16: "172.29"
+
 _zones: [ "1", "2"]
 
 services: init: {
@@ -23,7 +25,8 @@ services: init: {
 			"config:/config",
 			"/var/run/docker.sock:/var/run/docker.sock",
 		] +
-		[ for n in _zerotier_svcs {"\(n):/\(n)"}]
+		[ for n in _zerotier_svcs {"\(n):/\(n)"}] +
+		[ for n in _zones {"nginx\(n):/nginx\(n)"}]
 
 	healthcheck: {
 		test: ["CMD", "test", "-f", "/tmp/done.txt"]
@@ -124,6 +127,7 @@ _kuma_app: [N=_]: {
 	image: "nginx"
 	volumes: [
 		"config:/config",
+		"nginx\(N):/usr/share/nginx/html",
 	]
 }
 
@@ -142,9 +146,9 @@ _kuma_app_dp: [N=_]: {
 	]
 }
 
-services: {
-	"kuma-global": _kuma_global
-	"kuma-global": network_mode: "service:\(_zerotier_global)"
+services: "kuma-global": {
+	_kuma_global
+	network_mode: "service:\(_zerotier_global)"
 }
 
 services: done: image: "gcr.io/google_containers/pause-amd64:3.2"
@@ -154,21 +158,33 @@ services: done: depends_on: [
 
 services: {
 	for n in _zones {
-		"kuma-cp-\(n)": (_kuma_cp & {"\(n)": {}})[n]
-		"kuma-cp-\(n)": depends_on: "kuma-global": condition: "service_started"
+		"kuma-cp-\(n)": {
+			(_kuma_cp & {"\(n)": {}})[n]
+			depends_on: "kuma-global": condition: "service_started"
+			networks: default: ipv4_address:      "\(_network_16).88.2\(n)"
+		}
 
-		"kuma-ingress-\(n)": (_kuma_ingress & {"\(n)": {}})[n]
-		"kuma-ingress-\(n)": network_mode: "service:zerotier\(n)"
-		"kuma-ingress-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
+		"kuma-ingress-\(n)": {
+			(_kuma_ingress & {"\(n)": {}})[n]
+			network_mode: "service:zerotier\(n)"
+			depends_on: "kuma-cp-\(n)": condition: "service_started"
+		}
 
-		"kuma-app-dp-\(n)": (_kuma_app_dp & {"\(n)": {}})[n]
-		"kuma-app-dp-\(n)": network_mode: "service:kuma-app-pause-\(n)"
-		"kuma-app-dp-\(n)": depends_on: "kuma-ingress-\(n)": condition: "service_started"
+		"kuma-app-dp-\(n)": {
+			(_kuma_app_dp & {"\(n)": {}})[n]
+			network_mode: "service:kuma-app-pause-\(n)"
+			depends_on: "kuma-ingress-\(n)": condition: "service_started"
+		}
 
-		"kuma-app-pause-\(n)": _kuma_app_pause
+		"kuma-app-pause-\(n)": {
+			_kuma_app_pause
+			networks: default: ipv4_address: "\(_network_16).88.3\(n)"
+		}
 
-		"kuma-app-\(n)": (_kuma_app & {"\(n)": {}})[n]
-		"kuma-app-\(n)": network_mode: "service:kuma-app-pause-\(n)"
+		"kuma-app-\(n)": {
+			(_kuma_app & {"\(n)": {}})[n]
+			network_mode: "service:kuma-app-pause-\(n)"
+		}
 
 		"postgres\(n)": {
 			image: "postgres"
@@ -204,10 +220,6 @@ services: [Zerotier=string]: {
 		volumes: [
 			"\(Zerotier):/var/lib/zerotier-one",
 		]
-
-		links:
-			[ "postgres0"] +
-			[ for n in _zones {"postgres\(n)"}]
 	}
 }
 
@@ -250,10 +262,14 @@ services: sshd: network_mode: "service:\(_zerotier_sshd)"
 services: cloudflared: depends_on: "\(_zerotier_sshd)": condition: "service_started"
 services: cloudflared: network_mode: "service:\(_zerotier_sshd)"
 
-services: "\(_zerotier_global)": {}
+services: "\(_zerotier_global)": {
+	networks: default: ipv4_address: "\(_network_16).88.10"
+}
 services: {
 	for n in _zones {
-		"zerotier\(n)": {}
+		"zerotier\(n)": {
+			networks: default: ipv4_address: "\(_network_16).88.1\(n)"
+		}
 	}
 }
 
@@ -269,4 +285,19 @@ volumes: {
 	for n in _zerotier_svcs {
 		"\(n)": {}
 	}
+}
+
+volumes: {
+	for n in _zones {
+		"nginx\(n)": {}
+	}
+}
+
+networks: default: ipam: {
+	driver: "default"
+	config: [
+		{
+			subnet: "\(_network_16).0.0/16"
+		},
+	]
 }
