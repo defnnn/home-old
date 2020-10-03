@@ -11,6 +11,7 @@ services: init: {
 		"-c",
 		"""
 		set -x
+		chown 1001:1001 /var/run/docker.sock
 		touch /tmp/done.txt
 		exec sleep 86400000
 
@@ -18,7 +19,10 @@ services: init: {
 	]
 
 	volumes:
-		[ "config:/config"] +
+		[
+			"config:/config",
+			"/var/run/docker.sock:/var/run/docker.sock",
+		] +
 		[ for n in _zerotier_svcs {"\(n):/\(n)"}]
 
 	healthcheck: {
@@ -131,6 +135,11 @@ services: {
 	"kuma-global": network_mode: "service:\(_zerotier_global)"
 }
 
+services: "kuma-done": image: "gcr.io/google_containers/pause-amd64:3.2"
+services: "kuma-done": depends_on: [
+  for n in _zones { "kuma-app-dp-\(n)" }
+]
+
 services: {
 	for n in _zones {
 		"kuma-cp-\(n)": (_kuma_cp & {"\(n)": {}})[n]
@@ -142,7 +151,7 @@ services: {
 
 		"kuma-app-dp-\(n)": (_kuma_app_dp & {"\(n)": {}})[n]
 		"kuma-app-dp-\(n)": network_mode: "service:kuma-app-pause-\(n)"
-		"kuma-app-dp-\(n)": depends_on: "kuma-cp-\(n)": condition: "service_started"
+		"kuma-app-dp-\(n)": depends_on: "kuma-ingress-\(n)": condition: "service_started"
 
 		"kuma-app-pause-\(n)": _kuma_app_pause
 
@@ -168,7 +177,7 @@ services: [Zerotier=string]: {
 }
 
 services: [Service=string]: {
-	if Service =~ "^(sshd|cloudflared|kuma-global)$" {
+	if Service =~ "^(cloudflared|kuma-global)$" {
 		depends_on: init: condition: "service_healthy"
 		for n in _zerotier_svcs {
 			depends_on: "\(n)": condition: "service_started"
@@ -199,6 +208,7 @@ _zerotier: {
 }
 
 services: "\(_zerotier_sshd)": {}
+services: sshd: depends_on: "\(_zerotier_sshd)": condition: "service_started"
 services: sshd: network_mode:        "service:\(_zerotier_sshd)"
 services: cloudflared: network_mode: "service:\(_zerotier_sshd)"
 

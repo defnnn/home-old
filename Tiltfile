@@ -2,32 +2,20 @@ docker_compose("./docker-compose.yml")
 docker_build('letfn/kuma', 'b/kuma')
 docker_build('letfn/init', 'b/init')
 
-local_resource('-- config -----',
-  cmd='true',
-  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
-
-local_resource('apply-config',
+local_resource('cfg init',
   cmd='cat config.tgz | docker-compose run --rm  -T init tar xvfz -',
-  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
+  deps=['init'])
 
-local_resource('global-cp',
-  cmd='bash -x libexec/global-cp',
-  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
+local_resource('cfg kuma-global',
+  cmd='bash -x libexec/cfg-global',
+  deps=['kuma-global'])
 
-local_resource('farcast-cp-dp',
-  cmd='bash -x libexec/remote-cp; bash -x libexec/app-dp',
-  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
+local_resource('cfg kuma-remote',
+  cmd='bash -x libexec/cfg-remote; bash -x libexec/cfg-app',
+  deps=['kuma-done'])
 
-local_resource('-- tests ------',
-  cmd='true',
-  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
-
-local_resource('test',
-  cmd='bash -x libexec/test',
-  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
-
-local_resource('-- configs ----',
-  cmd='true',
+local_resource('test app',
+  cmd='bash -x libexec/test-app',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
 local_resource('save-config',

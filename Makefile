@@ -12,6 +12,7 @@ menu:
 config:
 	rm -f docker-compose.yml
 	$(MAKE) docker-compose.yml
+	git diff docker-compose.yml
 
 ---------------build: # -----------------------------
 thing: # Build all the things
@@ -126,14 +127,26 @@ recycle: # Recycle home container
 	docker-compose pull
 	$(MAKE) recreate
 
+rebash:
+	$(MAKE) down
+	$(MAKE) bash
+
 bash:
-	docker-compose exec sshd bash -il
+	docker-compose run --rm --entrypoint bash sshd -il
 
 -------------cuelang: # -----------------------------
 
 fmt:
 	cue fmt *.cue
+	yamlfmt -w docker-compose.yml
 
 docker-compose.yml: docker-compose.cue
 	cue export --out json docker-compose.cue | yq -y -S '.'  > docker-compose.yml.1
+	yamlfmt -w docker-compose.yml.1
 	mv docker-compose.yml.1 docker-compose.yml
+	
+----------------tilt: # -----------------------------
+
+tilt:
+	$(MAKE) down
+	tilt up

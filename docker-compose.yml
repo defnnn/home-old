@@ -17,102 +17,98 @@ services:
     image: letfn/cloudflared
     network_mode: service:zerotier
     volumes:
-      - config:/app/src/.cloudflared
+    - config:/app/src/.cloudflared
   init:
     command:
-      - bash
-      - -c
-      - 'set -x
-
-        touch /tmp/done.txt
-
-        exec sleep 86400000
-
-        '
+    - bash
+    - -c
+    - "set -x\nchown 1001:1001 /var/run/docker.sock\ntouch /tmp/done.txt\nexec sleep\
+      \ 86400000\n"
     env_file: .env
     healthcheck:
       interval: 10s
       retries: 100
       test:
-        - CMD
-        - test
-        - -f
-        - /tmp/done.txt
+      - CMD
+      - test
+      - -f
+      - /tmp/done.txt
       timeout: 15s
     image: letfn/init
     volumes:
-      - config:/config
-      - zerotier:/zerotier
-      - zerotier0:/zerotier0
-      - zerotier1:/zerotier1
-      - zerotier2:/zerotier2
-      - zerotier3:/zerotier3
+    - config:/config
+    - /var/run/docker.sock:/var/run/docker.sock
+    - zerotier:/zerotier
+    - zerotier0:/zerotier0
+    - zerotier1:/zerotier1
+    - zerotier2:/zerotier2
+    - zerotier3:/zerotier3
   kuma-app-1:
     env_file: .env
     image: nginx
     network_mode: service:kuma-app-pause-1
     volumes:
-      - config:/config
+    - config:/config
   kuma-app-2:
     env_file: .env
     image: nginx
     network_mode: service:kuma-app-pause-2
     volumes:
-      - config:/config
+    - config:/config
   kuma-app-3:
     env_file: .env
     image: nginx
     network_mode: service:kuma-app-pause-3
     volumes:
-      - config:/config
+    - config:/config
   kuma-app-dp-1:
     depends_on:
-      kuma-cp-1:
+      kuma-ingress-1:
         condition: service_started
     entrypoint:
-      - kuma-dp
-      - run
-      - --name=app
-      - --cp-address=http://kuma-cp-1:5681
-      - --dataplane-token-file=/config/farcast1-app-token
-      - --log-level=debug
+    - kuma-dp
+    - run
+    - --name=app
+    - --cp-address=http://kuma-cp-1:5681
+    - --dataplane-token-file=/config/farcast1-app-token
+    - --log-level=debug
     env_file: .env
     image: letfn/kuma
     network_mode: service:kuma-app-pause-1
     volumes:
-      - config:/config
+    - config:/config
   kuma-app-dp-2:
     depends_on:
-      kuma-cp-2:
+      kuma-ingress-2:
         condition: service_started
     entrypoint:
-      - kuma-dp
-      - run
-      - --name=app
-      - --cp-address=http://kuma-cp-2:5681
-      - --dataplane-token-file=/config/farcast2-app-token
-      - --log-level=debug
+    - kuma-dp
+    - run
+    - --name=app
+    - --cp-address=http://kuma-cp-2:5681
+    - --dataplane-token-file=/config/farcast2-app-token
+    - --log-level=debug
     env_file: .env
     image: letfn/kuma
     network_mode: service:kuma-app-pause-2
     volumes:
-      - config:/config
+    - config:/config
   kuma-app-dp-3:
     depends_on:
-      kuma-cp-3:
+      kuma-ingress-3:
         condition: service_started
     entrypoint:
-      - kuma-dp
-      - run
-      - --name=app
-      - --cp-address=http://kuma-cp-3:5681
-      - --dataplane-token-file=/config/farcast3-app-token
-      - --log-level=debug
+    - kuma-dp
+    - run
+    - --name=app
+    - --cp-address=http://kuma-cp-3:5681
+    - --dataplane-token-file=/config/farcast3-app-token
+    - --log-level=debug
     env_file: .env
     image: letfn/kuma
     network_mode: service:kuma-app-pause-3
     volumes:
-      - config:/config
+    - config:/config
   kuma-app-pause-1:
     env_file: .env
     image: gcr.io/google_containers/pause-amd64:3.2
@@ -127,67 +123,74 @@ services:
       kuma-global:
         condition: service_started
     entrypoint:
-      - kuma-cp
-      - run
+    - kuma-cp
+    - run
     env_file: .env
     environment:
-      - KUMA_MODE=remote
-      - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast1
-      - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
-      - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-1
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
+    - KUMA_MODE=remote
+    - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast1
+    - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
+    - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-1
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
     image: letfn/kuma
     volumes:
-      - config:/config
+    - config:/config
   kuma-cp-2:
     depends_on:
       kuma-global:
         condition: service_started
     entrypoint:
-      - kuma-cp
-      - run
+    - kuma-cp
+    - run
     env_file: .env
     environment:
-      - KUMA_MODE=remote
-      - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast2
-      - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
-      - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-2
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
+    - KUMA_MODE=remote
+    - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast2
+    - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
+    - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-2
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
     image: letfn/kuma
     volumes:
-      - config:/config
+    - config:/config
   kuma-cp-3:
     depends_on:
       kuma-global:
         condition: service_started
     entrypoint:
-      - kuma-cp
-      - run
+    - kuma-cp
+    - run
     env_file: .env
     environment:
-      - KUMA_MODE=remote
-      - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast3
-      - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
-      - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-3
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
-      - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
+    - KUMA_MODE=remote
+    - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast3
+    - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
+    - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-3
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
+    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
     image: letfn/kuma
     volumes:
-      - config:/config
+    - config:/config
+  kuma-done:
+    depends_on:
+    - kuma-app-dp-1
+    - kuma-app-dp-2
+    - kuma-app-dp-3
+    env_file: .env
+    image: gcr.io/google_containers/pause-amd64:3.2
   kuma-global:
     depends_on:
       init:
@@ -203,167 +206,157 @@ services:
       zerotier3:
         condition: service_started
     entrypoint:
-      - kuma-cp
-      - run
+    - kuma-cp
+    - run
     env_file: .env
     environment:
-      - KUMA_MODE=global
+    - KUMA_MODE=global
     image: letfn/kuma
     network_mode: service:zerotier0
     volumes:
-      - config:/config
+    - config:/config
   kuma-ingress-1:
     depends_on:
       kuma-cp-1:
         condition: service_started
     entrypoint:
-      - kuma-dp
-      - run
-      - --name=kuma-ingress
-      - --cp-address=http://kuma-cp-1:5681
-      - --dataplane-token-file=/config/farcast1-ingress-token
-      - --log-level=debug
+    - kuma-dp
+    - run
+    - --name=kuma-ingress
+    - --cp-address=http://kuma-cp-1:5681
+    - --dataplane-token-file=/config/farcast1-ingress-token
+    - --log-level=debug
     env_file: .env
     image: letfn/kuma
     network_mode: service:zerotier1
     volumes:
-      - config:/config
+    - config:/config
   kuma-ingress-2:
     depends_on:
       kuma-cp-2:
         condition: service_started
     entrypoint:
-      - kuma-dp
-      - run
-      - --name=kuma-ingress
-      - --cp-address=http://kuma-cp-2:5681
-      - --dataplane-token-file=/config/farcast2-ingress-token
-      - --log-level=debug
+    - kuma-dp
+    - run
+    - --name=kuma-ingress
+    - --cp-address=http://kuma-cp-2:5681
+    - --dataplane-token-file=/config/farcast2-ingress-token
+    - --log-level=debug
     env_file: .env
     image: letfn/kuma
     network_mode: service:zerotier2
     volumes:
-      - config:/config
+    - config:/config
   kuma-ingress-3:
     depends_on:
       kuma-cp-3:
         condition: service_started
     entrypoint:
-      - kuma-dp
-      - run
-      - --name=kuma-ingress
-      - --cp-address=http://kuma-cp-3:5681
-      - --dataplane-token-file=/config/farcast3-ingress-token
-      - --log-level=debug
+    - kuma-dp
+    - run
+    - --name=kuma-ingress
+    - --cp-address=http://kuma-cp-3:5681
+    - --dataplane-token-file=/config/farcast3-ingress-token
+    - --log-level=debug
     env_file: .env
     image: letfn/kuma
     network_mode: service:zerotier3
     volumes:
-      - config:/config
+    - config:/config
   sshd:
     depends_on:
-      init:
-        condition: service_healthy
       zerotier:
         condition: service_started
-      zerotier0:
-        condition: service_started
-      zerotier1:
-        condition: service_started
-      zerotier2:
-        condition: service_started
-      zerotier3:
-        condition: service_started
     entrypoint:
-      - /service
-      - sshd
+    - /service
+    - sshd
     env_file: .env
     image: defn/home:jojomomojo
     network_mode: service:zerotier
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - config:/data/home-secret
-      - config:/config
-      - zerotier:/zerotier
-      - zerotier0:/zerotier0
-      - zerotier1:/zerotier1
-      - zerotier2:/zerotier2
-      - zerotier3:/zerotier3
+    - /var/run/docker.sock:/var/run/docker.sock
+    - config:/data/home-secret
+    - config:/config
+    - zerotier:/zerotier
+    - zerotier0:/zerotier0
+    - zerotier1:/zerotier1
+    - zerotier2:/zerotier2
+    - zerotier3:/zerotier3
   zerotier:
     cap_drop:
-      - NET_RAW
-      - NET_ADMIN
-      - SYS_ADMIN
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
     depends_on:
       init:
         condition: service_healthy
     devices:
-      - /dev/net/tun
+    - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
     privileged: true
     volumes:
-      - zerotier:/var/lib/zerotier-one
+    - zerotier:/var/lib/zerotier-one
   zerotier0:
     cap_drop:
-      - NET_RAW
-      - NET_ADMIN
-      - SYS_ADMIN
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
     depends_on:
       init:
         condition: service_healthy
     devices:
-      - /dev/net/tun
+    - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
     privileged: true
     volumes:
-      - zerotier0:/var/lib/zerotier-one
+    - zerotier0:/var/lib/zerotier-one
   zerotier1:
     cap_drop:
-      - NET_RAW
-      - NET_ADMIN
-      - SYS_ADMIN
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
     depends_on:
       init:
         condition: service_healthy
     devices:
-      - /dev/net/tun
+    - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
     privileged: true
     volumes:
-      - zerotier1:/var/lib/zerotier-one
+    - zerotier1:/var/lib/zerotier-one
   zerotier2:
     cap_drop:
-      - NET_RAW
-      - NET_ADMIN
-      - SYS_ADMIN
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
     depends_on:
       init:
         condition: service_healthy
     devices:
-      - /dev/net/tun
+    - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
     privileged: true
     volumes:
-      - zerotier2:/var/lib/zerotier-one
+    - zerotier2:/var/lib/zerotier-one
   zerotier3:
     cap_drop:
-      - NET_RAW
-      - NET_ADMIN
-      - SYS_ADMIN
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
     depends_on:
       init:
         condition: service_healthy
     devices:
-      - /dev/net/tun
+    - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
     privileged: true
     volumes:
-      - zerotier3:/var/lib/zerotier-one
+    - zerotier3:/var/lib/zerotier-one
 version: '3.7'
 volumes:
   config: {}

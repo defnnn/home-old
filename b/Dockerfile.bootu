@@ -49,7 +49,11 @@ COPY index /tmp/index
 COPY index-homedir /tmp/index-homedir
 COPY index-dotfiles /tmp/index-dotfiles
 
+RUN rm -f package-lock.json
+
 RUN make update; make install; make upgrade
+
+RUN rm -f /home/linuxbrew/.linuxbrew/bin/gs
 
 COPY service /service
 RUN sudo chmod 755 /service
