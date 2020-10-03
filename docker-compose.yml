@@ -11,8 +11,6 @@ services:
         condition: service_started
       zerotier2:
         condition: service_started
-      zerotier3:
-        condition: service_started
     env_file: .env
     image: letfn/cloudflared
     network_mode: service:zerotier
@@ -22,7 +20,6 @@ services:
     depends_on:
     - kuma-app-dp-1
     - kuma-app-dp-2
-    - kuma-app-dp-3
     env_file: .env
     image: gcr.io/google_containers/pause-amd64:3.2
   init:
@@ -49,7 +46,6 @@ services:
     - zerotier0:/zerotier0
     - zerotier1:/zerotier1
     - zerotier2:/zerotier2
-    - zerotier3:/zerotier3
   kuma-app-1:
     env_file: .env
     image: nginx
@@ -60,12 +56,6 @@ services:
     env_file: .env
     image: nginx
     network_mode: service:kuma-app-pause-2
-    volumes:
-    - config:/config
-  kuma-app-3:
-    env_file: .env
-    image: nginx
-    network_mode: service:kuma-app-pause-3
     volumes:
     - config:/config
   kuma-app-dp-1:
@@ -100,29 +90,10 @@ services:
     network_mode: service:kuma-app-pause-2
     volumes:
     - config:/config
-  kuma-app-dp-3:
-    command:
-    - kuma-dp
-    - run
-    - --name=app
-    - --cp-address=http://kuma-cp-3:5681
-    - --dataplane-token-file=/config/farcast3-app-token
-    - --log-level=debug
-    depends_on:
-      kuma-ingress-3:
-        condition: service_started
-    env_file: .env
-    image: letfn/kuma
-    network_mode: service:kuma-app-pause-3
-    volumes:
-    - config:/config
   kuma-app-pause-1:
     env_file: .env
     image: gcr.io/google_containers/pause-amd64:3.2
   kuma-app-pause-2:
-    env_file: .env
-    image: gcr.io/google_containers/pause-amd64:3.2
-  kuma-app-pause-3:
     env_file: .env
     image: gcr.io/google_containers/pause-amd64:3.2
   kuma-cp-1:
@@ -169,28 +140,6 @@ services:
     image: letfn/kuma
     volumes:
     - config:/config
-  kuma-cp-3:
-    depends_on:
-      kuma-global:
-        condition: service_started
-    entrypoint:
-    - kuma-cp
-    - run
-    env_file: .env
-    environment:
-    - KUMA_MODE=remote
-    - KUMA_MULTICLUSTER_REMOTE_ZONE=farcast3
-    - KUMA_MULTICLUSTER_REMOTE_GLOBAL_ADDRESS=grpcs://192.168.195.156:5685
-    - KUMA_GENERAL_ADVERTISED_HOSTNAME=kuma-cp-3
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_ENABLED=true
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_INTERFACE=0.0.0.0
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_PORT=5684
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_CERT_FILE=/certs/server/cert.pem
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_TLS_KEY_FILE=/certs/server/key.pem
-    - KUMA_DATAPLANE_TOKEN_SERVER_PUBLIC_CLIENT_CERTS_DIR=/certs/client
-    image: letfn/kuma
-    volumes:
-    - config:/config
   kuma-global:
     depends_on:
       init:
@@ -202,8 +151,6 @@ services:
       zerotier1:
         condition: service_started
       zerotier2:
-        condition: service_started
-      zerotier3:
         condition: service_started
     entrypoint:
     - kuma-cp
@@ -247,22 +194,6 @@ services:
     network_mode: service:zerotier2
     volumes:
     - config:/config
-  kuma-ingress-3:
-    command:
-    - kuma-dp
-    - run
-    - --name=kuma-ingress
-    - --cp-address=http://kuma-cp-3:5681
-    - --dataplane-token-file=/config/farcast3-ingress-token
-    - --log-level=debug
-    depends_on:
-      kuma-cp-3:
-        condition: service_started
-    env_file: .env
-    image: letfn/kuma
-    network_mode: service:zerotier3
-    volumes:
-    - config:/config
   sshd:
     depends_on:
       zerotier:
@@ -281,7 +212,6 @@ services:
     - zerotier0:/zerotier0
     - zerotier1:/zerotier1
     - zerotier2:/zerotier2
-    - zerotier3:/zerotier3
   zerotier:
     cap_drop:
     - NET_RAW
@@ -342,21 +272,6 @@ services:
     privileged: true
     volumes:
     - zerotier2:/var/lib/zerotier-one
-  zerotier3:
-    cap_drop:
-    - NET_RAW
-    - NET_ADMIN
-    - SYS_ADMIN
-    depends_on:
-      init:
-        condition: service_healthy
-    devices:
-    - /dev/net/tun
-    env_file: .env
-    image: letfn/zerotier
-    privileged: true
-    volumes:
-    - zerotier3:/var/lib/zerotier-one
 version: '3.7'
 volumes:
   config: {}
@@ -364,4 +279,3 @@ volumes:
   zerotier0: {}
   zerotier1: {}
   zerotier2: {}
-  zerotier3: {}

@@ -2,7 +2,7 @@ version: "3.7"
 
 _ip_global: "192.168.195.156"
 
-_zones: [ "1", "2", "3"]
+_zones: [ "1", "2"]
 
 services: init: {
 	image: "letfn/init"
