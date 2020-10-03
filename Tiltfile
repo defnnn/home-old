@@ -9,13 +9,13 @@ local_resource('cfg init',
   cmd='cat config.tgz | docker-compose run --rm  -T init tar xvfz -',
   resource_deps=['done'])
 
-local_resource('cfg kuma-global',
-  cmd='bash -x libexec/cfg-global',
+local_resource('cfg kuma-data',
+  cmd='bash -x libexec/cfg-ingress; bash -x libexec/cfg-app',
   resource_deps=['done'])
 
-local_resource('cfg kuma-remote',
-  cmd='bash -x libexec/cfg-remote; bash -x libexec/cfg-app',
-  resource_deps=['done'])
+local_resource('cfg kuma-control',
+  cmd='bash -x libexec/cfg-control',
+  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
 local_resource('test app',
   cmd='bash -x libexec/test-app',
