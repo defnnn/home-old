@@ -1,0 +1,8 @@
+zerotier:
+
+    docker-compose exec zerotier1 zerotier-cli listnetworks | tail -1 | awk '{print $9}' | tr ',' '\n' | grep -v :: | cut -d/ -f1
+
+container:
+
+    docker inspect "$(docker-compose ps -q kuma-app-pause-${n})" | jq -r '.[] | .NetworkSettings.Networks[].IPAddress'
+
