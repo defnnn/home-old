@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-dataplane=app
-token=app
 selector=.app
 
 for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
@@ -17,12 +15,6 @@ for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
     | yq -y "${selector}" \
     | docker-compose exec -T kuma-cp-${n} \
         kumactl apply -f -
-
-  # feh
-  docker-compose exec -T kuma-cp-${n} \
-    kumactl generate dataplane-token --dataplane=$dataplane \
-      | docker-compose exec -T kuma-cp-${n} \
-          tee /config/farcast${n}-${token}-token > /dev/null
 done
 
 rm -f farcast*tmp.json
