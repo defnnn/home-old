@@ -132,7 +132,9 @@ _kuma_app_dp: [N=_]: {
 }
 
 services: {
+  "kuma-global-done": image: "gcr.io/google_containers/pause-amd64:3.2"
   "kuma-global-done": depends_on: "kuma-global": condition: "service_healthy"
+
 	"kuma-global": _kuma_global
 	"kuma-global": network_mode: "service:\(_zerotier_global)"
 }

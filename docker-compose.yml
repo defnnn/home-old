@@ -225,6 +225,7 @@ services:
       kuma-global:
         condition: service_healthy
     env_file: .env
+    image: gcr.io/google_containers/pause-amd64:3.2
   kuma-ingress-1:
     depends_on:
       kuma-cp-1:
