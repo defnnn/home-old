@@ -1,14 +1,28 @@
 #!/usr/bin/env bash
 
+dataplane=app
+token=app
+select=.app
+
 for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
-  cat farcast${n}.json | jq --arg ip "$(docker inspect "$(docker-compose ps -q kuma-app-pause-${n})" | jq -r '.[] | .NetworkSettings.Networks[].IPAddress')" '. + {ip_container: $ip}' > farcast${n}tmp.json
-
-  cue export farcast.cue farcastx.cue farcast${n}.cue farcast${n}tmp.json  | yq -y '.app' | docker-compose exec -T kuma-cp-${n} kumactl apply -f -
-
-  rm -f farcast${n}tmp.json
-
-  docker-compose exec -T kuma-cp-${n} kumactl generate dataplane-token --dataplane=app | docker-compose exec -T kuma-cp-${n} tee /config/farcast${n}-app-token > /dev/null
-
   echo app${n} | docker-compose exec -T kuma-app-${n} tee /usr/share/nginx/html/index.html
 
+  cat farcast${n}.json \
+    | jq --arg ip "$(docker inspect "$(docker-compose ps -q kuma-app-pause-${n})" | jq -r '.[] | .NetworkSettings.Networks[].IPAddress')" \
+        '. + {ip_container: $ip}' \
+    > farcast${n}tmp.json
+
+  # meh
+  cue export farcast.cue farcastx.cue farcast${n}.cue farcast${n}tmp.json \
+    | yq -y "${selector}" \
+    | docker-compose exec -T kuma-cp-${n} \
+        kumactl apply -f -
+
+  # feh
+  docker-compose exec -T kuma-cp-${n} \
+    kumactl generate dataplane-token --dataplane=$dataplane \
+      | docker-compose exec -T kuma-cp-${n} \
+          tee /config/farcast${n}-${token}-token > /dev/null
 done
+
+rm -f farcast*tmp.json

@@ -1,8 +1,24 @@
 #!/usr/bin/env bash
 
-for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do 
-  cue export farcast.cue farcastx.cue farcast${n}.cue farcast${n}.json | yq -r .ingress | docker-compose exec -T kuma-cp-${n} kumactl apply -f -
+dataplane=kuma-ingress
+token=ingress
+selector=.ingress
 
-  docker-compose exec -T kuma-cp-${n} kumactl generate dataplane-token --dataplane=kuma-ingress | docker-compose exec -T kuma-cp-${n} tee /config/farcast${n}-ingress-token > /dev/null
+for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
+  cat farcast${n}.json \
+    > farcast${n}tmp.json
 
+  # meh
+  cue export farcast.cue farcastx.cue farcast${n}.cue farcast${n}tmp.json \
+    | yq -y "${selector}" \
+    | docker-compose exec -T kuma-cp-${n} \
+        kumactl apply -f -
+
+  # feh
+  docker-compose exec -T kuma-cp-${n} \
+    kumactl generate dataplane-token --dataplane=$dataplane \
+      | docker-compose exec -T kuma-cp-${n} \
+          tee /config/farcast${n}-${token}-token > /dev/null
 done
+
+rm -f farcast*tmp.json
