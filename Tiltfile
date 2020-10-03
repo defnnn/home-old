@@ -17,7 +17,7 @@ local_resource('cfg kuma-control',
   cmd='bash -x libexec/cfg-control',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
-local_resource('cfg data',
+local_resource('cfg kuma-data',
   cmd='bash -x libexec/cfg-data',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
