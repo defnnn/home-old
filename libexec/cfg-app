@@ -2,7 +2,7 @@
 
 dataplane=app
 token=app
-select=.app
+selector=.app
 
 for n in $(cue export docker-compose.cue todo.cue | jq -r '.zones[]'); do
   echo app${n} | docker-compose exec -T kuma-app-${n} tee /usr/share/nginx/html/index.html
