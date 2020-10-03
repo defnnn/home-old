@@ -15,8 +15,8 @@ local_resource('cfg kuma-control',
   cmd='bash -x libexec/cfg-control',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
-local_resource('cfg kuma-data',
-  cmd='bash -x libexec/cfg-data',
+local_resource('cfg kuma-dataplane-tokens',
+  cmd='bash -x libexec/cfg-dataplane-tokens',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False)
 
 local_resource('test app',
