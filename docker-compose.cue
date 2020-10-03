@@ -4,7 +4,9 @@ _ip_global: "192.168.195.156"
 
 _zones: [ "1", "2", "3"]
 
+services: "init-done": image: "gcr.io/google_containers/pause-amd64:3.2"
 services: "init-done": depends_on: init: condition: "service_healthy"
+
 services: init: {
 	image: "letfn/init"
 	command: [
