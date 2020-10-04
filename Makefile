@@ -75,6 +75,8 @@ build-jojomomojo: b/index b/index-homedir b/index-dotfiles # Build jojomomojo co
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
 	$(MAKE) test-jojomomojo
+	docker tag defn/home:jojomomojo localhost:5000/defn/home:jojomomojo
+	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:jojomomojo; fi
 	if [[ -n "$(EXPECTED_REF)" ]]; then docker tag defn/home:jojomomojo "$(EXPECTED_REF)"; fi
 
 ----------------test: # -----------------------------
