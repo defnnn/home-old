@@ -22,6 +22,12 @@ function main {
   sshd)
     shift
 
+    if [[ -w /data ]]; then
+      if ! test -f /data/.hello; then
+        echo "$(date) $(uname -a)" > /data/.hello
+      fi
+    fi
+
     env | grep ^AWS_ | sort | sudo tee /etc/aws.env > /dev/null
 
     if [[ -f /data/home-secret/trusted-user-ca-keys.pem ]]; then
