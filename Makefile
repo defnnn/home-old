@@ -63,6 +63,12 @@ b/index: .git/index
 	cp -f .git/index b/index.1
 	mv -f b/index.1 b/index
 
+push: 
+	docker push defn/home:jojomomojo
+
+build: 
+	$(MAKE) build-jojomomojo
+
 build-jojomomojo: b/index b/index-homedir b/index-dotfiles # Build jojomomojo container with boot
 	@echo
 	docker build $(build) -t defn/home:jojomomojo \
