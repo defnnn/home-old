@@ -35,15 +35,13 @@ RUN sudo ln -nfs /home/linuxbrew/.linuxbrew/bin/gpg* /home/linuxbrew/.linuxbrew/
 
 RUN git clone $HOMEDIR homedir && mv homedir/.git . && rm -rf homedir && git reset --hard && echo "$DOTFILES" > .dotfiles-repo && make update
 
-RUN ./env.sh brew bundle && rm -rf $(brew --cache)
+RUN ./env.sh brew bundle && sudo rm -rf $(brew --cache)
 
-RUN ./env.sh asdf install || ./env.sh asdf install
+RUN ./env.sh asdf install || ./env.sh asdf install; sudo rm -rf $(brew --cache)
 
 RUN ./env.sh npm install && npm install -g npm
 
-RUN make install
-
-RUN make upgrade
+RUN make install && make upgrade; sudo rm -rf $(brew --cache)
 
 COPY index /tmp/index
 COPY index-homedir /tmp/index-homedir
@@ -51,7 +49,7 @@ COPY index-dotfiles /tmp/index-dotfiles
 
 RUN rm -f package-lock.json
 
-RUN make update; make install; make upgrade
+RUN make update; make install; make upgrade; sudo rm -rf $(brew --cache)
 
 RUN rm -f /home/linuxbrew/.linuxbrew/bin/gs
 

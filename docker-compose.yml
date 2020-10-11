@@ -82,7 +82,7 @@ services:
     command:
     - bash
     - -c
-    - "set -x\nchown 1001:1001 /var/run/docker.sock\ntouch /tmp/done.txt\nexec sleep\
+    - "set -x\nchown 1000:1000 /var/run/docker.sock\ntouch /tmp/done.txt\nexec sleep\
       \ 86400000\n"
     env_file: .env
     healthcheck:

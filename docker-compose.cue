@@ -13,7 +13,7 @@ services: init: {
 		"-c",
 		"""
 		set -x
-		chown 1001:1001 /var/run/docker.sock
+		chown 1000:1000 /var/run/docker.sock
 		touch /tmp/done.txt
 		exec sleep 86400000
 
