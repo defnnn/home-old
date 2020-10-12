@@ -36,7 +36,7 @@ steps:
     - grep "GatewayPorts clientspecified" /etc/ssh/sshd_config
     - test -x "$(which tmux)"
     - test -x "$(which gpg)"
-    - test "$HOMEBOOT" = "boot"
+    - test "$HOMEBOOT" = "app"
     - test "$HOMEBOOT" = "$(whoami)"
     - test "$HOMEBOOT" = "$(stat -c '%U' /home/$HOMEBOOT)"
 
@@ -58,7 +58,6 @@ steps:
     - grep "GatewayPorts clientspecified" /etc/ssh/sshd_config
     - test -x "$(which tmux)"
     - test -x "$(which gpg)"
-    - test -x "$(which cloudflared)"
     - test "$HOMEUSER" = "$(whoami)"
     - test "SUDO_USER=$HOMEUSER" = "$(sudo env | grep $HOMEUSER)"
     - test "$HOMEUSER" = "$(stat -c '%U' /etc/ssh)"
@@ -90,7 +89,6 @@ steps:
     - cd
     - test -x "$(which tmux)"
     - test -x "$(which gpg)"
-    - test -x "$(which cloudflared)"
     - test "/home/$HOMEBOOT" = "$(pwd)"
     - test "$HOMEBOOT" = "$(whoami)"
     - test "$HOMEBOOT" = "$(stat -c '%U' /home/$HOMEBOOT)"
@@ -117,7 +115,6 @@ steps:
     - grep "GatewayPorts clientspecified" /etc/ssh/sshd_config
     - test -x "$(which tmux)"
     - test -x "$(which gpg)"
-    - test -x "$(which cloudflared)"
     - test "$HOMEUSER" = "$(whoami)"
     - test "SUDO_USER=$HOMEUSER" = "$(sudo env | grep $HOMEUSER)"
     - test "$HOMEUSER" = "$(stat -c '%U' /etc/ssh)"

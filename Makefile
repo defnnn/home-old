@@ -23,9 +23,8 @@ thing: # Build all the things
 build-sshd: # Build sshd container with lefn/python
 	@echo
 	docker build $(build) -t defn/home:sshd \
-		--build-arg HOMEBOOT=boot \
+		--build-arg HOMEBOOT=app \
 		-f b/Dockerfile.sshd \
-		--no-cache \
 		b
 	$(MAKE) test-sshd
 	docker push defn/home:sshd
@@ -33,11 +32,10 @@ build-sshd: # Build sshd container with lefn/python
 build-ssh: # Build ssh container with sshd
 	@echo
 	docker build $(build) -t defn/home:ssh \
-		--build-arg HOMEBOOT=boot \
+		--build-arg HOMEBOOT=app \
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=ssh.defn.sh \
 		-f b/Dockerfile.sshu \
-		--no-cache \
 		b
 	$(MAKE) test-ssh
 	docker push defn/home:ssh
@@ -45,7 +43,7 @@ build-ssh: # Build ssh container with sshd
 build-boot: # Build boot container with sshd
 	@echo
 	docker build $(build) -t defn/home:boot \
-		--build-arg HOMEBOOT=boot \
+		--build-arg HOMEBOOT=app \
 		-f b/Dockerfile.boot \
 		b
 	$(MAKE) test-boot
@@ -72,7 +70,7 @@ build:
 build-jojomomojo: b/index b/index-homedir b/index-dotfiles # Build jojomomojo container with boot
 	@echo
 	docker build $(build) -t defn/home:jojomomojo \
-		--build-arg HOMEBOOT=boot \
+		--build-arg HOMEBOOT=app \
 		--build-arg HOMEUSER=jojomomojo \
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \

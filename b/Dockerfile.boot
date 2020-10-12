@@ -19,10 +19,6 @@ RUN curl -O -sSL "https://s3.amazonaws.com/session-manager-downloads/plugin/late
     && dpkg -i session-manager-plugin.deb \
     && rm -f session-manager-plugin.deb
 
-RUN curl -O -sSL "https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb" \
-    && dpkg -i cloudflared-stable-linux-amd64.deb \
-    && rm -f cloudflared-stable-linux-amd64.deb
-
 RUN install -d -o $HOMEBOOT -g $HOMEBOOT -d /home/linuxbrew
 RUN install -d -o $HOMEBOOT -g $HOMEBOOT -d /home/$HOMEBOOT
 RUN usermod -d /home/$HOMEBOOT $HOMEBOOT

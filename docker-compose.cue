@@ -254,7 +254,11 @@ _zerotier: {
 	privileged: true
 }
 
-services: "\(_zerotier_sshd)": {}
+services: "\(_zerotier_sshd)": {
+  ports: [
+    "2222:2222"
+  ]
+}
 
 services: sshd: depends_on: "\(_zerotier_sshd)": condition: "service_started"
 services: sshd: network_mode: "service:\(_zerotier_sshd)"

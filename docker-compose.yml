@@ -277,6 +277,8 @@ services:
     - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
+    ports:
+    - 2222:2222
     privileged: true
     volumes:
     - zerotier:/var/lib/zerotier-one

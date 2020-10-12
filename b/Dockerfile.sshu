@@ -19,9 +19,6 @@ RUN ln -nfs $HOMEBOOT /home/$HOMEUSER
 RUN chown -h $HOMEUSER:$HOMEUSER /home/$HOMEBOOT /home/$HOMEUSER
 
 RUN apt-get update && apt-get upgrade -y
-RUN curl -O -sSL "https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb" \
-    && dpkg -i cloudflared-stable-linux-amd64.deb \
-    && rm -f cloudflared-stable-linux-amd64.deb
 
 USER $HOMEUSER
 WORKDIR /home/$HOMEUSER
