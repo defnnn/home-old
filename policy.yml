@@ -1,5 +1,18 @@
 - labels:
     - key: name
+      value: test-host-to-home
+  endpointSelector:
+    matchLabels:
+      id: home
+  ingress:
+    - fromEntities:
+        - host
+      toPorts:
+        - ports:
+            - port: "2222"
+              protocol: TCP
+- labels:
+    - key: name
       value: test-home-to-black
   endpointSelector:
     matchLabels:
