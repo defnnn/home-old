@@ -63,3 +63,5 @@ services: cloudflared: network_mode: "service:zerotier"
 
 volumes: config: {}
 volumes: zerotier: {}
+
+networks: default: driver: "cilium"

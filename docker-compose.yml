@@ -1,3 +1,6 @@
+networks:
+  default:
+    driver: cilium
 services:
   cloudflared:
     depends_on:
