@@ -120,7 +120,11 @@ bash-jojomomojo: # bash shell with jojomomojo
 ------docker-compose: # -----------------------------
 
 up: # Bring up farcast
+	$(MAKE) policy
 	docker-compose up -d --remove-orphans
+
+policy:
+	cat policy.yml | docker run --rm -i letfn/python-cli yq . | (cd ../cilium && docker-compose exec -T cilium cilium policy import -)
 
 down: # Bring down farcast
 	docker-compose down --remove-orphans
@@ -139,7 +143,9 @@ rebash:
 
 bash:
 	docker-compose run --rm --entrypoint bash sshd -il
-	#docker-compose exec sshd bash -il
+
+bash-exec:
+	docker-compose exec sshd bash -il
 
 -------------cuelang: # -----------------------------
 

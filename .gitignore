@@ -156,3 +156,4 @@ config.tgz
 b/index*
 
 farcast*tmp.json
+docker-compose.override.yml

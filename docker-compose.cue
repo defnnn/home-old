@@ -47,6 +47,9 @@ _zerotier: {
 		"/dev/net/tun",
 	]
 	privileged: true
+  labels: [
+    "id=home"
+  ]
 }
 
 services: zerotier: {

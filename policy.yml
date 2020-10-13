@@ -1,0 +1,36 @@
+- labels:
+    - key: name
+      value: test-home-to-black
+  endpointSelector:
+    matchLabels:
+      id: black
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            id: home
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+          rules:
+            http:
+            - method: GET
+              path: /red
+- labels:
+    - key: name
+      value: test-home-to-black
+  endpointSelector:
+    matchLabels:
+      id: black
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            id: home
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+          rules:
+            http:
+            - method: GET
+              path: /blue

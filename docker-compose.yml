@@ -36,6 +36,8 @@ services:
     - /dev/net/tun
     env_file: .env
     image: letfn/zerotier
+    labels:
+    - id=home
     ports:
     - 2222:2222
     privileged: true

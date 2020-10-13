@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  black:
+    image: nginx
+    labels:
+      - id=black
+    volumes:
+      - ./html/black:/usr/share/nginx/html
+  red:
+    image: nginx
+    labels:
+      - id=red
+    volumes:
+      - ./html/red:/usr/share/nginx/html
+  blue:
+    image: nginx
+    labels:
+      - id=blue
+    volumes:
+      - ./html/blue:/usr/share/nginx/html
