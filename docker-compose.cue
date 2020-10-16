@@ -2,15 +2,14 @@ version: "3.7"
 
 services: sshd: {
 	image: "defn/home:jojomomojo"
-	entrypoint: ["/service", "sshd"]
 	volumes:
-		[
-			"/var/run/docker.sock:/var/run/docker.sock",
-      "$HOME/.password-store:/home/app/.password-store",
-      "$HOME/work:/home/app/work",
-			"config:/data/home-secret",
-      "zerotier:/zerotier"
-		]
+	[
+		"/var/run/docker.sock:/var/run/docker.sock",
+		"$HOME/.password-store:/home/app/.password-store",
+		"$HOME/work:/home/app/work",
+		"config:/data/home-secret",
+		"zerotier:/zerotier",
+	]
 }
 
 services: cloudflared: {
@@ -47,15 +46,15 @@ _zerotier: {
 		"/dev/net/tun",
 	]
 	privileged: true
-  labels: [
-    "id=home"
-  ]
+	labels: [
+		"id=home",
+	]
 }
 
 services: zerotier: {
-  ports: [
-    "2222:2222"
-  ]
+	ports: [
+		"2222:2222",
+	]
 }
 
 services: sshd: depends_on: zerotier: condition: "service_started"

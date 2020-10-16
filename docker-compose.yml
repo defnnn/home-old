@@ -15,9 +15,6 @@ services:
     depends_on:
       zerotier:
         condition: service_started
-    entrypoint:
-    - /service
-    - sshd
     env_file: .env
     image: defn/home:jojomomojo
     network_mode: service:zerotier

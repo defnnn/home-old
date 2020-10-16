@@ -1,51 +1,27 @@
 #!/usr/bin/env bash
 
 function main {
-  case "$1" in
-
-  cloudflared)
-    shift
-    cd
-
-    origin=localhost
-    if grep sshd /etc/hosts; then
-      origin=sshd
+  if [[ -w /data ]]; then
+    if ! test -f /data/.hello; then
+      echo "$(date) $(uname -a)" > /data/.hello
     fi
-    export TUNNEL_URL=ssh://${origin}:2222 TUNNEL_HOSTNAME="${1}" TUNNEL_ORIGIN_CERT="/efs/cloudflare/cert-${1}.pem"
+  fi
 
-    while true; do
-      cloudflared tunnel --no-autoupdate
-      sleep 10
-    done
-    ;;
+  env | grep ^AWS_ | sort | sudo tee /etc/aws.env > /dev/null
 
-  sshd)
-    shift
+  if [[ -f /data/home-secret/trusted-user-ca-keys.pem ]]; then
+    cp /data/home-secret/trusted-user-ca-keys.pem /etc/ssh/trusted-user-ca-keys.pem
+  elif [[ -n "${HOME_TRUSTED_USER_CA_KEYS:-}" ]]; then
+    echo "${HOME_TRUSTED_USER_CA_KEYS}" | base64 -d > /etc/ssh/trusted-user-ca-keys.pem
+  fi
 
-    if [[ -w /data ]]; then
-      if ! test -f /data/.hello; then
-        echo "$(date) $(uname -a)" > /data/.hello
-      fi
-    fi
+  echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
 
-    env | grep ^AWS_ | sort | sudo tee /etc/aws.env > /dev/null
-
-    if [[ -f /data/home-secret/trusted-user-ca-keys.pem ]]; then
-      cp /data/home-secret/trusted-user-ca-keys.pem /etc/ssh/trusted-user-ca-keys.pem
-    elif [[ -n "${HOME_TRUSTED_USER_CA_KEYS:-}" ]]; then
-      echo "${HOME_TRUSTED_USER_CA_KEYS}" | base64 -d > /etc/ssh/trusted-user-ca-keys.pem
-    fi
-
-    echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
-
-    if [[ "$$" == 1 ]]; then
-      exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
-    else
-      exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
-    fi
-    ;;
-
-  esac
+  if [[ "$$" == 1 ]]; then
+    exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+  else
+    exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
+  fi
 }
 
 main "$@"

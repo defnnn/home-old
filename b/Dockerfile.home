@@ -1,4 +1,4 @@
-FROM defn/home:boot
+FROM defn/home:brew
 
 ARG HOMEBOOT
 ARG HOMEUSER
@@ -27,7 +27,7 @@ WORKDIR /home/$HOMEUSER
 ENV HOME=/home/$HOMEUSER
 ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-RUN sudo apt-get update && sudo apt-get upgrade -y
+RUN sudo apt-get update && sudo apt-get upgrade -y && sudo apt install -y zbar-tools
 RUN brew upgrade
 
 RUN rm -f /home/linuxbrew/.linuxbrew/bin/gs
@@ -57,3 +57,4 @@ RUN mkdir -p .ssh && curl -sSL https://api.github.com/users/jojomomojo/keys | jq
 
 COPY service /service
 RUN sudo chmod 755 /service
+CMD [ "sshd" ]

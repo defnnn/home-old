@@ -17,7 +17,7 @@ config:
 ---------------build: # -----------------------------
 thing: # Build all the things
 	$(MAKE) build-sshd
-	$(MAKE) build-boot
+	$(MAKE) build-brew
 	$(MAKE) build-jojomomojo
 
 build-sshd: # Build sshd container with lefn/python
@@ -29,25 +29,14 @@ build-sshd: # Build sshd container with lefn/python
 	$(MAKE) test-sshd
 	docker push defn/home:sshd
 
-build-ssh: # Build ssh container with sshd
+build-brew: # Build brew container with sshd
 	@echo
-	docker build $(build) -t defn/home:ssh \
+	docker build $(build) -t defn/home:brew \
 		--build-arg HOMEBOOT=app \
-		--build-arg HOMEUSER=jojomomojo \
-		--build-arg HOMEHOST=ssh.defn.sh \
-		-f b/Dockerfile.sshu \
+		-f b/Dockerfile.brew \
 		b
-	$(MAKE) test-ssh
-	docker push defn/home:ssh
-
-build-boot: # Build boot container with sshd
-	@echo
-	docker build $(build) -t defn/home:boot \
-		--build-arg HOMEBOOT=app \
-		-f b/Dockerfile.boot \
-		b
-	$(MAKE) test-boot
-	docker push defn/home:boot
+	$(MAKE) test-brew
+	docker push defn/home:brew
 
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
@@ -67,7 +56,7 @@ push:
 build: 
 	$(MAKE) build-jojomomojo
 
-build-jojomomojo: b/index b/index-homedir b/index-dotfiles # Build jojomomojo container with boot
+build-jojomomojo: b/index b/index-homedir b/index-dotfiles # Build jojomomojo container with brew
 	@echo
 	docker build $(build) -t defn/home:jojomomojo \
 		--build-arg HOMEBOOT=app \
@@ -75,7 +64,7 @@ build-jojomomojo: b/index b/index-homedir b/index-dotfiles # Build jojomomojo co
 		--build-arg HOMEHOST=jojomomojo.defn.sh \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
 		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
-		-f b/Dockerfile.bootu \
+		-f b/Dockerfile.home \
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
 	$(MAKE) test-jojomomojo
@@ -87,18 +76,14 @@ build-jojomomojo: b/index b/index-homedir b/index-dotfiles # Build jojomomojo co
 
 test: # test all images
 	$(MAKE) test-sshd
-	$(MAKE) test-ssh
-	$(MAKE) test-boot
+	$(MAKE) test-brew
 	$(MAKE) test-jojomomojo
 
 test-sshd: # test image sshd
 	drone exec --env-file=.drone.env --pipeline test-sshd
 
-test-ssh: # test image ssh
-	drone exec --env-file=.drone.env --pipeline test-ssh
-
-test-boot: # test image boot
-	drone exec --env-file=.drone.env --pipeline test-boot
+test-brew: # test image brew
+	drone exec --env-file=.drone.env --pipeline test-brew
 
 test-jojomomojo: # test image jojomomojo
 	drone exec --env-file=.drone.env --pipeline test-jojomomojo
@@ -108,11 +93,8 @@ test-jojomomojo: # test image jojomomojo
 bash-sshd: # bash shell with sshd
 	docker run --rm -ti --entrypoint bash defn/home:sshd
 
-bash-ssh: # bash shell with ssh
-	docker run --rm -ti --entrypoint bash defn/home:ssh
-
-bash-boot: # bash shell with boot
-	docker run --rm -ti --entrypoint bash defn/home:boot
+bash-brew: # bash shell with brew
+	docker run --rm -ti --entrypoint bash defn/home:brew
 
 bash-jojomomojo: # bash shell with jojomomojo
 	docker run --rm -ti --entrypoint bash defn/home:jojomomojo

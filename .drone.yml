@@ -40,43 +40,11 @@ steps:
     - test "$HOMEBOOT" = "$(whoami)"
     - test "$HOMEBOOT" = "$(stat -c '%U' /home/$HOMEBOOT)"
 
----
-kind: pipeline
-type: docker
-name: test-ssh
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: local
-  image: defn/home:ssh
-  commands:
-    - cd
-    - test "/home/$HOMEUSER" = "$(pwd)"
-    - grep "GatewayPorts clientspecified" /etc/ssh/sshd_config
-    - test -x "$(which tmux)"
-    - test -x "$(which gpg)"
-    - test "$HOMEUSER" = "$(whoami)"
-    - test "SUDO_USER=$HOMEUSER" = "$(sudo env | grep $HOMEUSER)"
-    - test "$HOMEUSER" = "$(stat -c '%U' /etc/ssh)"
-    - test "$HOMEUSER" = "$(stat -c '%U' /run/sshd)"
-    - test "$HOMEUSER" = "$(stat -c '%U' /home/$HOMEBOOT)"
-    - test "$HOMEUSER" = "$(stat -c '%U' /home/$HOMEUSER)"
-    - test "drwx------" = "$(stat -c '%A' .gnupg)"
-    - test -f ".gnupg/gpg.conf"
-    - find .gnupg/ -ls
-    - if test -d boot; then false; fi
-    - find /home/* -uid 0 -ls || true
-    - find /home/* -gid 0 -ls || true
-    - test "" = "$(find /home/* -uid 0 -ls)"
-
 ----
 
 kind: pipeline
 type: docker
-name: test-boot
+name: test-brew
 
 platform:
   os: linux
@@ -84,7 +52,7 @@ platform:
 
 steps:
 - name: local
-  image: defn/home:boot
+  image: defn/home:brew
   commands:
     - cd
     - test -x "$(which tmux)"
