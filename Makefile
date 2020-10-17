@@ -7,7 +7,7 @@ HOMEDIR ?= https://github.com/amanibhavam/homedir
 DOTFILES ?= https://github.com/amanibhavam/dotfiles
 
 menu:
-	@perl -ne 'printf("\n") if m{^-}; printf("%20s: %s\n","$$1","$$2") if m{^([\w+-]+):[^#]+#\s(.+)$$}' Makefile
+	@perl -ne 'printf("\n") if m{^-}; printf("%20s: %s\n","$$1","$$2") if m{^([\s\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
 config:
 	rm -f docker-compose.yml
@@ -56,21 +56,20 @@ push:
 build: 
 	$(MAKE) build-jojomomojo
 
-build-jojomomojo: b/index b/index-homedir b/index-dotfiles # Build jojomomojo container with brew
+jojomomojo dgwyn: b/index b/index-homedir b/index-dotfiles # Build jojomomojo container with brew
 	@echo
-	docker build $(build) -t defn/home:jojomomojo \
+	docker build $(build) -t defn/home:$@ \
 		--build-arg HOMEBOOT=app \
-		--build-arg HOMEUSER=jojomomojo \
-		--build-arg HOMEHOST=jojomomojo.defn.sh \
+		--build-arg HOMEUSER=$@ \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
 		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
 		-f b/Dockerfile.home \
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
-	$(MAKE) test-jojomomojo
-	docker tag defn/home:jojomomojo localhost:5000/defn/home:jojomomojo
-	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:jojomomojo; fi
-	if [[ -n "$(EXPECTED_REF)" ]]; then docker tag defn/home:jojomomojo "$(EXPECTED_REF)"; fi
+	$(MAKE) test-$@
+	docker tag defn/home:$@ localhost:5000/defn/home:$@
+	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:$@; fi
+	if [[ -n "$(EXPECTED_REF)" ]]; then docker tag defn/home:$@ "$(EXPECTED_REF)"; fi
 
 ----------------test: # -----------------------------
 
@@ -85,8 +84,8 @@ test-sshd: # test image sshd
 test-brew: # test image brew
 	drone exec --env-file=.drone.env --pipeline test-brew
 
-test-jojomomojo: # test image jojomomojo
-	drone exec --env-file=.drone.env --pipeline test-jojomomojo
+test-jojomomojo test-dgwyn: # test image jojomomojo
+	drone exec --env-file=.drone.env --pipeline $@
 
 ----------------bash: # -----------------------------
 

@@ -2,7 +2,6 @@ FROM defn/home:brew
 
 ARG HOMEBOOT
 ARG HOMEUSER
-ARG HOMEHOST
 ARG HOMEDIR
 ARG DOTFILES
 
@@ -20,17 +19,15 @@ RUN echo "$HOMEUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 RUN mkdir -p /run/sshd /run && chown -hR $HOMEUSER:$HOMEUSER /run /etc/ssh
 RUN ln -nfs $HOMEBOOT /home/$HOMEUSER
 RUN chown -h $HOMEUSER:$HOMEUSER /home/$HOMEUSER /home/$HOMEBOOT
-RUN rm -f /usr/bin/gs
 
 USER $HOMEUSER
 WORKDIR /home/$HOMEUSER
 ENV HOME=/home/$HOMEUSER
 ENV PATH=/home/$HOMEUSER/.asdf/bin:/home/$HOMEUSER/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-RUN sudo apt-get update && sudo apt-get upgrade -y && sudo apt install -y zbar-tools
+RUN sudo apt-get update && sudo apt-get upgrade -y && sudo apt install -y zbar-tools htop
 RUN brew upgrade
 
-RUN rm -f /home/linuxbrew/.linuxbrew/bin/gs
 RUN sudo ln -nfs /home/linuxbrew/.linuxbrew/bin/gpg* /home/linuxbrew/.linuxbrew/bin/tmux /usr/local/bin/
 
 RUN git clone $HOMEDIR homedir && mv homedir/.git . && rm -rf homedir && git reset --hard && echo "$DOTFILES" > .dotfiles-repo && make update
@@ -39,23 +36,15 @@ RUN ./env.sh brew bundle && sudo rm -rf $(brew --cache)
 
 RUN ./env.sh asdf install || ./env.sh asdf install; sudo rm -rf $(brew --cache)
 
-RUN ./env.sh npm install && npm install -g npm
-
 RUN make install && make upgrade; sudo rm -rf $(brew --cache)
 
 COPY index /tmp/index
 COPY index-homedir /tmp/index-homedir
 COPY index-dotfiles /tmp/index-dotfiles
 
-RUN rm -f package-lock.json
-
 RUN make update; make install; make upgrade; sudo rm -rf $(brew --cache)
 
-RUN rm -f /home/linuxbrew/.linuxbrew/bin/gs
-
-RUN mkdir -p .ssh && curl -sSL https://api.github.com/users/jojomomojo/keys | jq -r '.[].key' > .ssh/authorized_keys && chmod 700 .ssh && chmod 600 .ssh/authorized_keys
-
-RUN sudo apt-get update && sudo apt install -y htop
+RUN mkdir -p .ssh && curl -sSL https://api.github.com/users/$HOMEUSER/keys | jq -r '.[].key' > .ssh/authorized_keys && chmod 700 .ssh && chmod 600 .ssh/authorized_keys
 
 COPY service /service
 RUN sudo chmod 755 /service
