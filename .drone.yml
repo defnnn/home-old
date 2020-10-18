@@ -68,7 +68,7 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: test-jojomomojo
+name: test-home
 
 platform:
   os: linux
@@ -76,7 +76,7 @@ platform:
 
 steps:
 - name: local
-  image: defn/home:jojomomojo
+  image: defn/home:home
   commands:
     - cd
     - test "/home/$HOMEUSER" = "$(pwd)"

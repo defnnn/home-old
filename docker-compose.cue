@@ -1,7 +1,7 @@
 version: "3.7"
 
 services: sshd: {
-	image: "defn/home:jojomomojo"
+	image: "defn/home:app"
 	volumes:
 	[
 		"/var/run/docker.sock:/var/run/docker.sock",

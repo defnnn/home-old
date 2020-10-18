@@ -15,11 +15,6 @@ config:
 	git diff docker-compose.yml
 
 ---------------build: # -----------------------------
-thing: # Build all the things
-	$(MAKE) build-sshd
-	$(MAKE) build-brew
-	$(MAKE) build-jojomomojo
-
 build-sshd: # Build sshd container with lefn/python
 	@echo
 	docker build $(build) -t defn/home:sshd \
@@ -38,6 +33,20 @@ build-brew: # Build brew container with sshd
 	$(MAKE) test-brew
 	docker push defn/home:brew
 
+build-home: b/index b/index-homedir b/index-dotfiles # Build app container with brew
+	@echo
+	docker build $(build) -t defn/home:home \
+		--build-arg HOMEBOOT=app \
+		--build-arg HOMEUSER=app \
+		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
+		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
+		-f b/Dockerfile.home \
+		b
+	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
+	docker tag defn/home:home localhost:5000/defn/home:home
+	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:home; fi
+	if [[ -n "$(EXPECTED_REF)" ]]; then docker tag defn/home:home "$(EXPECTED_REF)"; fi
+
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
 	mv -f b/index-homedir.1 b/index-homedir
@@ -51,32 +60,17 @@ b/index: .git/index
 	mv -f b/index.1 b/index
 
 push: 
-	docker push defn/home:jojomomojo
+	docker push defn/home:pp
 
 build: 
-	$(MAKE) build-jojomomojo
-
-jojomomojo dgwyn: b/index b/index-homedir b/index-dotfiles # Build jojomomojo container with brew
-	@echo
-	docker build $(build) -t defn/home:$@ \
-		--build-arg HOMEBOOT=app \
-		--build-arg HOMEUSER=$@ \
-		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
-		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
-		-f b/Dockerfile.home \
-		b
-	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
-	$(MAKE) test-jojomomojo
-	docker tag defn/home:$@ localhost:5000/defn/home:$@
-	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:$@; fi
-	if [[ -n "$(EXPECTED_REF)" ]]; then docker tag defn/home:$@ "$(EXPECTED_REF)"; fi
+	$(MAKE) build-app
 
 ----------------test: # -----------------------------
 
 test: # test all images
 	$(MAKE) test-sshd
 	$(MAKE) test-brew
-	$(MAKE) test-jojomomojo
+	$(MAKE) test-app
 
 test-sshd: # test image sshd
 	drone exec --env-file=.drone.env --pipeline test-sshd
@@ -84,7 +78,7 @@ test-sshd: # test image sshd
 test-brew: # test image brew
 	drone exec --env-file=.drone.env --pipeline test-brew
 
-test-jojomomojo test-dgwyn: # test image jojomomojo
+test-app: # test image app
 	drone exec --env-file=.drone.env --pipeline $@
 
 ----------------bash: # -----------------------------
@@ -95,8 +89,8 @@ bash-sshd: # bash shell with sshd
 bash-brew: # bash shell with brew
 	docker run --rm -ti --entrypoint bash defn/home:brew
 
-bash-jojomomojo: # bash shell with jojomomojo
-	docker run --rm -ti --entrypoint bash defn/home:jojomomojo
+bash-app: # bash shell with app
+	docker run --rm -ti --entrypoint bash defn/home:app
 
 ------docker-compose: # -----------------------------
 

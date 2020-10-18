@@ -5,6 +5,8 @@ ARG HOMEUSER
 ARG HOMEDIR
 ARG DOTFILES
 
+ARG GITHUBUSER
+
 ENV HOMEBOOT=$HOMEBOOT
 ENV HOMEUSER=$HOMEUSER
 ENV HOMEHOME=$HOMEHOME
@@ -43,8 +45,6 @@ COPY index-homedir /tmp/index-homedir
 COPY index-dotfiles /tmp/index-dotfiles
 
 RUN make update; make install; make upgrade; sudo rm -rf $(brew --cache)
-
-RUN mkdir -p .ssh && curl -sSL https://api.github.com/users/$HOMEUSER/keys | jq -r '.[].key' > .ssh/authorized_keys && chmod 700 .ssh && chmod 600 .ssh/authorized_keys
 
 COPY service /service
 RUN sudo chmod 755 /service
