@@ -66,7 +66,7 @@ jojomomojo dgwyn: b/index b/index-homedir b/index-dotfiles # Build jojomomojo co
 		-f b/Dockerfile.home \
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
-	$(MAKE) test-$@
+	$(MAKE) test-jojomomojo
 	docker tag defn/home:$@ localhost:5000/defn/home:$@
 	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:$@; fi
 	if [[ -n "$(EXPECTED_REF)" ]]; then docker tag defn/home:$@ "$(EXPECTED_REF)"; fi
