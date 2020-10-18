@@ -60,7 +60,7 @@ b/index: .git/index
 	mv -f b/index.1 b/index
 
 push: 
-	docker push defn/home:pp
+	docker push defn/home:home
 
 build: 
 	$(MAKE) build-app
