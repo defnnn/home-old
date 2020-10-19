@@ -17,6 +17,13 @@ function main {
 
   echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
 
+  if [[ -n "${GITHUB_USER:-}" ]]; then
+    sudo -u app mkdir ~app/.ssh
+    sudo -u app chmod 700 ~app/.ssh
+    curl -s "https://api.github.com/users/${GITHUB_USER}/keys" | jq -r '.[].key' | sudo -u app tee -a ~app/.ssh/authorized_keys
+    sudo -u app chmod 600 ~app/.ssh/authorized_keys
+  fi
+
   if [[ "$$" == 1 ]]; then
     exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
   else
