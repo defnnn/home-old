@@ -1,2 +1,4 @@
-services: user1: networks: default: ipv4_address: "${KITT_NETWORK_PREFIX}.99"
-services: user2: networks: default: ipv4_address: "${KITT_NETWORK_PREFIX}.98"
+services: user1: labels: dns: "user1.yourdomain"
+services: user1: environment: GITHUB_USER: "user1"
+services: user2: labels: dns: "user2.yourdomain"
+services: user2: environment: GITHUB_USER: "user2"
