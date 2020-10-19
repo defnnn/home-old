@@ -1,46 +1,20 @@
 networks:
   default:
-    driver: cilium
+    external:
+      name: kitt_default
 services:
-  cloudflared:
-    depends_on:
-      zerotier:
-        condition: service_started
-    env_file: .env
-    image: letfn/cloudflared
-    network_mode: service:zerotier
-    volumes:
-    - config:/app/src/.cloudflared
-  sshd:
-    depends_on:
-      zerotier:
-        condition: service_started
-    env_file: .env
-    image: defn/home:jojomomojo
-    network_mode: service:zerotier
+  defn:
+    image: defn/home:home
+    networks:
+      default:
+        ipv4_address: ${KITT_NETWORK_PREFIX}.99
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - $HOME/.password-store:/home/app/.password-store
-    - $HOME/work:/home/app/work
-    - config:/data/home-secret
-    - zerotier:/zerotier
-  zerotier:
-    cap_drop:
-    - NET_RAW
-    - NET_ADMIN
-    - SYS_ADMIN
-    devices:
-    - /dev/net/tun
-    env_file: .env
-    image: letfn/zerotier
-    labels:
-    - id=home
-    ports:
-    - 2222:2222
-    privileged: true
+  dgwyn:
+    image: defn/home:home
+    networks:
+      default:
+        ipv4_address: ${KITT_NETWORK_PREFIX}.98
     volumes:
-    - zerotier:/var/lib/zerotier-one
+    - /var/run/docker.sock:/var/run/docker.sock
 version: '3.7'
-volumes:
-  config: {}
-  zerotier: {}

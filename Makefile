@@ -9,6 +9,9 @@ DOTFILES ?= https://github.com/amanibhavam/dotfiles
 menu:
 	@perl -ne 'printf("\n") if m{^-}; printf("%20s: %s\n","$$1","$$2") if m{^([\s\w+-]+):[^#]+#\s(.+)$$}' Makefile
 
+setup:
+	$(MAKE) recreate
+
 config:
 	rm -f docker-compose.yml
 	$(MAKE) docker-compose.yml
@@ -95,7 +98,6 @@ bash-app: # bash shell with app
 ------docker-compose: # -----------------------------
 
 up: # Bring up farcast
-	$(MAKE) policy
 	docker-compose up -d --remove-orphans
 
 policy:
