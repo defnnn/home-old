@@ -66,7 +66,7 @@ push:
 	docker push defn/home:home
 
 build: 
-	$(MAKE) build-app
+	$(MAKE) build-home
 
 ----------------test: # -----------------------------
 
