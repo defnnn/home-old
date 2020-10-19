@@ -1,0 +1,2 @@
+services: user1: networks: default: ipv4_address: "${KITT_NETWORK_PREFIX}.99"
+services: user2: networks: default: ipv4_address: "${KITT_NETWORK_PREFIX}.98"

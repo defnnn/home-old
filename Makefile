@@ -131,7 +131,7 @@ fmt:
 	yamlfmt -w docker-compose.yml
 
 docker-compose.yml: docker-compose.cue
-	cue export --out json docker-compose.cue | yq -y -S '.'  > docker-compose.yml.1
+	cue export --out json docker-compose.cue users.cue | yq -y -S '.'  > docker-compose.yml.1
 	yamlfmt -w docker-compose.yml.1
 	mv docker-compose.yml.1 docker-compose.yml
 	
