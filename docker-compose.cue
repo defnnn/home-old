@@ -8,7 +8,7 @@ services: [Name=string]: {
 	]
 }
 
-services: defn: networks: default: ipv4_address: "${KITT_NETWORK_PREFIX}.99"
+services: defn: networks: default: ipv4_address:  "${KITT_NETWORK_PREFIX}.99"
 services: dgwyn: networks: default: ipv4_address: "${KITT_NETWORK_PREFIX}.98"
 
 networks: default: external: name: "kitt_default"

@@ -97,13 +97,13 @@ bash-app: # bash shell with app
 
 ------docker-compose: # -----------------------------
 
-up: # Bring up farcast
+up: # Bring up homd
 	docker-compose up -d --remove-orphans
 
 policy:
 	cat policy.yml | docker run --rm -i letfn/python-cli yq . | (cd ../cilium && docker-compose exec -T cilium cilium policy import -)
 
-down: # Bring down farcast
+down: # Bring down home
 	docker-compose down --remove-orphans
 
 recreate: # Recreate home container
