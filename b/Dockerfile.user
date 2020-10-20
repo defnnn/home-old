@@ -10,6 +10,7 @@ USER root
 
 RUN usermod -l $NEWUSER $HOMEBOOT
 RUN id -a $NEWUSER
+RUN echo "$NEWUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 
 USER $NEWUSER
 
