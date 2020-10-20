@@ -21,7 +21,7 @@ function main {
     if [[ -z "${NEWUSER:-}" ]]; then
       NEWUSER="${HOMEBOOT}"
     fi
-    sudo -u "${NEWUSER}" mkdir /home/app/.ssh
+    sudo -u "${NEWUSER}" mkdir -p /home/app/.ssh
     sudo -u "${NEWUSER}" chmod 700 /home/app/.ssh
     curl -s "https://api.github.com/users/${GITHUB_USER}/keys" | jq -r '.[].key' | sudo -u "${NEWUSER}" tee -a /home/app/.ssh/authorized_keys
     sudo -u "${NEWUSER}" chmod 600 /home/app/.ssh/authorized_keys
