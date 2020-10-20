@@ -53,7 +53,7 @@ defn lamda: # Build home container with personalized username
 	@echo
 	docker build $(build) -t defn/home:$@ \
 		--build-arg HOMEBOOT=app \
-		--build-arg HOMEUSER=$@ \
+		--build-arg NEWUSER=$@ \
 		-f b/Dockerfile.user \
 		b
 	docker tag defn/home:$@ localhost:5000/defn/home:$@
