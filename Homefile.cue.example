@@ -1,0 +1,6 @@
+_users: {
+  defn: github: "jojomomojo"
+  defn: dns: "home.defn.sh"
+  defn: ip: "${KITT_NETWORK_PREFIX}.99"
+  defn: id: "defn.home"
+}
