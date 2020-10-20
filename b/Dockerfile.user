@@ -12,3 +12,6 @@ RUN usermod -l $NEWUSER $HOMEBOOT
 RUN id -a $NEWUSER
 
 USER $NEWUSER
+
+COPY service /service
+RUN sudo chmod 755 /service
