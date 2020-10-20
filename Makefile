@@ -36,7 +36,7 @@ build-brew: # Build brew container with sshd
 	$(MAKE) test-brew
 	docker push defn/home:brew
 
-build-home: b/index b/index-homedir b/index-dotfiles # Build app container with brew
+build-home: b/index b/index-homedir b/index-dotfiles # Build home container with brew
 	@echo
 	docker build $(build) -t defn/home:home \
 		--build-arg HOMEBOOT=app \
@@ -48,7 +48,16 @@ build-home: b/index b/index-homedir b/index-dotfiles # Build app container with 
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
 	docker tag defn/home:home localhost:5000/defn/home:home
 	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:home; fi
-	if [[ -n "$(EXPECTED_REF)" ]]; then docker tag defn/home:home "$(EXPECTED_REF)"; fi
+
+defn lamda: # Build home container with personalized username
+	@echo
+	docker build $(build) -t defn/home:$@ \
+		--build-arg HOMEBOOT=app \
+		--build-arg HOMEUSER=$@ \
+		-f b/Dockerfile.user \
+		b
+	docker tag defn/home:$@ localhost:5000/defn/home:$@
+	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:$@; fi
 
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
