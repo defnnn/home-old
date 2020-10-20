@@ -58,6 +58,7 @@ defn lamda: # Build home container with personalized username
 		b
 	docker tag defn/home:$@ localhost:5000/defn/home:$@
 	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:$@; fi
+	docker push defn/home:$@
 
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
