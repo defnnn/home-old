@@ -3,11 +3,7 @@ version: "3.7"
 networks: default: external: name: "kitt_default"
 
 services: [Name=string]: {
-	image: "defn/home:home"
-	volumes:
-	[
-		"/var/run/docker.sock:/var/run/docker.sock",
-	]
+	image: "defn/home:\(Name)"
 }
 
 for k, v in _users {
