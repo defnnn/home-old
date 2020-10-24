@@ -110,9 +110,6 @@ bash-app: # bash shell with app
 up: # Bring up homd
 	docker-compose up -d --remove-orphans
 
-policy:
-	cat policy.yml | docker run --rm -i letfn/python-cli yq . | (cd ../cilium && docker-compose exec -T cilium cilium policy import -)
-
 down: # Bring down home
 	docker-compose down --remove-orphans
 
