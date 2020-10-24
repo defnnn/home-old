@@ -8,6 +8,8 @@ for k, v in _users {
     environment: GITHUB_USER: v.github
     networks: default: ipv4_address: v.ip
     labels: id: v.id
+    labels: SERVICE_NAME: "\(k)"
     image: "defn/home:\(v.username)"
+    ports: [ 2222 ]
   }
 }
