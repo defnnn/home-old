@@ -11,5 +11,6 @@ for k, v in _users {
     labels: id: v.id
     labels: SERVICE_NAME: "\(k)"
     labels: zone: "kitt"
+    labels: app: "home"
   }
 }
