@@ -4,7 +4,6 @@ SHELL := /bin/bash
 
 VARIANT ?= latest
 HOMEDIR ?= https://github.com/amanibhavam/homedir
-DOTFILES ?= https://github.com/amanibhavam/dotfiles
 
 menu:
 	@perl -ne 'printf("\n") if m{^-}; printf("%20s: %s\n","$$1","$$2") if m{^([\s\w+-]+):[^#]+#\s(.+)$$}' Makefile
@@ -36,13 +35,12 @@ build-brew: # Build brew container with sshd
 	$(MAKE) test-brew
 	docker push defn/home:brew
 
-build-home: b/index b/index-homedir b/index-dotfiles # Build home container with brew
+build-home: b/index b/index-homedir # Build home container with brew
 	@echo
 	docker build $(build) -t defn/home:home \
 		--build-arg HOMEBOOT=app \
 		--build-arg HOMEUSER=app \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
-		--build-arg DOTFILES=https://github.com/amanibhavam/dotfiles \
 		-f b/Dockerfile.home \
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
@@ -63,10 +61,6 @@ defn lamda: # Build home container with personalized username
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
 	mv -f b/index-homedir.1 b/index-homedir
-
-b/index-dotfiles: $(HOME)/.dotfiles/.git/index
-	cp -f $(HOME)/.dotfiles/.git/index b/index-dotfiles.1
-	mv -f b/index-dotfiles.1 b/index-dotfiles
 
 b/index: .git/index
 	cp -f .git/index b/index.1

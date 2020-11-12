@@ -3,7 +3,6 @@ FROM defn/home:brew
 ARG HOMEBOOT
 ARG HOMEUSER
 ARG HOMEDIR
-ARG DOTFILES
 
 ARG GITHUBUSER
 
@@ -32,7 +31,7 @@ RUN brew upgrade
 
 RUN sudo ln -nfs /home/linuxbrew/.linuxbrew/bin/gpg* /home/linuxbrew/.linuxbrew/bin/tmux /usr/local/bin/
 
-RUN git clone $HOMEDIR homedir && mv homedir/.git . && rm -rf homedir && git reset --hard && echo "$DOTFILES" > .dotfiles-repo && make update
+RUN git clone $HOMEDIR homedir && mv homedir/.git . && rm -rf homedir && git reset --hard && make update
 
 RUN ./env.sh brew bundle && sudo rm -rf $(brew --cache)
 
@@ -42,7 +41,6 @@ RUN make install && make upgrade; sudo rm -rf $(brew --cache)
 
 COPY index /tmp/index
 COPY index-homedir /tmp/index-homedir
-COPY index-dotfiles /tmp/index-dotfiles
 
 RUN make update; make install; make upgrade; sudo rm -rf $(brew --cache)
 
