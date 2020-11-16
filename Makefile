@@ -44,8 +44,6 @@ build-home: b/index b/index-homedir # Build home container with brew
 		-f b/Dockerfile.home \
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
-	docker tag defn/home:home localhost:5000/defn/home:home
-	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:home; fi
 
 defn lamda: # Build home container with personalized username
 	@echo
@@ -54,8 +52,6 @@ defn lamda: # Build home container with personalized username
 		--build-arg NEWUSER=$@ \
 		-f b/Dockerfile.user \
 		b
-	docker tag defn/home:$@ localhost:5000/defn/home:$@
-	if nc -z -v localhost 5000; then docker push localhost:5000/defn/home:$@; fi
 	docker push defn/home:$@
 
 b/index-homedir: $(HOME)/.git/index
