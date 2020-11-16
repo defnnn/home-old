@@ -116,20 +116,18 @@ rebash:
 	$(MAKE) bash
 
 bash:
-	docker-compose run --rm --entrypoint bash sshd -il
+	docker-compose run --rm --entrypoint bash defn -il
 
 bash-exec:
-	docker-compose exec sshd bash -il
+	docker-compose exec defn bash -il
 
 -------------cuelang: # -----------------------------
 
 fmt:
 	cue fmt *.cue
-	yamlfmt -w docker-compose.yml
 
 docker-compose.yml: docker-compose.cue
 	cue export --out json docker-compose.cue Homefile.cue | yq -y -S '.'  > docker-compose.yml.1
-	yamlfmt -w docker-compose.yml.1
 	mv docker-compose.yml.1 docker-compose.yml
 	
 ----------------tilt: # -----------------------------
