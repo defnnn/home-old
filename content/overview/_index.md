@@ -1,30 +1,25 @@
----
-title: Overview
-toc: true
----
-text
+## Build your home container
 
-## head 1
+Builds a container image with your username (`$USER`).
 
-text
+    make user
 
-## head 2
 
-text
+### Run your home container
 
-## head 3
+First, copy `.env.example` to `.env`.  Adjust the values to your accounts.
 
-text
+    cp .env.exaple .env
+    vi .env
 
-## head 4
+Then generate configuration:
 
-text
+    make config
 
-## head 5
+Then, bring up the home container:
 
-text
+    make up
 
-## head 6
+Create an ssh alias named home to ssh host 127.0.0.1, port 2222, user `$USER`.  ssh into the alias:
 
-text
-
+    ssh home

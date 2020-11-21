@@ -46,7 +46,10 @@ build-home: b/index b/index-homedir # Build home container with brew
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
 	docker push defn/home:home
 
-defn lamda: # Build home container with personalized username
+user:
+	$(MAKE) $(USER)
+
+$(USER): # Build home container with personalized username
 	@echo
 	docker build $(build) -t defn/home:$@ \
 		--build-arg HOMEBOOT=app \
