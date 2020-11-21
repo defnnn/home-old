@@ -53,6 +53,7 @@ defn lamda: # Build home container with personalized username
 		--build-arg NEWUSER=$@ \
 		-f b/Dockerfile.user \
 		b
+	docker tag defn/home:$@ defn/home:user
 
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
