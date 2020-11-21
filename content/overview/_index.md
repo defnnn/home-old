@@ -2,8 +2,8 @@
 
 Builds a container image with your username (`$USER`).
 
+    docker pull defn/home:home
     make user
-
 
 ### Run your home container
 
