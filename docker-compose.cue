@@ -7,7 +7,11 @@ for k, v in _users {
     env_file: ".env"
     volumes: [ 
       "$HOME/.password-store:/home/app/.password-store",
-      "$HOME/work:/home/app/work"
+      "$HOME/work:/home/app/work",
+      "$HOME:$HOME",
+      "/var/run/docker.sock:/var/run/docker.sock"
     ]
   }
 }
+
+networks: default: external: name: "cloudbuild"
