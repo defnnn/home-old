@@ -5,10 +5,13 @@ for k, v in _users {
     image: "defn/home:\(v.username)"
     ports: [ "127.0.0.1:2222:2222" ]
     env_file: ".env"
+    environment: {
+      "HOME": "$HOME"
+    }
     volumes: [ 
+      "./b/service:/service",
       "$HOME/.password-store:/home/app/.password-store",
       "$HOME/work:/home/app/work",
-      "$HOME:$HOME",
       "/var/run/docker.sock:/var/run/docker.sock"
     ]
   }

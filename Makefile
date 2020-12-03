@@ -16,6 +16,9 @@ config:
 	$(MAKE) docker-compose.yml
 	git diff docker-compose.yml
 
+logs:
+	docker-compose logs -f
+
 ---------------build: # -----------------------------
 build-sshd: # Build sshd container with lefn/python
 	@echo
@@ -98,6 +101,9 @@ bash-brew: # bash shell with brew
 
 bash-app: # bash shell with app
 	docker run --rm -ti --entrypoint bash defn/home:app
+
+attach: # tmux attach to running home
+	tm home
 
 ------docker-compose: # -----------------------------
 

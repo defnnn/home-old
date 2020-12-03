@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 function main {
+  set -x
+
   if [[ -w /data ]]; then
     if ! test -f /data/.hello; then
       echo "$(date) $(uname -a)" > /data/.hello
@@ -27,6 +29,11 @@ function main {
     sudo -u "${NEWUSER}" chmod 600 /home/app/.ssh/authorized_keys
   fi
 
+  sudo mkdir -p "$(dirname "${HOME}")"
+  sudo ln -nfs /home/app "${HOME}"
+  sudo usermod -d "${HOME}" "${NEWUSER}"
+
+  # TODO in tmux, shell is in new home directory
   if [[ "$$" == 1 ]]; then
     exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
   else
