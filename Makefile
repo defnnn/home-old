@@ -102,6 +102,9 @@ bash-brew: # bash shell with brew
 bash-home: # bash shell with home
 	docker run --rm -ti --entrypoint bash defn/home:home
 
+bash: # bash shell with docker-compose exec
+	docker-compose exec home bash -il
+
 attach: # tmux attach to running home
 	tm home
 
@@ -124,12 +127,6 @@ recycle: # Recycle home container
 rebash:
 	$(MAKE) down
 	$(MAKE) bash
-
-bash:
-	docker-compose run --rm --entrypoint bash defn -il
-
-bash-exec:
-	docker-compose exec defn bash -il
 
 -------------cuelang: # -----------------------------
 
