@@ -1,4 +1,4 @@
-FROM letfn/python:latest
+FROM defn/python:latest
 
 ARG HOMEBOOT
 ENV HOMEBOOT=$HOMEBOOT

@@ -22,44 +22,44 @@ logs:
 ---------------build: # -----------------------------
 build-latest: # Build latest container with lefn/python
 	@echo
-	docker build $(build) -t defn/home:latest \
+	podman build $(build) -t defn/home:latest \
 		--build-arg HOMEBOOT=app \
 		-f b/Dockerfile \
 		b
 	$(MAKE) test-latest
-	echo docker push defn/home:latest
+	podman push defn/home:latest
 
 build-brew: # Build brew container with latest
 	@echo
-	docker build $(build) -t defn/home:brew \
+	podman build $(build) -t defn/home:brew \
 		--build-arg HOMEBOOT=app \
 		-f b/Dockerfile.brew \
 		b
 	$(MAKE) test-brew
-	echo docker push defn/home:brew
+	podman push defn/home:brew
 
 build-home: b/index b/index-homedir # Build home container with brew
 	@echo
-	docker build $(build) -t defn/home:home \
+	podman build $(build) -t defn/home:home \
 		--build-arg HOMEBOOT=app \
 		--build-arg HOMEUSER=app \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
 		-f b/Dockerfile.home \
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
-	echo docker push defn/home:home
+	podman push defn/home:home
 
 user:
 	$(MAKE) $(USER)
 
 $(USER): # Build home container with personalized username
 	@echo
-	docker build $(build) -t defn/home:$@ \
+	podman build $(build) -t defn/home:$@ \
 		--build-arg HOMEBOOT=app \
 		--build-arg NEWUSER=$@ \
 		-f b/Dockerfile.user \
 		b
-	docker tag defn/home:$@ defn/home:user
+	podman tag defn/home:$@ defn/home:user
 
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
@@ -70,7 +70,7 @@ b/index: .git/index
 	mv -f b/index.1 b/index
 
 push: 
-	docker push defn/home:home
+	podman push defn/home:home
 
 build: 
 	$(MAKE) build-home
@@ -94,13 +94,13 @@ test-app: # test image app
 ----------------bash: # -----------------------------
 
 bash-latest: # bash shell with latest
-	docker run --rm -ti --entrypoint bash defn/home:latest
+	podman run --rm -ti --entrypoint bash defn/home:latest
 
 bash-brew: # bash shell with brew
-	docker run --rm -ti --entrypoint bash defn/home:brew
+	podman run --rm -ti --entrypoint bash defn/home:brew
 
 bash-home: # bash shell with home
-	docker run --rm -ti --entrypoint bash defn/home:home
+	podman run --rm -ti --entrypoint bash defn/home:home
 
 bash: # bash shell with docker-compose exec
 	docker-compose exec home bash -il
