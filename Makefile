@@ -22,7 +22,7 @@ logs:
 ---------------build: # -----------------------------
 build-latest: # Build latest container with lefn/python
 	@echo
-	podman build $(build) -t defn/home:latest \
+	docker build $(build) -t defn/home:latest \
 		--build-arg HOMEBOOT=app \
 		-f b/Dockerfile \
 		b
@@ -31,7 +31,7 @@ build-latest: # Build latest container with lefn/python
 
 build-brew: # Build brew container with latest
 	@echo
-	podman build $(build) -t defn/home:brew \
+	docker build $(build) -t defn/home:brew \
 		--build-arg HOMEBOOT=app \
 		-f b/Dockerfile.brew \
 		b
@@ -40,7 +40,7 @@ build-brew: # Build brew container with latest
 
 build-home: b/index b/index-homedir # Build home container with brew
 	@echo
-	podman build $(build) -t defn/home:home \
+	docker build $(build) -t defn/home:home \
 		--build-arg HOMEBOOT=app \
 		--build-arg HOMEUSER=app \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
@@ -54,12 +54,12 @@ user:
 
 $(USER): # Build home container with personalized username
 	@echo
-	podman build $(build) -t defn/home:$@ \
+	docker build $(build) -t defn/home:$@ \
 		--build-arg HOMEBOOT=app \
 		--build-arg NEWUSER=$@ \
 		-f b/Dockerfile.user \
 		b
-	podman tag defn/home:$@ defn/home:user
+	docker tag defn/home:$@ defn/home:user
 
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
@@ -94,13 +94,13 @@ test-app: # test image app
 ----------------bash: # -----------------------------
 
 bash-latest: # bash shell with latest
-	podman run --rm -ti --entrypoint bash defn/home:latest
+	docker run --rm -ti --entrypoint bash defn/home:latest
 
 bash-brew: # bash shell with brew
-	podman run --rm -ti --entrypoint bash defn/home:brew
+	docker run --rm -ti --entrypoint bash defn/home:brew
 
 bash-home: # bash shell with home
-	podman run --rm -ti --entrypoint bash defn/home:home
+	docker run --rm -ti --entrypoint bash defn/home:home
 
 attach: # tmux attach to running home
 	tm home
