@@ -21,7 +21,7 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: test-sshd
+name: test-latest
 
 platform:
   os: linux
@@ -29,9 +29,10 @@ platform:
 
 steps:
 - name: local
-  image: defn/home:sshd
+  image: defn/home:latest
   commands:
     - cd
+    - set -x
     - test "/home/$HOMEBOOT" = "$(pwd)"
     - grep "GatewayPorts clientspecified" /etc/ssh/sshd_config
     - test -x "$(which tmux)"

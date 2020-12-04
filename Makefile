@@ -20,46 +20,46 @@ logs:
 	docker-compose logs -f
 
 ---------------build: # -----------------------------
-build-sshd: # Build sshd container with lefn/python
+build-latest: # Build latest container with lefn/python
 	@echo
-	docker build $(build) -t defn/home:sshd \
+	podman build $(build) -t defn/home:latest \
 		--build-arg HOMEBOOT=app \
-		-f b/Dockerfile.sshd \
+		-f b/Dockerfile \
 		b
-	$(MAKE) test-sshd
-	docker push defn/home:sshd
+	$(MAKE) test-latest
+	echo docker push defn/home:latest
 
-build-brew: # Build brew container with sshd
+build-brew: # Build brew container with latest
 	@echo
-	docker build $(build) -t defn/home:brew \
+	podman build $(build) -t defn/home:brew \
 		--build-arg HOMEBOOT=app \
 		-f b/Dockerfile.brew \
 		b
 	$(MAKE) test-brew
-	docker push defn/home:brew
+	echo docker push defn/home:brew
 
 build-home: b/index b/index-homedir # Build home container with brew
 	@echo
-	docker build $(build) -t defn/home:home \
+	podman build $(build) -t defn/home:home \
 		--build-arg HOMEBOOT=app \
 		--build-arg HOMEUSER=app \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
 		-f b/Dockerfile.home \
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
-	docker push defn/home:home
+	echo docker push defn/home:home
 
 user:
 	$(MAKE) $(USER)
 
 $(USER): # Build home container with personalized username
 	@echo
-	docker build $(build) -t defn/home:$@ \
+	podman build $(build) -t defn/home:$@ \
 		--build-arg HOMEBOOT=app \
 		--build-arg NEWUSER=$@ \
 		-f b/Dockerfile.user \
 		b
-	docker tag defn/home:$@ defn/home:user
+	podman tag defn/home:$@ defn/home:user
 
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
@@ -78,29 +78,29 @@ build:
 ----------------test: # -----------------------------
 
 test: # test all images
-	$(MAKE) test-sshd
+	$(MAKE) test-latest
 	$(MAKE) test-brew
 	$(MAKE) test-app
 
-test-sshd: # test image sshd
-	drone exec --env-file=.drone.env --pipeline test-sshd
+test-latest: # test image latest
+	echo drone exec --env-file=.drone.env --pipeline test-latest
 
 test-brew: # test image brew
-	drone exec --env-file=.drone.env --pipeline test-brew
+	echo drone exec --env-file=.drone.env --pipeline test-brew
 
 test-app: # test image app
-	drone exec --env-file=.drone.env --pipeline $@
+	echo drone exec --env-file=.drone.env --pipeline $@
 
 ----------------bash: # -----------------------------
 
-bash-sshd: # bash shell with sshd
-	docker run --rm -ti --entrypoint bash defn/home:sshd
+bash-latest: # bash shell with latest
+	podman run --rm -ti --entrypoint bash defn/home:latest
 
 bash-brew: # bash shell with brew
-	docker run --rm -ti --entrypoint bash defn/home:brew
+	podman run --rm -ti --entrypoint bash defn/home:brew
 
-bash-app: # bash shell with app
-	docker run --rm -ti --entrypoint bash defn/home:app
+bash-home: # bash shell with home
+	podman run --rm -ti --entrypoint bash defn/home:home
 
 attach: # tmux attach to running home
 	tm home

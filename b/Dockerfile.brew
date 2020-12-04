@@ -1,4 +1,4 @@
-FROM defn/home:sshd
+FROM defn/home:latest
 
 ARG HOMEBOOT
 
@@ -12,8 +12,7 @@ ENV container docker
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        docker.io libudev-dev
+    && apt-get install -y --no-install-recommends libudev-dev fuse-overlayfs
 
 RUN curl -O -sSL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
     && dpkg -i session-manager-plugin.deb \
@@ -33,7 +32,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
-    && git clone --depth 100 https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
+    && git clone https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
 
 RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew list
 
