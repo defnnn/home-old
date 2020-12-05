@@ -54,12 +54,12 @@ user:
 
 $(USER): # Build home container with personalized username
 	@echo
-	podman build $(build) -t defn/home:$@ \
+	docker build $(build) -t defn/home:$@ \
 		--build-arg HOMEBOOT=app \
 		--build-arg NEWUSER=$@ \
 		-f b/Dockerfile.user \
 		b
-	podman tag defn/home:$@ defn/home:user
+	docker tag defn/home:$@ defn/home:user
 
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
