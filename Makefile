@@ -49,18 +49,6 @@ build-home: b/index b/index-homedir # Build home container with brew
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
 	podman push defn/home:home
 
-user:
-	$(MAKE) $(USER)
-
-$(USER): # Build home container with personalized username
-	@echo
-	docker build $(build) -t defn/home:$@ \
-		--build-arg HOMEBOOT=app \
-		--build-arg NEWUSER=$@ \
-		-f b/Dockerfile.user \
-		b
-	docker tag defn/home:$@ defn/home:user
-
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
 	mv -f b/index-homedir.1 b/index-homedir
@@ -104,6 +92,10 @@ bash-home: # bash shell with home
 
 bash: # bash shell with docker-compose exec
 	docker-compose exec home bash -il
+
+ssh: # sign and ssh to container
+	@ssh home true || (cd && make step-ssh-user user=home username=app)
+	@ssh home
 
 attach: # tmux attach to running home
 	tm home

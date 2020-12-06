@@ -2,7 +2,7 @@ version: "3.7"
 
 for k, v in _users {
   services: "\(k)": {
-    image: "defn/home:\(v.username)"
+    image: "defn/home:home"
     ports: [ "127.0.0.1:2222:2222" ]
     env_file: ".env"
     environment: {
