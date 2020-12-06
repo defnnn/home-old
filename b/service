@@ -3,30 +3,18 @@
 function main {
   set -x
 
-  if [[ -w /data ]]; then
-    if ! test -f /data/.hello; then
-      echo "$(date) $(uname -a)" > /data/.hello
-    fi
-  fi
-
   env | grep ^AWS_ | sort | sudo tee /etc/aws.env > /dev/null
 
-  if [[ -f /data/home-secret/trusted-user-ca-keys.pem ]]; then
-    cp /data/home-secret/trusted-user-ca-keys.pem /etc/ssh/trusted-user-ca-keys.pem
-  elif [[ -n "${HOME_TRUSTED_USER_CA_KEYS:-}" ]]; then
-    echo "${HOME_TRUSTED_USER_CA_KEYS}" | base64 -d > /etc/ssh/trusted-user-ca-keys.pem
+  if [[ -n "${HOME_SSH_USER_KEY_PUB:-}" ]]; then
+    echo "${HOME_SSH_USER_KEY_PUB}" | base64 -d | sudo tee /etc/ssh/ssh_user_key.pub >/dev/null
+    echo TrustedUserCAKeys /etc/ssh/ssh_user_key.pub | sudo tee -a /etc/ssh/sshd_config
   fi
 
-  echo TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem | sudo tee -a /etc/ssh/sshd_config
-
-  if [[ -n "${GITHUB_USER:-}" ]]; then
-    if [[ -z "${NEWUSER:-}" ]]; then
-      NEWUSER="${HOMEBOOT}"
-    fi
-    sudo -u "${NEWUSER}" mkdir -p /home/app/.ssh
-    sudo -u "${NEWUSER}" chmod 700 /home/app/.ssh
-    curl -s "https://api.github.com/users/${GITHUB_USER}/keys" | jq -r '.[].key' | sudo -u "${NEWUSER}" tee -a /home/app/.ssh/authorized_keys
-    sudo -u "${NEWUSER}" chmod 600 /home/app/.ssh/authorized_keys
+  if [[ -n "${HOME_SSH_HOST_ECDSA_KEY:-}" ]]; then
+    echo "${HOME_SSH_HOST_ECDSA_KEY}" | base64 -d | sudo tee /etc/ssh/ssh_host_ecdsa_key >/dev/null
+    echo "${HOME_SSH_HOST_ECDSA_KEY_CERT_PUB}" | base64 -d | sudo tee /etc/ssh/ssh_host_ecdsa_key-cert.pub >/dev/null
+    echo HostKey /etc/ssh/ssh_host_ecdsa_key | sudo tee -a /etc/ssh/sshd_config
+    echo HostCertificate /etc/ssh/ssh_host_ecdsa_key-cert.pub | sudo tee -a /etc/ssh/sshd_config
   fi
 
   sudo mkdir -p "$(dirname "${HOME}")"
