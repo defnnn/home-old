@@ -113,12 +113,15 @@ recreate: # Recreate home container
 	$(MAKE) up
 
 recycle: # Recycle home container
-	docker-compose pull
+	$(MAKE) pull
 	$(MAKE) recreate
 
 rebash:
 	$(MAKE) down
 	$(MAKE) bash
+
+pull:
+	docker-compose pull
 
 -------------cuelang: # -----------------------------
 
