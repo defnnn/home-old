@@ -94,7 +94,7 @@ bash: # bash shell with docker-compose exec
 	docker-compose exec home bash -il
 
 ssh: # sign and ssh to container
-	@ssh home true || (cd && make step-ssh-user user=home username=app)
+	@ssh home true || (cd && cd .password-store && make ssh-user-renew)
 	@ssh home
 
 attach: # tmux attach to running home
