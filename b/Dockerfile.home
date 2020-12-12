@@ -11,11 +11,9 @@ ENV HOMEUSER=$HOMEUSER
 ENV HOMEHOME=$HOMEHOME
 
 USER root
-RUN groupadd -g 996 dkr
 RUN groupmod -n $HOMEUSER $HOMEBOOT
 RUN usermod -d /home/$HOMEUSER $HOMEBOOT
 RUN usermod -l $HOMEUSER $HOMEBOOT
-RUN usermod -a -G dkr $HOMEUSER
 RUN echo "$HOMEUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 RUN mkdir -p /run/sshd /run && chown -hR $HOMEUSER:$HOMEUSER /run /etc/ssh
 RUN if [[ "$HOMEBOOT" != "$HOMEUSER" ]]; then ln -nfs $HOMEBOOT /home/$HOMEUSER; fi
