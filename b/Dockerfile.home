@@ -16,7 +16,7 @@ RUN usermod -d /home/$HOMEUSER $HOMEBOOT
 RUN usermod -l $HOMEUSER $HOMEBOOT
 RUN echo "$HOMEUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 RUN mkdir -p /run/sshd /run && chown -hR $HOMEUSER:$HOMEUSER /run /etc/ssh
-RUN if [[ "$HOMEBOOT" != "$HOMEUSER" ]]; then ln -nfs $HOMEBOOT /home/$HOMEUSER; fi
+RUN if test "$HOMEBOOT" != "$HOMEUSER"; then ln -nfs $HOMEBOOT /home/$HOMEUSER; fi
 RUN chown -h $HOMEUSER:$HOMEUSER /home/$HOMEUSER /home/$HOMEBOOT
 
 USER $HOMEUSER
