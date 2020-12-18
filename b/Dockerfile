@@ -5,8 +5,9 @@ ENV HOMEBOOT=$HOMEBOOT
 
 USER root
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 ENV HOME=/root
-ENV DEBIAN_FRONTEND=noninteractive
 ENV container docker
 
 RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/udevadm
