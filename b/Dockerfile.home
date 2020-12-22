@@ -31,7 +31,7 @@ RUN sudo ln -nfs /home/linuxbrew/.linuxbrew/bin/gpg* /home/linuxbrew/.linuxbrew/
 
 RUN git clone $HOMEDIR homedir && mv homedir/.git . && rm -rf homedir && git reset --hard && make update
 
-RUN ./env.sh brew bundle && sudo rm -rf $(brew --cache)
+RUN (./env.sh brew bundle || true) && sudo rm -rf $(brew --cache)
 
 RUN ./env.sh asdf install || ./env.sh asdf install; sudo rm -rf $(brew --cache)
 
