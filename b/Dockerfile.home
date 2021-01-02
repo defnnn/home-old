@@ -16,7 +16,7 @@ RUN usermod -d /home/$HOMEUSER $HOMEBOOT
 RUN usermod -l $HOMEUSER $HOMEBOOT
 RUN echo "$HOMEUSER ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 RUN mkdir -p /run/sshd /run && chown -hR $HOMEUSER:$HOMEUSER /run /etc/ssh
-RUN if test  "$HOMEBOOT" != "$HOMEUSER"; then ln -nfs $HOMEBOOT /home/$HOMEUSER; fi
+RUN if test "$HOMEBOOT" != "$HOMEUSER"; then ln -nfs $HOMEBOOT /home/$HOMEUSER; fi
 RUN chown -h $HOMEUSER:$HOMEUSER /home/$HOMEUSER /home/$HOMEBOOT
 
 USER $HOMEUSER
@@ -31,16 +31,16 @@ RUN sudo ln -nfs /home/linuxbrew/.linuxbrew/bin/gpg* /home/linuxbrew/.linuxbrew/
 
 RUN git clone $HOMEDIR homedir && mv homedir/.git . && rm -rf homedir && git reset --hard && make update
 
-RUN ./env.sh brew bundle && sudo rm -rf $(brew --cache)
+RUN ./env.sh brew bundle || true
 
-RUN ./env.sh asdf install || ./env.sh asdf install; sudo rm -rf $(brew --cache)
+RUN ./env.sh asdf install || ./env.sh asdf install
 
-RUN make install && make upgrade; sudo rm -rf $(brew --cache)
+RUN make install
 
 COPY index /tmp/index
 COPY index-homedir /tmp/index-homedir
 
-RUN make update; make install; make upgrade; sudo rm -rf $(brew --cache)
+RUN make thing
 
 COPY service /service
 RUN sudo chmod 755 /service

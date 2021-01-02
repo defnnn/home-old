@@ -35,15 +35,12 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN git clone --depth 1 https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew \
-    && git clone https://github.com/Homebrew/linuxbrew-core /home/linuxbrew/.linuxbrew/Library/Taps/homebrew/homebrew-core
-
-RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew list
+RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh > /tmp/install.sh && bash /tmp/install.sh
 
 RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew tap linuxbrew/xorg
 
-RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --help
-
 RUN sudo ln -nfs locale.h /usr/include/xlocale.h && env HOMEBREW_NO_AUTO_UPDATE=1 brew install perl
+
+RUN env HOMEBREW_NO_AUTO_UPDATE=1 brew install figlet lolcat
 
 ENV PATH=/home/$HOMEBOOT/.asdf/bin:/home/$HOMEBOOT/.asdf/shims:/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

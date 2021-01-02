@@ -20,6 +20,11 @@ logs:
 	docker-compose logs -f
 
 ---------------build: # -----------------------------
+rebuild:
+	$(MAKE) build-latest build=--no-cache
+	$(MAKE) build-brew build=--no-cache
+	$(MAKE) build-home build=--no-cache
+
 build-latest: # Build latest container with lefn/python
 	@echo
 	podman build $(build) -t defn/home:latest \
