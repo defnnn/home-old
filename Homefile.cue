@@ -1,3 +1,3 @@
 _users: {
-  home: username: "user"
+	home: username: "user"
 }

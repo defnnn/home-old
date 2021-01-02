@@ -20,12 +20,7 @@ function main {
   sudo mkdir -p "$(dirname "${HOME}")"
   sudo usermod -d "${HOME}" "${NEWUSER}"
 
-  # TODO in tmux, shell is in new home directory
-  if [[ "$$" == 1 ]]; then
-    exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
-  else
-    exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
-  fi
+  exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
 }
 
 main "$@"
