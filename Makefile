@@ -20,14 +20,11 @@ logs:
 	docker-compose logs -f
 
 ---------------build: # -----------------------------
-rebuild:
+rebuild: # Rebuild everything from scratch
 	$(MAKE) build-latest build=--no-cache
 	$(MAKE) build-brew build=--no-cache
 	$(MAKE) build-home build=--no-cache
 	$(MAKE) build-jenkins
-
-rebuild: # Rebuild everything from scratch
-	$(MAKE) build-latest build-brew build-home build-jenkins build=--no-cache
 
 build-latest: # Build latest container with lefn/python
 	@echo
