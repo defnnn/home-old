@@ -24,6 +24,10 @@ rebuild:
 	$(MAKE) build-latest build=--no-cache
 	$(MAKE) build-brew build=--no-cache
 	$(MAKE) build-home build=--no-cache
+	$(MAKE) build-jenkins build=--no-cache
+
+rebuild: # Rebuild everything from scratch
+	$(MAKE) build-latest build-brew build-home build-jenkins build=--no-cache
 
 build-latest: # Build latest container with lefn/python
 	@echo
@@ -55,8 +59,9 @@ build-home: b/index b/index-homedir # Build home container with brew
 	podman push defn/home:home
 
 build-jenkins: # Build Jenkins
-	podman build -t defn/jenkins \
+	podman build $(build) -t defn/jenkins \
 		-f b/Dockerfile.jenkins .
+	podman push defn/jenkins
 
 jenkins-pass:
 	@docker-compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
