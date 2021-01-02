@@ -44,4 +44,5 @@ RUN make thing
 
 COPY service /service
 RUN sudo chmod 755 /service
+ENTRYPOINT [ "/service" ]
 CMD [ "sshd" ]
