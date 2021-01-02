@@ -9,7 +9,7 @@ for k, v in _users {
     environment: {
       "HOME": "$HOME"
       "DOCKER_TLS_VERIFY": "1"
-      "DOCKER_TLS_CERTDIR": "/certs"
+      "DOCKER_CERT_PATH": "/certs/client"
       "DOCKER_HOST": "tcp://169.254.32.1:2376"
     }
     volumes: [
