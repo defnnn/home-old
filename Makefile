@@ -54,6 +54,10 @@ build-home: b/index b/index-homedir # Build home container with brew
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
 	podman push defn/home:home
 
+build-jenkins: # Build Jenkins
+	podman build -t defn/jenkins \
+		-f b/Dockerfile.jenkins .
+
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
 	mv -f b/index-homedir.1 b/index-homedir
