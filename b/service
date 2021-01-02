@@ -18,7 +18,6 @@ function main {
   fi
 
   sudo mkdir -p "$(dirname "${HOME}")"
-  sudo ln -nfs /home/app "${HOME}"
   sudo usermod -d "${HOME}" "${NEWUSER}"
 
   # TODO in tmux, shell is in new home directory

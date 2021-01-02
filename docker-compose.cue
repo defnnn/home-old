@@ -7,7 +7,6 @@ for k, v in _users {
     ports: [ "127.0.0.1:2222:2222" ]
     env_file: ".env"
     environment: {
-      "HOME": "$HOME"
       "DOCKER_TLS_VERIFY": "1"
       "DOCKER_CERT_PATH": "/certs/client"
       "DOCKER_HOST": "tcp://172.31.0.2:2376"
