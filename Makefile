@@ -94,15 +94,8 @@ test-app: # test image app
 	echo drone exec --env-file=.drone.env --pipeline $@
 
 ----------------bash: # -----------------------------
-
-bash-latest: # bash shell with latest
-	podman run --rm -ti --entrypoint bash defn/home:latest
-
-bash-brew: # bash shell with brew
-	podman run --rm -ti --entrypoint bash defn/home:brew
-
-bash-home: # bash shell with home
-	podman run --rm -ti --entrypoint bash defn/home:home
+bash-jenkins: # jenkins shell with docker-compose exec
+	docker-compose exec -u 0 jenkins bash -il
 
 bash: # bash shell with docker-compose exec
 	docker-compose exec home bash -il
