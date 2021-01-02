@@ -8,6 +8,9 @@ for k, v in _users {
     env_file: ".env"
     environment: {
       "HOME": "$HOME"
+      "DOCKER_TLS_VERIFY": "1"
+      "DOCKER_TLS_CERTDIR": "/certs"
+      "DOCKER_HOST": "tcp://169.254.32.1:2376"
     }
     volumes: [
       "./b/service:/service",

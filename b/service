@@ -21,6 +21,10 @@ function main {
   sudo ln -nfs /home/app "${HOME}"
   sudo usermod -d "${HOME}" "${NEWUSER}"
 
+  if [[ -d /certs/clients ]]; then
+    (set +f; ln -nfs /certs/clients/* /home/app/.docker/)
+  fi
+
   # TODO in tmux, shell is in new home directory
   if [[ "$$" == 1 ]]; then
     exec /tini -- /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
