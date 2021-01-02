@@ -28,37 +28,37 @@ rebuild: # Rebuild everything from scratch
 
 build-latest: # Build latest container with lefn/python
 	@echo
-	podman build $(build) -t defn/home:latest \
+	docker build $(build) -t defn/home:latest \
 		--build-arg HOMEBOOT=app \
 		-f b/Dockerfile \
 		b
 	$(MAKE) test-latest
-	podman push defn/home:latest
+	docker push defn/home:latest
 
 build-brew: # Build brew container with latest
 	@echo
-	podman build $(build) -t defn/home:brew \
+	docker build $(build) -t defn/home:brew \
 		--build-arg HOMEBOOT=app \
 		-f b/Dockerfile.brew \
 		b
 	$(MAKE) test-brew
-	podman push defn/home:brew
+	docker push defn/home:brew
 
 build-home: b/index b/index-homedir # Build home container with brew
 	@echo
-	podman build $(build) -t defn/home:home \
+	docker build $(build) -t defn/home:home \
 		--build-arg HOMEBOOT=app \
 		--build-arg HOMEUSER=app \
 		--build-arg HOMEDIR=https://github.com/amanibhavam/homedir \
 		-f b/Dockerfile.home \
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
-	podman push defn/home:home
+	docker push defn/home:home
 
 build-jenkins: # Build Jenkins
-	podman build $(build) -t defn/jenkins \
+	docker build $(build) -t defn/jenkins \
 		-f b/Dockerfile.jenkins .
-	podman push defn/jenkins
+	docker push defn/jenkins
 
 jenkins-pass:
 	@docker-compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
@@ -72,7 +72,7 @@ b/index: .git/index
 	mv -f b/index.1 b/index
 
 push: 
-	podman push defn/home:home
+	docker push defn/home:home
 
 build: 
 	$(MAKE) build-home
