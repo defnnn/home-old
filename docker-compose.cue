@@ -10,14 +10,14 @@ for k, v in _users {
       "HOME": "$HOME"
       "DOCKER_TLS_VERIFY": "1"
       "DOCKER_CERT_PATH": "/certs/client"
-      "DOCKER_HOST": "tcp://169.254.32.1:2376"
+      "DOCKER_HOST": "tcp://172.31.0.2:2376"
     }
     volumes: [
       "./b/service:/service",
       "$HOME/.password-store:/home/app/.password-store",
       "$HOME/work:/home/app/work",
       "/var/run/docker.sock:/var/run/docker.sock",
-      "jenkins-docker-certs:/certs/clients"
+      "jenkins-docker-certs:/certs/client"
     ]
   }
 }
