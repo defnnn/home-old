@@ -31,6 +31,15 @@ services: docker: {
 	]
 }
 
+services: cloudflared: {
+	image:      "defn/cloudflared"
+	env_file:   ".env.dind"
+	network_mode: "service:jenkins"
+	volumes: [
+		"./etc/cloudflared:/certs/cloudflared",
+  ]
+}
+
 for k, v in _users {
 	services: "\(k)": {
 		image:        "defn/home:home"
