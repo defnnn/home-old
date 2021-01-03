@@ -21,10 +21,10 @@ logs:
 
 ---------------build: # -----------------------------
 rebuild: # Rebuild everything from scratch
-	$(MAKE) build-latest build=--no-cache
-	$(MAKE) build-brew build=--no-cache
-	$(MAKE) build-home build=--no-cache
-	$(MAKE) build-jenkins
+	$(MAKE) build-jenkins push-jenkins
+	$(MAKE) build-latest push-latest build=--no-cache
+	$(MAKE) build-brew push-brew build=--no-cache
+	$(MAKE) build-home push-home build=--no-cache
 
 build-latest: # Build latest container with lefn/python
 	@echo
@@ -33,6 +33,8 @@ build-latest: # Build latest container with lefn/python
 		-f b/Dockerfile \
 		b
 	$(MAKE) test-latest
+
+push-latest:
 	docker push defn/home:latest
 
 build-brew: # Build brew container with latest
@@ -42,6 +44,8 @@ build-brew: # Build brew container with latest
 		-f b/Dockerfile.brew \
 		b
 	$(MAKE) test-brew
+
+push-brew:
 	docker push defn/home:brew
 
 build-home: b/index b/index-homedir # Build home container with brew
@@ -53,6 +57,8 @@ build-home: b/index b/index-homedir # Build home container with brew
 		-f b/Dockerfile.home \
 		b
 	echo "TEST_PY=$(shell cat test.py | (base64 -w 0 2>/dev/null || base64) )" > .drone.env
+
+push-home:
 	docker push defn/home:home
 
 build-jenkins: # Build Jenkins
@@ -60,11 +66,11 @@ build-jenkins: # Build Jenkins
 		-f b/Dockerfile.jenkins .
 	docker push defn/jenkins
 
+push-jenkins:
+	docker push defn/jenkins
+
 jenkins-pass:
 	@docker-compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
-
-jenkins-cli:
-	curl -sSL -o ~/bin/jenkins-cli.jar http://localhost:8080/jnlpJars/jenkins-cli.jar
 
 jenkins-updates:
 	docker-compose exec jenkins bash -c 'env PATH=$$PATH:/opt/java/openjdk/bin jenkins-plugin-cli --available-updates'
