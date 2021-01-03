@@ -66,6 +66,9 @@ jenkins-pass:
 jenkins-cli:
 	curl -sSL -o ~/bin/jenkins-cli.jar http://localhost:8080/jnlpJars/jenkins-cli.jar
 
+jenkins-updates:
+	docker-compose exec jenkins bash -c 'env PATH=$$PATH:/opt/java/openjdk/bin jenkins-plugin-cli --available-updates'
+
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
 	mv -f b/index-homedir.1 b/index-homedir
