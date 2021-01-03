@@ -5,19 +5,13 @@ volumes: {
 	"jenkins": {}
 }
 
-services: docker: {
-	image:      "docker:dind"
-	privileged: true
-	env_file:   ".env.dind"
-	volumes: [
-		"docker-certs:/certs/client",
-		"jenkins:/var/jenkins_home",
-	]
-}
+services: jenkins: ports: [
+	"127.0.0.1:2222:2222",
+	"127.0.0.1:8080:8080",
+]
 
 services: jenkins: {
 	image:        "defn/jenkins"
-	network_mode: "service:docker"
 	env_file:     ".env.dind"
 	volumes: [
 		"docker-certs:/certs/client",
@@ -25,15 +19,22 @@ services: jenkins: {
 	]
 }
 
-services: docker: ports: [
-	"127.0.0.1:2222:2222",
-	"127.0.0.1:8080:8080",
-]
+services: docker: {
+	image:      "docker:dind"
+	privileged: true
+	env_file:   ".env.dind"
+	network_mode: "service:jenkins"
+	pid:          "service:jenkins"
+	volumes: [
+		"docker-certs:/certs/client",
+		"jenkins:/var/jenkins_home",
+	]
+}
 
 for k, v in _users {
 	services: "\(k)": {
 		image:        "defn/home:home"
-		network_mode: "service:docker"
+		network_mode: "service:jenkins"
 		pid:          "service:jenkins"
 		env_file:     ".env.dind"
 		volumes: [
