@@ -2,7 +2,7 @@ FROM jenkins/jenkins:2.263.1-lts-slim
 
 USER root
 
-RUN apt-get update && apt-get install -y apt-transport-https ca-certificates curl gnupg2  software-properties-common wget
+RUN apt-get update && apt-get install -y apt-transport-https ca-certificates curl gnupg2  software-properties-common wget man
 
 RUN curl -fsSL https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
 RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
