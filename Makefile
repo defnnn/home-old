@@ -63,6 +63,9 @@ build-jenkins: # Build Jenkins
 jenkins-pass:
 	@docker-compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
+jenkins-cli:
+	curl -sSL -o ~/bin/jenkins-cli.jar http://localhost:8080/jnlpJars/jenkins-cli.jar
+
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
 	mv -f b/index-homedir.1 b/index-homedir
