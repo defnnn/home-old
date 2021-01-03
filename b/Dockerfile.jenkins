@@ -11,6 +11,3 @@ RUN add-apt-repository --yes "deb [arch=amd64] https://download.docker.com/linux
 RUN apt-get update && apt-get install -y docker-ce-cli
 
 USER jenkins
-
-#RUN env PATH=$PATH:/opt/java/openjdk/bin jenkins-plugin-cli --available-updates
-
