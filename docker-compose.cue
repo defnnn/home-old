@@ -41,7 +41,6 @@ for k, v in _users {
 			"./b/service:/service",
 			"$HOME/.password-store:/home/app/.password-store",
 			"$HOME/work:/home/app/work",
-			"/var/run/docker.sock:/var/run/docker.sock",
 			"docker-certs:/certs/client",
 			"jenkins:/var/jenkins_home",
 		]
