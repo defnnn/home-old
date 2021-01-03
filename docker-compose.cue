@@ -11,6 +11,7 @@ services: docker: {
 	env_file:   ".env.dind"
 	volumes: [
 		"docker-certs:/certs/client",
+		"jenkins:/var/jenkins_home",
 	]
 }
 
@@ -41,7 +42,7 @@ for k, v in _users {
 			"$HOME/work:/home/app/work",
 			"/var/run/docker.sock:/var/run/docker.sock",
 			"docker-certs:/certs/client",
-		  "jenkins:/var/jenkins_home"
+			"jenkins:/var/jenkins_home",
 		]
 	}
 }
