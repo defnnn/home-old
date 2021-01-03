@@ -4,6 +4,8 @@ USER root
 
 RUN apt-get update && apt-get install -y apt-transport-https ca-certificates curl gnupg2  software-properties-common wget man
 
+RUN mkdir -p /usr/share/man/man1
+
 RUN curl -fsSL https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
 RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
 RUN apt-get update && apt-get install -y adoptopenjdk-8-hotspot
