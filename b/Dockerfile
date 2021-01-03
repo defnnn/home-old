@@ -15,12 +15,17 @@ RUN dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/ud
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
+        wget apt-transport-https software-properties-common \
         openssh-server tzdata locales iputils-ping iproute2 net-tools dnsutils curl wget unzip jq xz-utils \
         sudo git vim less \
         build-essential m4 make \
         libssl-dev zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev libncursesw5-dev libffi-dev liblzma-dev libreadline-dev \
         tmux gnupg libusb-1.0-0 \
     && rm -f /usr/bin/gs
+
+RUN curl -fsSL https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
+RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
+RUN apt-get update && apt-get install -y adoptopenjdk-8-hotspot
 
 RUN echo GatewayPorts clientspecified >> /etc/ssh/sshd_config
 
