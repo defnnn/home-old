@@ -11,8 +11,8 @@ services: jenkins: ports: [
 ]
 
 services: jenkins: {
-	image:        "defn/jenkins"
-	env_file:     ".env.dind"
+	image:    "defn/jenkins"
+	env_file: ".env.dind"
 	volumes: [
 		"docker-certs:/certs/client",
 		"jenkins:/var/jenkins_home",
@@ -20,9 +20,9 @@ services: jenkins: {
 }
 
 services: docker: {
-	image:      "docker:dind"
-	privileged: true
-	env_file:   ".env.dind"
+	image:        "docker:dind"
+	privileged:   true
+	env_file:     ".env.dind"
 	network_mode: "service:jenkins"
 	pid:          "service:jenkins"
 	volumes: [
@@ -32,12 +32,26 @@ services: docker: {
 }
 
 services: cloudflared: {
-	image:      "defn/cloudflared"
-	env_file:   ".env.dind"
+	image:        "defn/cloudflared"
+	env_file:     ".env.dind"
 	network_mode: "service:jenkins"
 	volumes: [
 		"./etc/cloudflared:/certs/cloudflared",
-  ]
+	]
+}
+
+services: vault: {
+	image:        "defn/vault"
+	env_file:     ".env.dind"
+	network_mode: "service:jenkins"
+	entrypoint: [
+		"vault", "agent",
+		"-config", "/vault/vault-agent.hcl",
+		"-log-level", "debug",
+	]
+	volumes: [
+		"./etc/vault:/vault",
+	]
 }
 
 for k, v in _users {
