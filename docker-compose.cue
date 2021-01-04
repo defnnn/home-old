@@ -66,6 +66,7 @@ for k, v in _users {
 			"$HOME/work:/home/app/work",
 			"docker-certs:/certs/client",
 			"jenkins:/var/jenkins_home",
+			"./etc/vault:/vault",
 		]
 	}
 }
