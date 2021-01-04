@@ -4,5 +4,6 @@ Extra plugins:
 
 - github-autostatus
 - hashicorp-vault-plugin
-
+- configuration-as-code
+- configuration-as-code-groovy
 
