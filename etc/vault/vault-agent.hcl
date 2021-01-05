@@ -29,5 +29,5 @@ auto_auth {
 }
 
 cache {
-  use_auto_auth_token = false
+  use_auto_auth_token = true
 }

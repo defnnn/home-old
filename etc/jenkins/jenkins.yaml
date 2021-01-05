@@ -1,0 +1,10 @@
+unclassified:
+  hashicorpVault:
+    configuration:
+      engineVersion: 2
+      skipSslVerification: true
+      vaultUrl: "http://127.0.0.1:8200"
+      vaultCredentialId: "VaultToken"
+  location:
+    adminAddress: "iam+test@defn.sh"
+    url: "https://j.defn.sh/"
