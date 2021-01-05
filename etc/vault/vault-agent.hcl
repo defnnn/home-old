@@ -1,4 +1,4 @@
-pi_file = "./pidfile"
+pi_file = "/vault/pid"
 
 exit_after_auth = false
 
@@ -7,7 +7,7 @@ vault {
 }
 
 listener "tcp" {
-  address = "127.0.0.1:8200"
+  address = "0.0.0.0:8200"
   tls_disable = true
 }
 
@@ -23,7 +23,7 @@ auto_auth {
 
   sink "file" {
     config = {
-      path = "/vault/jenkins_token"
+      path = "/vault/token"
     }
   }
 }
