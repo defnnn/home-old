@@ -23,6 +23,7 @@ services: jenkins: {
 		"docker-certs:/certs/client",
 		"jenkins:/var/jenkins_home",
 		"./etc/jenkins:/jenkins",
+		"./etc/vault:/vault",
 	]
 	depends_on: [
 		"docker",
