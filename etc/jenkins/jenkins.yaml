@@ -1,10 +1,34 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - vaultTokenFileCredential:
+          filepath: "/vault/token"
+          id: "VaultToken"
+          scope: GLOBAL
+
 unclassified:
   hashicorpVault:
     configuration:
       engineVersion: 2
       skipSslVerification: true
-      vaultUrl: "http://127.0.0.1:8200"
       vaultCredentialId: "VaultToken"
+      vaultUrl: "http://127.0.0.1:8200"
   location:
     adminAddress: "iam+test@defn.sh"
     url: "https://j.defn.sh/"
+
+jenkins:
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+  globalNodeProperties:
+  - envVars:
+      env:
+      - key: "DOCKER_CERT_PATH"
+        value: "/certs/client"
+      - key: "DOCKER_HOST"
+        value: "tcp://127.0.0.1:2376"
+      - key: "DOCKER_TLS_VERIFY"
+        value: "1"
+
