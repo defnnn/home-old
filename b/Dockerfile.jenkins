@@ -12,4 +12,6 @@ RUN apt-get update && apt-get install -y docker-ce-cli
 
 RUN apt-get install -y make
 
+RUN cd /usr/local/bin && curl -O -sSL https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_amd64.zip && unzip vault_1.6.1_linux_amd64.zip && rm -f vault_1.6.1_linux_amd64.zip && chmod 755 vault
+
 USER jenkins
