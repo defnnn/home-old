@@ -66,8 +66,7 @@ push-jenkins:
 	docker push defn/jenkins
 
 jenkins: # Recreate Jenkins services
-	vault read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault/jenkins_role_id
-	vault write -wrap-ttl=60s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault/jenkins_secret_id
+	$(MAKE) renew
 	rm -f etc/vault/token
 	$(MAKE) recreate
 	while true; do if test -f etc/vault/token; then break; fi; sleep 1; done
@@ -84,6 +83,13 @@ jenkins-casc-env:
 jenkins-reload:
 	$(MAKE) jenkins-casc-env
 	cat etc/jenkins/reload.groovy | docker-compose exec -T home ./env.sh j groovysh
+
+jenkins-renew:
+	vault read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault/jenkins_role_id
+	vault write -wrap-ttl=60s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault/jenkins_secret_id
+
+jenkins-revoke:
+	env VAULT_TOKEN="$$(cat etc/vault/token)" vault token revoke -self
 
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
