@@ -66,6 +66,8 @@ push-jenkins:
 	docker push defn/jenkins
 
 jenkins: # Recreate Jenkins services
+	vault read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault/jenkins_role_id
+	vault write -wrap-ttl=60s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault/jenkins_secret_id
 	rm -f etc/vault/token
 	$(MAKE) recreate
 	while true; do if test -f etc/vault/token; then break; fi; sleep 1; done
