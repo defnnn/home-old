@@ -17,7 +17,7 @@ auto_auth {
     config = {
       role_id_file_path = "/vault/role_id"
       secret_id_file_path = "/vault/secret_id"
-      secret_id_response_wrapping_path = "auth/approle/role/defn/secret-id"
+      secret_id_response_wrapping_path = "auth/approle/role/jenkins/secret-id"
     }
   }
 
