@@ -58,6 +58,23 @@ build-home: b/index b/index-homedir # Build home container with brew
 push-home:
 	docker push defn/home:home
 
+fmt: # Format cue
+	cue fmt *.cue
+
+docker-compose.yml: docker-compose.cue
+	cue export --out json docker-compose.cue Homefile.cue | yq -y -S '.'  > docker-compose.yml.1
+	mv docker-compose.yml.1 docker-compose.yml
+
+b/index-homedir: $(HOME)/.git/index
+	cp -f $(HOME)/.git/index b/index-homedir.1
+	mv -f b/index-homedir.1 b/index-homedir
+
+b/index: .git/index
+	cp -f .git/index b/index.1
+	mv -f b/index.1 b/index
+
+-------------jenkins: # -----------------------------
+
 build-jenkins: # Build Jenkins
 	docker build $(build) -t defn/jenkins \
 		-f b/Dockerfile.jenkins .
@@ -65,7 +82,7 @@ build-jenkins: # Build Jenkins
 push-jenkins:
 	docker push defn/jenkins
 
-jenkins: # Recreate Jenkins services
+jenkins-recreate: # Recreate Jenkins services
 	$(MAKE) renew
 	rm -f etc/vault/token
 	$(MAKE) recreate
@@ -76,28 +93,23 @@ jenkins: # Recreate Jenkins services
 jenkins-pass:
 	@docker-compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
-jenkins-casc-env:
+jenkins-casc-env: # Regenerate Jenkins credentials
 	echo -n CASC_VAULT_TOKEN= > etc/jenkins/casc.env
 	cat etc/vault/token >> etc/jenkins/casc.env
 
-jenkins-reload:
+jenkins-reload: # Reload Jenkins configuration
 	$(MAKE) jenkins-casc-env
 	cat etc/jenkins/reload.groovy | docker-compose exec -T home ./env.sh j groovysh
 
-vault-renew:
+jenkins-bash: # jenkins shell with docker-compose exec
+	docker-compose exec -u 0 jenkins bash -il
+
+vault-renew: # Renew vault agent credentials
 	vault read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault/jenkins_role_id
 	vault write -wrap-ttl=60s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault/jenkins_secret_id
 
-vault-revoke:
+vault-revoke: # Revoke vault agent token
 	env VAULT_TOKEN="$$(cat etc/vault/token)" vault token revoke -self
-
-b/index-homedir: $(HOME)/.git/index
-	cp -f $(HOME)/.git/index b/index-homedir.1
-	mv -f b/index-homedir.1 b/index-homedir
-
-b/index: .git/index
-	cp -f .git/index b/index.1
-	mv -f b/index.1 b/index
 
 ----------------test: # -----------------------------
 
@@ -115,14 +127,10 @@ test-brew: # test image brew
 test-app: # test image app
 	echo drone exec --env-file=.drone.env --pipeline $@
 
-----------------bash: # -----------------------------
-bash-jenkins: # jenkins shell with docker-compose exec
-	docker-compose exec -u 0 jenkins bash -il
+------docker-compose: # -----------------------------
 
 bash: # bash shell with docker-compose exec
 	docker-compose exec home bash -il
-
-------docker-compose: # -----------------------------
 
 up: # Bring up homd
 	docker-compose up -d --remove-orphans
@@ -144,18 +152,3 @@ rebash:
 
 pull:
 	docker-compose pull
-
--------------cuelang: # -----------------------------
-
-fmt:
-	cue fmt *.cue
-
-docker-compose.yml: docker-compose.cue
-	cue export --out json docker-compose.cue Homefile.cue | yq -y -S '.'  > docker-compose.yml.1
-	mv docker-compose.yml.1 docker-compose.yml
-	
-----------------tilt: # -----------------------------
-
-tilt:
-	-tilt down
-	tilt up
