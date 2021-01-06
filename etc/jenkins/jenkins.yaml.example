@@ -10,7 +10,7 @@ credentials:
           id: "GitHub"
           password: "${GITHUB_TOKEN}"
           scope: GLOBAL
-          username: "${GITHUB_USERNAME}"
+          username: "yourusername"
       - string:
           id: "GitHub Token"
           scope: GLOBAL
@@ -26,11 +26,15 @@ unclassified:
   location:
     adminAddress: "your@email"
     url: "https://your.domain"
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleOnOver
   gitHubPluginConfig:
     configs:
     - credentialsId: "GitHub"
       name: "github"
     hookUrl: "${JENKINS_URL}/github-webhook/"
+  buildStatusConfig:
+    enableGithub: true
 
 jenkins:
   authorizationStrategy:
