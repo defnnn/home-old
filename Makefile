@@ -65,12 +65,23 @@ build-jenkins: # Build Jenkins
 push-jenkins:
 	docker push defn/jenkins
 
+jenkins: # Recreate Jenkins services
+	rm -f etc/vault/token
+	$(MAKE) recreate
+	while true; do if test -f etc/vault/token; then break; fi; sleep 1; done
+	sleep 1
+	$(MAKE) jenkins-casc-env
+	-$(MAKE) reload
+
 jenkins-pass:
 	@docker-compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
-jenkins-reload:
+jenkins-casc-env:
 	echo -n CASC_VAULT_TOKEN= > etc/jenkins/casc.env
 	cat etc/vault/token >> etc/jenkins/casc.env
+
+jenkins-reload:
+	$(MAKE) jenkins-casc-env
 	cat etc/jenkins/reload.groovy | docker-compose exec -T home ./env.sh j groovysh
 
 b/index-homedir: $(HOME)/.git/index
