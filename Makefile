@@ -84,11 +84,11 @@ jenkins-reload:
 	$(MAKE) jenkins-casc-env
 	cat etc/jenkins/reload.groovy | docker-compose exec -T home ./env.sh j groovysh
 
-jenkins-renew:
+vault-renew:
 	vault read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault/jenkins_role_id
 	vault write -wrap-ttl=60s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault/jenkins_secret_id
 
-jenkins-revoke:
+vault-revoke:
 	env VAULT_TOKEN="$$(cat etc/vault/token)" vault token revoke -self
 
 b/index-homedir: $(HOME)/.git/index
