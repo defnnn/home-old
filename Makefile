@@ -68,8 +68,10 @@ push-jenkins:
 jenkins-pass:
 	@docker-compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
-jenkins-updates:
-	docker-compose exec jenkins bash -c 'env PATH=$$PATH:/opt/java/openjdk/bin jenkins-plugin-cli --available-updates'
+jenkins-reload:
+	echo -n CASC_VAULT_TOKEN= > etc/jenkins/casc.env
+	cat etc/vault/token >> etc/jenkins/casc.env
+	cat etc/jenkins/reload.groovy | docker-compose exec -T home ./env.sh j groovysh
 
 b/index-homedir: $(HOME)/.git/index
 	cp -f $(HOME)/.git/index b/index-homedir.1
