@@ -50,9 +50,6 @@ services: cloudflared: {
 	volumes: [
 		"./etc/cloudflared:/certs/cloudflared",
 	]
-	depends_on: [
-		"jenkins",
-	]
 }
 
 services: vault: {
