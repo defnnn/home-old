@@ -30,7 +30,7 @@ unclassified:
     apiRateLimitChecker: ThrottleOnOver
   gitHubPluginConfig:
     configs:
-    - credentialsId: "GitHub"
+    - credentialsId: "GitHub Token"
       name: "github"
     hookUrl: "${JENKINS_URL}/github-webhook/"
   buildStatusConfig:
