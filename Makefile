@@ -109,8 +109,11 @@ vault-renew: # Renew vault agent credentials
 	vault read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault/jenkins_role_id
 	vault write -wrap-ttl=60s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault/jenkins_secret_id
 
-vault-revoke: # Revoke vault agent token
+vault-revoke: # Revoke vault agent sink token
 	docker-compose exec -T vault env VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN="$$(cat etc/vault/token)" vault token revoke -self
+
+vault-lookup: # Lookup vault agent sink token
+	docker-compose exec -T vault env VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN="$$(cat etc/vault/token)" vault token lookup
 
 ----------------test: # -----------------------------
 
