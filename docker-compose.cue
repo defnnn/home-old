@@ -53,14 +53,9 @@ services: cloudflared: {
 }
 
 services: vault: {
-	image:        "defn/vault"
+	image:        "defn/vault-agent"
 	env_file:     ".env.dind"
 	network_mode: "service:pause"
-	entrypoint: [
-		"vault", "agent",
-		"-config", "/vault/vault-agent.hcl",
-		"-log-level", "debug",
-	]
 	volumes: [
 		"./etc/vault:/vault",
 	]

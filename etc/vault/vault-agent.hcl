@@ -2,13 +2,13 @@ pi_file = "/vault/pid"
 
 exit_after_auth = false
 
-vault {
-  address = "https://vault.global.defn.sh"
-}
-
 listener "tcp" {
   address = "0.0.0.0:8200"
   tls_disable = true
+}
+
+cache {
+  use_auto_auth_token = false
 }
 
 auto_auth {
@@ -24,10 +24,7 @@ auto_auth {
   sink "file" {
     config = {
       path = "/vault/token"
+      mode = 0600
     }
   }
-}
-
-cache {
-  use_auto_auth_token = false
 }
