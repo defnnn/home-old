@@ -14,4 +14,6 @@ RUN apt-get install -y make
 
 RUN cd /usr/local/bin && curl -O -sSL https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_amd64.zip && unzip vault_1.6.1_linux_amd64.zip && rm -f vault_1.6.1_linux_amd64.zip && chmod 755 vault
 
+RUN cd /usr/local/bin && curl -O -sSL https://github.com/drone/drone-cli/releases/download/v1.2.4/drone_linux_arm64.tar.gz && tar xxfz drone_linux_arm64.tar.gz && rm -f drone_linux_arm64.tar.gz && chmod 755 drone
+
 USER jenkins
