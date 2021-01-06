@@ -83,7 +83,8 @@ push-jenkins:
 	docker push defn/jenkins
 
 jenkins-recreate: # Recreate Jenkins services
-	$(MAKE) renew
+	$(MAKE) fmt config
+	$(MAKE) vault-renew
 	rm -f etc/vault/token
 	$(MAKE) recreate
 	while true; do if test -f etc/vault/token; then break; fi; sleep 1; done
