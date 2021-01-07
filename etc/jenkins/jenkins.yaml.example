@@ -51,17 +51,3 @@ jenkins:
         value: "1"
       - key: "VAULT_ADDR"
         value: "http://127.0.0.1:8200"
-  security:
-    apiToken:
-      creationOfLegacyTokenEnabled: false
-      tokenGenerationOnCreationEnabled: false
-      usageStatisticsEnabled: true
-    globalJobDslSecurityConfiguration:
-      useScriptSecurity: true
-    sSHD:
-      port: -1
-    scriptApproval:
-      approvedSignatures:
-      - "staticField com.cloudbees.plugins.credentials.CredentialsScope GLOBAL"
-      - "staticMethod hudson.util.Secret fromString java.lang.String"
-      - "new com.datapipe.jenkins.vault.credentials.VaultTokenCredential com.cloudbees.plugins.credentials.CredentialsScope java.lang.String java.lang.String hudson.util.Secret"

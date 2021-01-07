@@ -1,9 +1,3 @@
-Github IPs: https://api.github.com/meta
-
-Extra plugins:
-
-- github-autostatus
-- hashicorp-vault-plugin
-- configuration-as-code
-- configuration-as-code-groovy
-- job-dsl-plugin
+new com.datapipe.jenkins.vault.credentials.VaultTokenCredential com.cloudbees.plugins.credentials.CredentialsScope java.lang.String java.lang.String hudson.util.Secret
+staticField com.cloudbees.plugins.credentials.CredentialsScope GLOBAL
+staticMethod hudson.util.Secret fromString java.lang.String
