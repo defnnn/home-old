@@ -14,6 +14,8 @@ RUN apt-get install -y make
 
 RUN cd /usr/local/bin && curl -O -sSL https://github.com/drone/drone-cli/releases/download/v1.2.4/drone_linux_arm64.tar.gz && tar xxfz drone_linux_arm64.tar.gz && rm -f drone_linux_arm64.tar.gz && chmod 755 drone
 
+RUN curl -o /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64 && chmod 755 /usr/local/bin/docker-compose
+
 RUN curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
 
 RUN install -d -o jenkins -m 0700 /asdf
