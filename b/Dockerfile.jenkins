@@ -12,8 +12,21 @@ RUN apt-get update && apt-get install -y docker-ce-cli
 
 RUN apt-get install -y make
 
-RUN cd /usr/local/bin && curl -O -sSL https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_amd64.zip && unzip vault_1.6.1_linux_amd64.zip && rm -f vault_1.6.1_linux_amd64.zip && chmod 755 vault
-
 RUN cd /usr/local/bin && curl -O -sSL https://github.com/drone/drone-cli/releases/download/v1.2.4/drone_linux_arm64.tar.gz && tar xxfz drone_linux_arm64.tar.gz && rm -f drone_linux_arm64.tar.gz && chmod 755 drone
 
+RUN curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
+
+RUN install -d -o jenkins -m 0700 /asdf
+
 USER jenkins
+
+COPY env.sh /env.sh
+
+RUN git clone https://github.com/asdf-vm/asdf.git /asdf/.asdf --branch v0.8.0
+
+RUN /env.sh asdf plugin-add golang
+RUN /env.sh asdf plugin-add vault
+
+RUN /env.sh asdf install vault 1.6.1
+RUN /env.sh asdf install golang 1.15.6
+
