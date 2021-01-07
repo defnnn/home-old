@@ -6,4 +6,4 @@ Extra plugins:
 - hashicorp-vault-plugin
 - configuration-as-code
 - configuration-as-code-groovy
-
+- job-dsl-plugin
