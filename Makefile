@@ -90,7 +90,7 @@ jenkins-recreate: # Recreate Jenkins services
 	$(MAKE) recreate
 	while true; do if test -f etc/vault/token; then break; fi; sleep 1; done
 	sleep 1
-	-$(MAKE) jenkins-reload
+	$(MAKE) jenkins-casc-env
 
 jenkins-pass:
 	@docker-compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
