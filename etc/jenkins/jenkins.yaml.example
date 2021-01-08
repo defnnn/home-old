@@ -39,9 +39,7 @@ unclassified:
     enableGithub: true
   globalLibraries:
     libraries:
-    - defaultVersion: "v0.0.1"
-      implicit: true
-      name: "youraccount/yourrepo"
+    - name: "youraccount/yourrepo"
       retriever:
         modernSCM:
           scm:
