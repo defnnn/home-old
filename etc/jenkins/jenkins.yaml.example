@@ -37,6 +37,23 @@ unclassified:
     hookUrl: "${JENKINS_URL}/github-webhook/"
   buildStatusConfig:
     enableGithub: true
+  globalLibraries:
+    libraries:
+    - defaultVersion: "v0.0.1"
+      implicit: true
+      name: "youraccount/yourrepo"
+      retriever:
+        modernSCM:
+          scm:
+            github:
+              configuredByUrl: true
+              credentialsId: "GitHub"
+              id: "youraccount/yourrepo/v0.0.1"
+              repoOwner: "youraccount"
+              repository: "yourrepo"
+              repositoryUrl: "https://github.com/youraccount/yourrepo"
+              traits:
+              - "gitHubTagDiscovery"
 
 jenkins:
   authorizationStrategy:
