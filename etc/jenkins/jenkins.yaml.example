@@ -52,8 +52,6 @@ unclassified:
               repoOwner: "youraccount"
               repository: "yourrepo"
               repositoryUrl: "https://github.com/youraccount/yourrepo"
-              traits:
-              - "gitHubTagDiscovery"
 
 jenkins:
   authorizationStrategy:
