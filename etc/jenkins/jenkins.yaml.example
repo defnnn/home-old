@@ -3,10 +3,12 @@ credentials:
     domainCredentials:
     - credentials:
       - vaultTokenFileCredential:
+          description: "Vault Token File"
           filepath: "/vault/token"
           id: "VaultToken"
           scope: GLOBAL
       - usernamePassword:
+          description: "GitHub: yourusername"
           id: "GitHub"
           password: "${GITHUB_TOKEN}"
           scope: GLOBAL
