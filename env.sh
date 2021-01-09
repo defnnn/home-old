@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 function main {
-  export ASDF_DATA_DIR=/asdf/.asdf
+  export ASDF_DATA_DIR=/j/.asdf
 
-  source /asdf/.asdf/asdf.sh
+  source /j/.asdf/asdf.sh
 
   exec "$@"
 }
