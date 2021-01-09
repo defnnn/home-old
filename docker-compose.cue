@@ -17,7 +17,7 @@ services: pause: {
 
 services: jenkins: {
 	image:        "defn/jenkins"
-	env_file:     ".env.dind"
+	env_file:     ".env.home"
 	network_mode: "service:pause"
 	pid:          "service:pause"
 	volumes: [
@@ -35,7 +35,7 @@ services: jenkins: {
 services: docker: {
 	image:        "docker:dind"
 	privileged:   true
-	env_file:     ".env.dind"
+	env_file:     ".env.home"
 	network_mode: "service:pause"
 	pid:          "service:pause"
 	volumes: [
@@ -46,16 +46,17 @@ services: docker: {
 
 services: cloudflared: {
 	image:        "defn/cloudflared"
-	env_file:     ".env.dind"
+	env_file:     ".env.home"
 	network_mode: "service:pause"
+	command: [ "tunnel", "run"]
 	volumes: [
-		"./etc/cloudflared:/certs/cloudflared",
+		"./etc/cloudflared:/etc/cloudflared",
 	]
 }
 
 services: vault: {
 	image:        "defn/vault-agent"
-	env_file:     ".env.dind"
+	env_file:     ".env.home"
 	network_mode: "service:pause"
 	volumes: [
 		"./etc/vault:/vault",
@@ -67,7 +68,7 @@ for k, v in _users {
 		image:        "defn/home:home"
 		network_mode: "service:pause"
 		pid:          "service:pause"
-		env_file:     ".env.dind"
+		env_file:     ".env.home"
 		volumes: [
 			"./b/service:/service",
 			"$HOME/.password-store:/home/app/.password-store",
