@@ -1,8 +1,10 @@
-tunnel: yourguid
-protocol: http2
+tunnel: tunnelname
 credentials-file: /etc/cloudflared/yourguid.json
+protocol: http2
 
 ingress:
   - hostname: yourdns
-    service: yourorigin
+    service: http://yourorigin
+    originRequest:
+      disableChunkedEncoding: true
   - service: http_status:404

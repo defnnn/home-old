@@ -8,3 +8,5 @@ hashicorp-vault-plugin
 configuration-as-code
 configuration-as-code-groovy
 job-dsl-plugin
+
+cloudflared tunnel route dns j.defn.sh j.defn.sh
