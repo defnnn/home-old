@@ -7,4 +7,6 @@ ingress:
     service: http://yourorigin
     originRequest:
       disableChunkedEncoding: true
+  - hostname: yourdns
+    service: ssh://localhost:2222
   - service: http_status:404
