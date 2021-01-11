@@ -10,6 +10,7 @@ services: pause: ports: [
 	"127.0.0.1:8080:8080",
 	"127.0.0.1:18250:18250",
 	"127.0.0.1:8099:8099",
+	"127.0.0.1:4141:4141",
 ]
 
 services: pause: {
@@ -30,6 +31,25 @@ services: jenkins: {
 	depends_on: [
 		"docker",
 		"vault",
+	]
+}
+
+services: atlantis: {
+	image:        "defn/atlantis"
+	env_file:     ".env.home"
+	network_mode: "service:pause"
+	pid:          "service:pause"
+	command: [
+		"atlantis",
+		"server",
+		"--gh-user",
+		"${ATLANTIS_GH_USER}",
+		"--repo-allowlist",
+		"${ATLANTIS_GH_REPO_ALLOWLIST}",
+	]
+	volumes: [
+	]
+	depends_on: [
 	]
 }
 
