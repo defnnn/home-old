@@ -1,0 +1,20 @@
+repos:
+- id: github.com/yourorg/yourrepo
+  apply_requirements: [approved, mergeable]
+  workflow: custom
+
+  allowed_overrides: [workflow]
+  allowed_workflows: [custom]
+  allow_custom_workflows: false
+
+workflows:
+  custom:
+    init:
+      - init
+    plan:
+      steps:
+      - plan
+      - run: echo plan-hook-post
+    apply:
+      steps:
+      - apply

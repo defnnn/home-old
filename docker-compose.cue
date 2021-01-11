@@ -42,12 +42,13 @@ services: atlantis: {
 	command: [
 		"atlantis",
 		"server",
-		"--gh-user",
-		"${ATLANTIS_GH_USER}",
-		"--repo-allowlist",
-		"${ATLANTIS_GH_REPO_ALLOWLIST}",
+		"--gh-user=${ATLANTIS_GH_USER}",
+		"--repo-allowlist=${ATLANTIS_GH_REPO_ALLOWLIST}",
+		"--repo-config=/atlantis/repos.yaml",
 	]
 	volumes: [
+		"./etc/atlantis:/atlantis",
+		"./data/atlantis:/home/atlantis/.atlantis",
 	]
 	depends_on: [
 	]
