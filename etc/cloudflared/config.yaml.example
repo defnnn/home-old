@@ -1,6 +1,7 @@
 tunnel: tunnelname
 credentials-file: /etc/cloudflared/yourguid.json
 protocol: http2
+metrics: localhost:8099
 
 ingress:
   - hostname: yourdns
