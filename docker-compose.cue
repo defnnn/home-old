@@ -98,7 +98,7 @@ for k, v in _users {
 			"docker-certs:/certs/client",
 			"jenkins:/var/jenkins_home",
 			"./etc/vault:/vault",
-		  "./data/atlantis:/home/atlantis/.atlantis",
+			"./data/atlantis:/home/atlantis/.atlantis",
 		]
 	}
 }
