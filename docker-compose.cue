@@ -3,6 +3,7 @@ version: "3.7"
 volumes: {
 	"docker-certs": {}
 	"jenkins": {}
+	"secrets-cloudflared": {}
 }
 
 services: pause: ports: [
@@ -72,6 +73,7 @@ services: cloudflared: {
 	network_mode: "service:pause"
 	command: [ "tunnel", "run"]
 	volumes: [
+		"secrets-cloudflared:/secrets",
 		"./etc/cloudflared:/etc/cloudflared",
 	]
 }
@@ -81,6 +83,7 @@ services: vault: {
 	env_file:     ".env.home"
 	network_mode: "service:pause"
 	volumes: [
+		"secrets-cloudflared:/secrets-cloudflared",
 		"./etc/vault:/vault",
 	]
 }

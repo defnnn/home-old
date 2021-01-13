@@ -28,3 +28,8 @@ auto_auth {
     }
   }
 }
+
+template {
+  source      = "/vault/cloudflared-credentials-file.json.tpl"
+  destination = "/secrets-cloudflared/credentials-file.json"
+}
