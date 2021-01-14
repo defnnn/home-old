@@ -132,7 +132,8 @@ dmypy.json
 # Secrets
 .drone.secret
 .drone.env
-.env*
+.env
+.env.home
 
 # Hugo
 /config.yaml
