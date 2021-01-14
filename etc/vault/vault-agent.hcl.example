@@ -49,3 +49,9 @@ template {
   source      = "/vault/cloudflared-credentials-file.json.tpl"
   destination = "/secrets-cloudflared/credentials-file.json"
 }
+
+template {
+  source      = "/vault/home.env.tpl"
+  destination = "/secrets-home/.env"
+}
+

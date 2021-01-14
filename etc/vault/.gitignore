@@ -1,4 +1,3 @@
 *
 !.gitignore
-!vault-agent.hcl
 !*.example
