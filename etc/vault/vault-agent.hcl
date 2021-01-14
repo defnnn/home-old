@@ -29,6 +29,22 @@ auto_auth {
   }
 }
 
+
+template {
+  source      = "/vault/jenkins.env.tpl"
+  destination = "/secrets-jenkins/.env"
+}
+
+template {
+  source      = "/vault/atlantis.env.tpl"
+  destination = "/secrets-atlantis/.env"
+}
+
+template {
+  source      = "/vault/cloudflared.env.tpl"
+  destination = "/secrets-cloudflared/.env"
+}
+
 template {
   source      = "/vault/cloudflared-credentials-file.json.tpl"
   destination = "/secrets-cloudflared/credentials-file.json"

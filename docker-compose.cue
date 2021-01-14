@@ -3,7 +3,10 @@ version: "3.7"
 volumes: {
 	"docker-certs": {}
 	"jenkins": {}
+	"secrets-jenkins": {}
+	"secrets-atlantis": {}
 	"secrets-cloudflared": {}
+	"secrets-home": {}
 }
 
 services: pause: ports: [
@@ -18,12 +21,25 @@ services: pause: {
 	image: "gcr.io/google_containers/pause-amd64:3.2"
 }
 
+services: docker: {
+	image:        "docker:dind"
+	privileged:   true
+	env_file:     ".env.home"
+	network_mode: "service:pause"
+	pid:          "service:pause"
+	volumes: [
+		"docker-certs:/certs/client",
+		"jenkins:/var/jenkins_home",
+	]
+}
+
 services: jenkins: {
 	image:        "defn/jenkins"
 	env_file:     ".env.home"
 	network_mode: "service:pause"
 	pid:          "service:pause"
 	volumes: [
+		"secrets-jenkins:/secrets",
 		"docker-certs:/certs/client",
 		"jenkins:/var/jenkins_home",
 		"./etc/jenkins:/jenkins",
@@ -48,22 +64,11 @@ services: atlantis: {
 		"--repo-config=/atlantis/repos.yaml",
 	]
 	volumes: [
+		"secrets-atlantis:/secrets",
 		"./etc/atlantis:/atlantis",
 		"./data/atlantis:/home/atlantis/.atlantis",
 	]
 	depends_on: [
-	]
-}
-
-services: docker: {
-	image:        "docker:dind"
-	privileged:   true
-	env_file:     ".env.home"
-	network_mode: "service:pause"
-	pid:          "service:pause"
-	volumes: [
-		"docker-certs:/certs/client",
-		"jenkins:/var/jenkins_home",
 	]
 }
 
@@ -83,7 +88,10 @@ services: vault: {
 	env_file:     ".env.home"
 	network_mode: "service:pause"
 	volumes: [
+		"secrets-jenkins:/secrets-jenkins",
+		"secrets-atlantis:/secrets-atlantis",
 		"secrets-cloudflared:/secrets-cloudflared",
+		"secrets-home:/secrets-home",
 		"./etc/vault:/vault",
 	]
 }
@@ -95,6 +103,7 @@ for k, v in _users {
 		pid:          "service:pause"
 		env_file:     ".env.home"
 		volumes: [
+			"secrets-home:/secrets",
 			"./b/service:/service",
 			"$HOME/.password-store:/home/app/.password-store",
 			"$HOME/work:/home/app/work",
