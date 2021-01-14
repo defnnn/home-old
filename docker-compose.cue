@@ -111,6 +111,10 @@ for k, v in _users {
 			"jenkins:/var/jenkins_home",
 			"./etc/vault:/vault",
 			"./data/atlantis:/home/atlantis/.atlantis",
+			"secrets-jenkins:/secrets-jenkins",
+			"secrets-atlantis:/secrets-atlantis",
+			"secrets-cloudflared:/secrets-cloudflared",
+			"secrets-home:/secrets-home",
 		]
 	}
 }
