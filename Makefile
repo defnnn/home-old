@@ -21,7 +21,6 @@ logs:
 
 ---------------build: # -----------------------------
 rebuild: # Rebuild everything from scratch
-	$(MAKE) build-jenkins push-jenkins
 	$(MAKE) build-latest push-latest build=--no-cache
 	$(MAKE) build-brew push-brew build=--no-cache
 	$(MAKE) build-home push-home build=--no-cache
