@@ -17,8 +17,10 @@ function main {
     echo HostCertificate /etc/ssh/ssh_host_ecdsa_key-cert.pub | sudo tee -a /etc/ssh/sshd_config
   fi
 
-  sudo mkdir -p "$(dirname "${HOME}")"
-  sudo usermod -d "${HOME}" "${NEWUSER}"
+  if [[ -n "${NEWUSER:-}" ]]; then
+    sudo mkdir -p "$(dirname "${HOME}")"
+    sudo usermod -d "${HOME}" "${NEWUSER}"
+  fi
 
   exec /usr/sbin/sshd -D -o UseDNS=no -o UsePAM=yes -o PasswordAuthentication=no -o Port=2222 -e
 }
