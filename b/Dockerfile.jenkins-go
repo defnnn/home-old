@@ -1,0 +1,11 @@
+FROM defn/jenkins-job
+
+USER app
+
+COPY env.sh /env.sh
+
+RUN /env.sh asdf plugin-add golang
+
+RUN /env.sh asdf install golang 1.15.6
+
+RUN curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | bash

@@ -1,0 +1,9 @@
+FROM defn/jenkins-job
+
+USER app
+
+COPY env.sh /env.sh
+
+RUN /env.sh asdf plugin-add python
+
+RUN /env.sh asdf install python 3.9.1

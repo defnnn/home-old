@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
 function main {
-  export ASDF_DATA_DIR=/j/.asdf
+  if [[ -d /j/.asdf ]]; then
+    export ASDF_DATA_DIR=/j/.asdf
+    source /j/.asdf/asdf.sh
+  else
+    source ~/.asdf/asdf.sh
+  fi
 
-  source /j/.asdf/asdf.sh
 
   exec "$@"
 }

@@ -74,12 +74,33 @@ b/index: .git/index
 
 -------------jenkins: # -----------------------------
 
-build-jenkins: # Build Jenkins
+build-jenkins: # Build Jenkins server
 	docker build $(build) -t defn/jenkins \
 		-f b/Dockerfile.jenkins .
 
+build-jenkins-job: # Build Jenkins job job
+	docker build $(build) -t defn/jenkins-job \
+		-f b/Dockerfile.jenkins-job .
+
+build-jenkins-go: # Build Jenkins go job
+	docker build $(build) -t defn/jenkins-go \
+		-f b/Dockerfile.jenkins-go .
+
+build-jenkins-python: # Build Jenkins python job
+	docker build $(build) -t defn/jenkins-python \
+		-f b/Dockerfile.jenkins-python .
+
 push-jenkins:
 	docker push defn/jenkins
+
+push-jenkins-job:
+	docker push defn/jenkins-job
+
+push-jenkins-go:
+	docker push defn/jenkins-go
+
+push-jenkins-python:
+	docker push defn/jenkins-python
 
 jenkins-recreate: # Recreate Jenkins services
 	v login
