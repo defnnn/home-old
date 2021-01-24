@@ -103,7 +103,6 @@ push-jenkins-python:
 	docker push defn/jenkins-python
 
 jenkins-recreate: # Recreate Jenkins services
-	v login
 	$(MAKE) fmt config
 	$(MAKE) vault-renew
 	rm -f etc/vault/token
@@ -127,10 +126,11 @@ jenkins-bash: # jenkins shell with docker-compose exec
 	docker-compose exec -u 0 jenkins bash -il
 
 vault-renew: # Renew vault agent credentials
-	env VAULT_ADDR=http://127.0.0.1:8200 vault read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault/role_id
-	env VAULT_ADDR=http://127.0.0.1:8200 vault write -wrap-ttl=60s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault/secret_id
-	env VAULT_ADDR=http://127.0.0.1:8200 vault read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault-agent/role_id
-	env VAULT_ADDR=http://127.0.0.1:8200 vault write -wrap-ttl=60s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault/secret_id
+	v login
+	v read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault/role_id
+	v read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault-agent/role_id
+	v write -wrap-ttl=180s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault/secret_id
+	v write -wrap-ttl=180s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault-agent/secret_id
 
 vault-revoke: # Revoke vault agent sink token
 	docker-compose exec -T vault env VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN="$$(cat etc/vault/token)" vault token revoke -self
