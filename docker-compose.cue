@@ -21,6 +21,18 @@ services: pause: {
 	image: "gcr.io/google_containers/pause-amd64:3.2"
 }
 
+services: "vault-agent": {
+	image:    "defn/vault-agent"
+	env_file: ".env.vault-agent"
+	volumes: [
+		"secrets-jenkins:/secrets-jenkins",
+		"secrets-atlantis:/secrets-atlantis",
+		"secrets-cloudflared:/secrets-cloudflared",
+		"secrets-home:/secrets-home",
+		"./etc/vault-agent:/vault",
+	]
+}
+
 services: docker: {
 	image:        "docker:dind"
 	privileged:   true
@@ -30,6 +42,19 @@ services: docker: {
 	volumes: [
 		"docker-certs:/certs/client",
 		"jenkins:/var/jenkins_home",
+	]
+}
+
+services: "jenkins-vault-agent": {
+	image:        "defn/vault-agent"
+	env_file:     ".env.jenkins-vault-agent"
+	network_mode: "service:pause"
+	volumes: [
+		"secrets-jenkins:/secrets-jenkins",
+		"secrets-atlantis:/secrets-atlantis",
+		"secrets-cloudflared:/secrets-cloudflared",
+		"secrets-home:/secrets-home",
+		"./etc/jenkins-vault-agent:/vault",
 	]
 }
 
@@ -48,6 +73,7 @@ services: jenkins: {
 	depends_on: [
 		"docker",
 		"jenkins-vault-agent",
+		"vault-agent",
 	]
 }
 
@@ -69,6 +95,7 @@ services: atlantis: {
 		"./data/atlantis:/home/atlantis/.atlantis",
 	]
 	depends_on: [
+		"vault-agent",
 	]
 }
 
@@ -81,30 +108,8 @@ services: cloudflared: {
 		"secrets-cloudflared:/secrets",
 		"./etc/cloudflared:/etc/cloudflared",
 	]
-}
-
-services: "jenkins-vault-agent": {
-	image:        "defn/vault-agent"
-	env_file:     ".env.jenkins-vault-agent"
-	network_mode: "service:pause"
-	volumes: [
-		"secrets-jenkins:/secrets-jenkins",
-		"secrets-atlantis:/secrets-atlantis",
-		"secrets-cloudflared:/secrets-cloudflared",
-		"secrets-home:/secrets-home",
-		"./etc/jenkins-vault-agent:/vault",
-	]
-}
-
-services: "vault-agent": {
-	image:    "defn/vault-agent"
-	env_file: ".env.vault-agent"
-	volumes: [
-		"secrets-jenkins:/secrets-jenkins",
-		"secrets-atlantis:/secrets-atlantis",
-		"secrets-cloudflared:/secrets-cloudflared",
-		"secrets-home:/secrets-home",
-		"./etc/vault-agent:/vault",
+	depends_on: [
+		"vault-agent",
 	]
 }
 
