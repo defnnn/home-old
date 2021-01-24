@@ -3,8 +3,6 @@
 function main {
   set -x
 
-  env | grep ^AWS_ | sort | sudo tee /etc/aws.env > /dev/null
-
   if [[ -n "${HOME_SSH_USER_KEY_PUB:-}" ]]; then
     echo "${HOME_SSH_USER_KEY_PUB}" | base64 -d | sudo tee /etc/ssh/ssh_user_key.pub >/dev/null
     echo TrustedUserCAKeys /etc/ssh/ssh_user_key.pub | sudo tee -a /etc/ssh/sshd_config
