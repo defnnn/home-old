@@ -105,9 +105,9 @@ push-jenkins-python:
 jenkins-recreate: # Recreate Jenkins services
 	$(MAKE) fmt config
 	$(MAKE) vault-renew
-	rm -f etc/vault/token
+	rm -f etc/jenkins-vault-agent/token
 	$(MAKE) recreate
-	while true; do if test -f etc/vault/token; then break; fi; sleep 1; done
+	while true; do if test -f etc/jenkins-vault-agent/token; then break; fi; sleep 1; done
 	sleep 1
 	$(MAKE) jenkins-casc-env
 
@@ -116,7 +116,7 @@ jenkins-pass:
 
 jenkins-casc-env: # Regenerate Jenkins credentials
 	echo -n CASC_VAULT_TOKEN= > etc/jenkins/casc.env
-	cat etc/vault/token >> etc/jenkins/casc.env
+	cat etc/jenkins-vault-agent/token >> etc/jenkins/casc.env
 
 jenkins-reload: # Reload Jenkins configuration
 	$(MAKE) jenkins-casc-env
@@ -127,16 +127,16 @@ jenkins-bash: # jenkins shell with docker-compose exec
 
 vault-renew: # Renew vault agent credentials
 	v login
-	v read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault/role_id
+	v read -field=role_id auth/approle/role/jenkins/role-id  > etc/jenkins-vault-agent/role_id
 	v read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault-agent/role_id
-	v write -wrap-ttl=180s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault/secret_id
+	v write -wrap-ttl=180s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/jenkins-vault-agent/secret_id
 	v write -wrap-ttl=180s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault-agent/secret_id
 
 vault-revoke: # Revoke vault agent sink token
-	docker-compose exec -T vault env VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN="$$(cat etc/vault/token)" vault token revoke -self
+	docker-compose exec -T vault env VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN="$$(cat etc/jenkins-vault-agent/token)" vault token revoke -self
 
 vault-lookup: # Lookup vault agent sink token
-	docker-compose exec -T vault env VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN="$$(cat etc/vault/token)" vault token lookup
+	docker-compose exec -T vault env VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN="$$(cat etc/jenkins-vault-agent/token)" vault token lookup
 
 ----------------test: # -----------------------------
 

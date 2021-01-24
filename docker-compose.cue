@@ -43,11 +43,11 @@ services: jenkins: {
 		"docker-certs:/certs/client",
 		"jenkins:/var/jenkins_home",
 		"./etc/jenkins:/jenkins",
-		"./etc/vault:/vault",
+		"./etc/jenkins-vault-agent:/vault",
 	]
 	depends_on: [
 		"docker",
-		"vault",
+		"jenkins-vault-agent",
 	]
 }
 
@@ -83,16 +83,16 @@ services: cloudflared: {
 	]
 }
 
-services: vault: {
+services: "jenkins-vault-agent": {
 	image:        "defn/vault-agent"
-	env_file:     ".env.home"
+	env_file:     ".env.jenkins-vault-agent"
 	network_mode: "service:pause"
 	volumes: [
 		"secrets-jenkins:/secrets-jenkins",
 		"secrets-atlantis:/secrets-atlantis",
 		"secrets-cloudflared:/secrets-cloudflared",
 		"secrets-home:/secrets-home",
-		"./etc/vault:/vault",
+		"./etc/jenkins-vault-agent:/vault",
 	]
 }
 
@@ -121,7 +121,6 @@ for k, v in _users {
 			"$HOME/work:/home/app/work",
 			"docker-certs:/certs/client",
 			"jenkins:/var/jenkins_home",
-			"./etc/vault:/vault",
 			"./data/atlantis:/home/atlantis/.atlantis",
 			"secrets-jenkins:/secrets-jenkins",
 			"secrets-atlantis:/secrets-atlantis",
