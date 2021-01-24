@@ -105,7 +105,6 @@ push-jenkins-python:
 jenkins-recreate: # Recreate Jenkins services
 	$(MAKE) fmt config
 	$(MAKE) vault-renew
-	rm -f etc/jenkins-vault-agent/token
 	$(MAKE) recreate
 	while true; do if test -f etc/jenkins-vault-agent/token; then break; fi; sleep 1; done
 	sleep 1
@@ -129,6 +128,7 @@ vault-renew: # Renew vault agent credentials
 	v login
 	v read -field=role_id auth/approle/role/jenkins/role-id  > etc/jenkins-vault-agent/role_id
 	v read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault-agent/role_id
+	rm -f etc/jenkins-vault-agent/token
 	v write -wrap-ttl=180s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/jenkins-vault-agent/secret_id
 	v write -wrap-ttl=180s -field=wrapping_token -f auth/approle/role/jenkins/secret-id > etc/vault-agent/secret_id
 
