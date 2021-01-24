@@ -96,6 +96,18 @@ services: vault: {
 	]
 }
 
+services: "vault-agent": {
+	image:    "defn/vault-agent"
+	env_file: ".env.vault-agent"
+	volumes: [
+		"secrets-jenkins:/secrets-jenkins",
+		"secrets-atlantis:/secrets-atlantis",
+		"secrets-cloudflared:/secrets-cloudflared",
+		"secrets-home:/secrets-home",
+		"./etc/vault-agent:/vault",
+	]
+}
+
 for k, v in _users {
 	services: "\(k)": {
 		image:        "defn/home:home"

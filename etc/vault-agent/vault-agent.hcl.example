@@ -1,0 +1,24 @@
+pi_file = "/vault/pid"
+
+exit_after_auth = true
+
+cache {
+  use_auto_auth_token = false
+}
+
+auto_auth {
+  method {
+    type = "approle"
+    config = {
+      role_id_file_path = "/vault/role_id"
+      secret_id_file_path = "/vault/secret_id"
+      secret_id_response_wrapping_path = "auth/approle/role/home/secret-id"
+    }
+  }
+}
+
+template {
+  source      = "/vault/home.env.tpl"
+  destination = "/secrets-home/.env"
+}
+
