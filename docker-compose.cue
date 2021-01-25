@@ -36,7 +36,7 @@ services: "vault-agent": {
 services: docker: {
 	image:        "docker:dind"
 	privileged:   true
-	env_file:     ".env.home"
+	env_file:     ".env.docker"
 	network_mode: "service:pause"
 	pid:          "service:pause"
 	volumes: [
@@ -60,7 +60,7 @@ services: "jenkins-vault-agent": {
 
 services: jenkins: {
 	image:        "defn/jenkins"
-	env_file:     ".env.home"
+	env_file:     ".env.jenkins"
 	network_mode: "service:pause"
 	pid:          "service:pause"
 	volumes: [
@@ -79,16 +79,9 @@ services: jenkins: {
 
 services: atlantis: {
 	image:        "defn/atlantis"
-	env_file:     ".env.home"
+	env_file:     ".env.atlantis"
 	network_mode: "service:pause"
 	pid:          "service:pause"
-	command: [
-		"atlantis",
-		"server",
-		"--gh-user=${ATLANTIS_GH_USER}",
-		"--repo-allowlist=${ATLANTIS_GH_REPO_ALLOWLIST}",
-		"--repo-config=/atlantis/repos.yaml",
-	]
 	volumes: [
 		"secrets-atlantis:/secrets",
 		"./etc/atlantis:/atlantis",
@@ -101,7 +94,7 @@ services: atlantis: {
 
 services: cloudflared: {
 	image:        "defn/cloudflared"
-	env_file:     ".env.home"
+	env_file:     ".env.cloudflared"
 	network_mode: "service:pause"
 	command: [ "tunnel", "run"]
 	volumes: [
