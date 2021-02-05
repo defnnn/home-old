@@ -1,6 +1,6 @@
 # Table of contents
 
-* [This title is not in GitHub](README.md)
+* [Cool beans](README.md)
 
 ## Apple
 
