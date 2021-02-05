@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: docs
 
-VARIANT ?= latest
+VARIANT ?= base
 HOMEDIR ?= https://github.com/amanibhavam/homedir
 
 menu:
@@ -21,21 +21,21 @@ logs:
 
 ---------------build: # -----------------------------
 rebuild: # Rebuild everything from scratch
-	$(MAKE) build-latest push-latest build=--no-cache
+	$(MAKE) build-base push-base build=--no-cache
 	$(MAKE) build-brew push-brew build=--no-cache
 	$(MAKE) build-home push-home build=--no-cache
 
-build-latest: # Build latest container with lefn/python
+build-base: # Build base container with lefn/python
 	@echo
-	docker build $(build) -t defn/home:latest \
+	docker build $(build) -t defn/home:base \
 		--build-arg HOMEBOOT=app \
 		-f b/Dockerfile \
 		b
 
-push-latest:
-	docker push defn/home:latest
+push-base:
+	docker push defn/home:base
 
-build-brew: # Build brew container with latest
+build-brew: # Build brew container with base
 	@echo
 	docker build $(build) -t defn/home:brew \
 		--build-arg HOMEBOOT=app \
@@ -102,7 +102,7 @@ push-jenkins-go:
 push-jenkins-python:
 	docker push defn/jenkins-python
 
-jenkins-recreate: # Recreate Jenkins services
+one: # Recreate Jenkins services
 	$(MAKE) fmt config
 	$(MAKE) vault-renew
 	$(MAKE) recreate
@@ -141,12 +141,12 @@ vault-lookup: # Lookup vault agent sink token
 ----------------test: # -----------------------------
 
 test: # test all images
-	$(MAKE) test-latest
+	$(MAKE) test-base
 	$(MAKE) test-brew
 	$(MAKE) test-app
 
-test-latest: # test image latest
-	echo drone exec --env-file=.drone.env --pipeline test-latest
+test-base: # test image base
+	echo drone exec --env-file=.drone.env --pipeline test-base
 
 test-brew: # test image brew
 	echo drone exec --env-file=.drone.env --pipeline test-brew

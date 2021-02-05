@@ -21,7 +21,7 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: test-latest
+name: test-base
 
 platform:
   os: linux
@@ -29,7 +29,7 @@ platform:
 
 steps:
 - name: local
-  image: defn/home:latest
+  image: defn/home:base
   commands:
     - cd
     - set -x

@@ -1,4 +1,4 @@
-FROM defn/home:latest
+FROM defn/home:base
 
 ARG HOMEBOOT
 
