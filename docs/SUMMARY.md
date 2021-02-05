@@ -4,6 +4,6 @@
 
 ## Apple
 
-* [Granny Smith](apple/apple-granny-smith/README.md)
-  * [Golden Delicious](apple/apple-granny-smith/apple-golden-delicious.md)
+* [Granny Smith](apple/granny-smith.md)
+* [Golden Delicious](apple/golden-delicious.md)
 
