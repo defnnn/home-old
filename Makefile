@@ -125,7 +125,6 @@ jenkins-bash: # jenkins shell with docker-compose exec
 	docker-compose exec -u 0 jenkins bash -il
 
 vault-renew: # Renew vault agent credentials
-	v login
 	v read -field=role_id auth/approle/role/jenkins/role-id  > etc/jenkins-vault-agent/role_id
 	v read -field=role_id auth/approle/role/jenkins/role-id  > etc/vault-agent/role_id
 	rm -f etc/jenkins-vault-agent/token
