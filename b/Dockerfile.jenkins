@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.276-jdk11
+FROM jenkins/jenkins:2.279-jdk11
 
 USER root
 
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y docker-ce-cli
 
 RUN cd /usr/local/bin && curl -O -sSL https://github.com/drone/drone-cli/releases/download/v1.2.4/drone_linux_arm64.tar.gz && tar xxfz drone_linux_arm64.tar.gz && rm -f drone_linux_arm64.tar.gz && chmod 755 drone
 
-RUN curl -o /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64 && chmod 755 /usr/local/bin/docker-compose
+RUN curl -o /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.28.2/docker-compose-Linux-x86_64 && chmod 755 /usr/local/bin/docker-compose
 
 RUN install -d -o jenkins -m 0700 /j
 
@@ -29,4 +29,4 @@ COPY env.sh /env.sh
 
 RUN /env.sh asdf plugin-add vault
 
-RUN /env.sh asdf install vault 1.6.1
+RUN /env.sh asdf install vault 1.6.2
