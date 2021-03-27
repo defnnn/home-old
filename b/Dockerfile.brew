@@ -16,7 +16,7 @@ RUN apt-get update \
 
 RUN . /etc/os-release && echo "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /" | tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
 RUN . /etc/os-release && curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key | apt-key add -
-RUN apt-get update && apt-get -y upgrade && apt-get -y install podman fuse-overlayfs buildah skopeo
+#RUN apt-get update && apt-get -y upgrade && apt-get -y install podman fuse-overlayfs buildah skopeo
 
 RUN curl -O -sSL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
     && dpkg -i session-manager-plugin.deb \
