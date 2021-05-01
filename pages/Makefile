@@ -1,3 +1,3 @@
 build:
-	mkdir -p pubic
+	mkdir -p public
 	uname -a > public/index.html
