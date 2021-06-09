@@ -23,10 +23,6 @@ RUN apt-get update \
         tmux gnupg libusb-1.0-0 \
     && rm -f /usr/bin/gs
 
-RUN curl -fsSL https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
-RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
-RUN apt-get update && apt-get install -y adoptopenjdk-11-hotspot
-
 RUN echo GatewayPorts clientspecified >> /etc/ssh/sshd_config
 
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
